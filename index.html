@@ -1,0 +1,1274 @@
+'use client';
+
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  AlertTriangle,
+  ArrowLeft,
+  ArrowRight,
+  Baby,
+  Building2,
+  Clipboard,
+  Download,
+  Heart,
+  Home,
+  Leaf,
+  Palette,
+  PawPrint,
+  Ruler,
+  Send,
+  Sofa,
+  Sparkles,
+  Timer,
+  Users,
+  Utensils,
+  Wallet,
+} from 'lucide-react';
+
+/**
+ * Intema Kitchen Digital Architect Assistant
+ * Tablet-first Question Flow + Scoring + Result Moodboard
+ *
+ * UX rules
+ * - Visual cards (no native radios)
+ * - Q4 multi-select; others single-select
+ * - Tie-break: Budget (Q13) then Style (Q7)
+ */
+
+type PersonaKey =
+  | 'tech'
+  | 'luxury'
+  | 'comfort'
+  | 'investor'
+  | 'gourmet'
+  | 'eco'
+  | 'social'
+  | 'coastal'
+  | 'fast'
+  | 'nostalgic';
+
+type ScoreDelta = Partial<Record<PersonaKey, number>>;
+
+type AlertKey = 'HIGH_DURABILITY_ALERT' | 'PET_MATERIAL_RECO';
+
+type Option = {
+  id: string;
+  label: string;
+  helper?: string;
+  icon: React.ReactNode;
+  score?: ScoreDelta;
+  triggers?: AlertKey[];
+};
+
+type Question = {
+  id: string;
+  key: string;
+  title: string;
+  subtitle?: string;
+  type: 'single' | 'multi';
+  options: Option[];
+};
+
+type Answers = Record<string, string | string[] | null>;
+
+type PersonaContent = {
+  title: string;
+  headline: string;
+  model: string;
+  material: string;
+  accessory: string;
+  salesTip?: string;
+  feature?: string;
+};
+
+type PersonaResult = {
+  winner: PersonaKey;
+  scores: Record<PersonaKey, number>;
+  tied: PersonaKey[];
+  alerts: AlertKey[];
+};
+
+const PERSONA_LABELS: Record<PersonaKey, string> = {
+  tech: 'Teknoloji Tutkunu Vizyoner',
+  luxury: 'Klasik Lüks Sever',
+  comfort: 'Konfor Odaklı Aile',
+  investor: 'Akıllı Yatırımcı',
+  gourmet: 'Gurme Şef',
+  eco: 'Doğal Yaşam Savunucusu',
+  social: 'Sosyal Ev Sahibi',
+  coastal: 'Dinginlik Arayan',
+  fast: 'Hız ve Pratiklik Odaklı',
+  nostalgic: 'Nostaljik Romantik',
+};
+
+const PERSONA_PRIORITY: PersonaKey[] = [
+  'tech',
+  'luxury',
+  'comfort',
+  'investor',
+  'gourmet',
+  'eco',
+  'social',
+  'coastal',
+  'fast',
+  'nostalgic',
+];
+
+// Exact mapping provided for Result Pages
+const PERSONA_CONTENT: Record<PersonaKey, PersonaContent> = {
+  tech: {
+    title: 'Teknoloji Tutkunu Vizyoner',
+    headline: 'Mutfak Değil, Bir Teknoloji Üssü.',
+    model: 'INOVA (Kulp’suz)',
+    material: 'Mat Lake (Koyu Taupe / Antrasit)',
+    accessory: 'Ring Prizli Aydınlatma Ünitesi (USB Charging)',
+    salesTip: '+5 cm ekstra tezgah yüksekliğini vurgula.',
+  },
+  luxury: {
+    title: 'Klasik Lüks Sever',
+    headline: 'Zamanın Ötesinde Bir Prestij.',
+    model: 'TOSCANA (Çerçeveli kapaklar)',
+    material: 'Parlak Lake (Porselen Mavi)',
+    accessory: 'Tezgah Üstü Büfe Dolaplar (Cam vitrinler)',
+  },
+  comfort: {
+    title: 'Konfor Odaklı Aile',
+    headline: 'Hayatın Hızına Yetişen Dayanıklı Mutfak.',
+    model: 'SIENA veya NORDA',
+    material: 'Akrilik PET (Anti-fingerprint, Scratch-resistant)',
+    accessory: 'Boy Kiler Mekanizması (Pantry) + Pet Module',
+  },
+  investor: {
+    title: 'Akıllı Yatırımcı',
+    headline: 'Akıllı Metrekareler, Yüksek Değer.',
+    model: 'PRIME (F/P)',
+    material: 'Melamin (Sıcak Beyaz / Bej)',
+    accessory: 'Açılır Masa Mekanizması (Space saving)',
+  },
+  gourmet: {
+    title: 'Gurme Şef',
+    headline: 'Evinizin Profesyonel Lezzet İstasyonu.',
+    model: 'INOVA (Yüksek kapasite)',
+    material: 'Soft Lak veya Metal Look (Grafit)',
+    accessory: 'Ergonomik Bulaşık Makinesi Ünitesi + Çekmece içi organizer',
+  },
+  eco: {
+    title: 'Doğal Yaşam Savunucusu',
+    headline: 'Doğanın Huzuru Mutfağınızda.',
+    model: 'NORDA (Scandinavian)',
+    material: 'Natural Wood Veneer + Recycled Mat PET',
+    accessory: 'Micro Garden Ünitesi (Ot yetiştirme)',
+  },
+  social: {
+    title: 'Sosyal Ev Sahibi',
+    headline: 'Sadece Yemek Değil, Sohbet Pişirilen Yer.',
+    model: 'INOVA (Ada plan)',
+    material: 'Kontrast Renkler (Ceviz + Cashmere)',
+    accessory: 'Wine/Glass modüller + Metal açık raflar',
+  },
+  coastal: {
+    title: 'Dinginlik Arayan (Yazlık)',
+    headline: 'Her Gün Tatil Sabahına Uyanmak Gibi.',
+    model: 'FRESCA (Dikey oluklar)',
+    material: 'Mat PET (Ocean Blue / Sage Green)',
+    accessory: 'Pencere altı evye planı + Hasır sepetler',
+  },
+  fast: {
+    title: 'Hız Odaklı',
+    headline: 'Beklemeden Yeni Mutfağınıza Kavuşun.',
+    model: 'PRIME (Stok)',
+    material: 'Laminate tezgah (3 haftalık teslim)',
+    accessory: 'Raylı aksesuar setleri (delme yok)',
+    feature: '3 haftalık teslim odağı',
+  },
+  nostalgic: {
+    title: 'Nostaljik Romantik',
+    headline: 'Geçmişin Sıcaklığı, Bugünün Konforu.',
+    model: 'VEGA (Country/Vintage)',
+    material: 'Polymeric (Magnolia / Baltic Blue)',
+    accessory: 'Rustik pirinç kulplar',
+  },
+};
+
+const QUESTIONS: Question[] = [
+  // --- REVİZE EDİLMİŞ DENGELİ SORU HAVUZU (MAX PUAN ~100 EŞİTLENDİ) ---
+  // p1: tech, p2: luxury, p3: comfort, p4: investor, p5: gourmet,
+  // p6: eco, p7: social, p8: coastal, p9: fast, p10: nostalgic
+  {
+    id: 'q1',
+    key: 'projectType',
+    title: 'Bu mutfak projesinin niteliği nedir?',
+    type: 'single',
+    options: [
+      {
+        id: 'q1_renovation',
+        label: 'Kendi evim / Tadilat',
+        helper: 'Mevcut evi iyileştirme, daha konforlu kullanım',
+        icon: <Home className="h-5 w-5" />,
+        score: { comfort: 5, nostalgic: 5 },
+      },
+      {
+        id: 'q1_newhouse',
+        label: 'Yeni Ev / Sıfır Proje',
+        helper: 'Yeni taşınma ya da sıfırdan kurulum',
+        icon: <Building2 className="h-5 w-5" />,
+        score: { tech: 10, luxury: 10, social: 5 },
+      },
+      {
+        id: 'q1_invest',
+        label: 'Yatırım / Stüdyo / Kiraya verilecek',
+        helper: 'Hızlı geri dönüş, metrekare verimliliği',
+        icon: <Building2 className="h-5 w-5" />,
+        score: { investor: 30 },
+      },
+      {
+        id: 'q1_summer',
+        label: 'Yazlık / İkinci Ev',
+        helper: 'Rahat, ferah, tatil modu',
+        icon: <Sparkles className="h-5 w-5" />,
+        score: { coastal: 40 },
+      },
+    ],
+  },
+  {
+    id: 'q2',
+    key: 'timeline',
+    title: 'Zaman kısıtınız nedir?',
+    type: 'single',
+    options: [
+      {
+        id: 'q2_urgent',
+        label: 'Çok acil, hemen bitmeli',
+        helper: 'Stok ve hızlı planlama',
+        icon: <Timer className="h-5 w-5" />,
+        score: { fast: 40, investor: 10 },
+      },
+      {
+        id: 'q2_standard',
+        label: 'Standart süreç (1-2 ay)',
+        helper: 'Normal proje akışı',
+        icon: <Ruler className="h-5 w-5" />,
+        score: { comfort: 5, gourmet: 5 },
+      },
+      {
+        id: 'q2_perfection',
+        label: 'Zaman sorun değil, mükemmel olsun',
+        helper: 'Detay ve rafine seçim',
+        icon: <Palette className="h-5 w-5" />,
+        score: { luxury: 15, nostalgic: 15, eco: 10 },
+      },
+    ],
+  },
+  {
+    id: 'q3',
+    key: 'space',
+    title: 'Mutfak alanının durumu?',
+    type: 'single',
+    options: [
+      {
+        id: 'q3_small',
+        label: 'Dar / Küçük',
+        helper: 'Metrekare verimliliği öncelik',
+        icon: <Ruler className="h-5 w-5" />,
+        score: { investor: 15, fast: 10 },
+      },
+      {
+        id: 'q3_large',
+        label: 'Geniş / Ada müsait',
+        helper: 'Ada, misafir, geniş tezgah',
+        icon: <Sofa className="h-5 w-5" />,
+        score: { social: 25, gourmet: 15, luxury: 10 },
+      },
+      {
+        id: 'q3_standard',
+        label: 'Standart',
+        helper: 'Klasik plan, dengeli ihtiyaç',
+        icon: <Home className="h-5 w-5" />,
+        score: { comfort: 5 },
+      },
+    ],
+  },
+  {
+    id: 'q4',
+    key: 'household',
+    title: 'Hane Halkı (Birden fazla seçebilirsiniz)',
+    type: 'multi',
+    options: [
+      {
+        id: 'q4_single',
+        label: 'Yalnız / Çift',
+        helper: 'Daha sade kullanım',
+        icon: <Users className="h-5 w-5" />,
+        score: { tech: 15, investor: 10, gourmet: 5 },
+      },
+      {
+        id: 'q4_children',
+        label: 'Çocuklar var',
+        helper: 'Hijyen, güvenlik, dayanıklılık',
+        icon: <Baby className="h-5 w-5" />,
+        score: { comfort: 20 },
+      },
+      {
+        id: 'q4_pets',
+        label: 'Evcil hayvan var',
+        helper: 'Kolay temizlik, çizilme direnci',
+        icon: <PawPrint className="h-5 w-5" />,
+        score: { eco: 15, comfort: 10 },
+      },
+      {
+        id: 'q4_crowd',
+        label: 'Kalabalık aile',
+        helper: 'Yoğun kullanım, büyük düzen',
+        icon: <Users className="h-5 w-5" />,
+        score: { social: 15, nostalgic: 10, comfort: 10 },
+      },
+    ],
+  },
+  {
+    id: 'q5',
+    key: 'meaning',
+    title: 'Mutfak sizin için ne ifade ediyor?',
+    type: 'single',
+    options: [
+      {
+        id: 'q5_showcase',
+        label: 'Vitrin (Sosyal alan)',
+        helper: 'Misafir, sohbet, sunum',
+        icon: <Sofa className="h-5 w-5" />,
+        score: { social: 30, tech: 10, luxury: 10 },
+      },
+      {
+        id: 'q5_operation',
+        label: 'Operasyon (Yemek yapma)',
+        helper: 'Yoğun pişirme, ekipman, düzen',
+        icon: <Utensils className="h-5 w-5" />,
+        score: { gourmet: 35 },
+      },
+      {
+        id: 'q5_sanctuary',
+        label: 'Sığınak (Huzur)',
+        helper: 'Sakinlik, doğal his, ferahlık',
+        icon: <Leaf className="h-5 w-5" />,
+        score: { coastal: 25, eco: 20 },
+      },
+      {
+        id: 'q5_heart',
+        label: 'Kalp (Aile odaklı)',
+        helper: 'Günlük yaşamın merkezi',
+        icon: <Heart className="h-5 w-5" />,
+        score: { nostalgic: 25, comfort: 10 },
+      },
+      {
+        id: 'q5_station',
+        label: 'İstasyon (Pratik)',
+        helper: 'Hızlı çözüm, net iş',
+        icon: <Timer className="h-5 w-5" />,
+        score: { fast: 20, investor: 15 },
+      },
+    ],
+  },
+  {
+    id: 'q6',
+    key: 'painPoint',
+    title: 'Şu anki mutfakta en büyük şikayetiniz?',
+    type: 'single',
+    options: [
+      {
+        id: 'q6_clutter',
+        label: 'Dağınıklık / Yer yok',
+        helper: 'Kiler, organizer, akıllı depolama',
+        icon: <Utensils className="h-5 w-5" />,
+        score: { gourmet: 15, comfort: 5, investor: 5 },
+      },
+      {
+        id: 'q6_cleaning',
+        label: 'Temizlik zorluğu / Lekeler',
+        helper: 'Kolay silinebilir yüzeyler',
+        icon: <AlertTriangle className="h-5 w-5" />,
+        score: { comfort: 15, fast: 10 },
+        triggers: ['PET_MATERIAL_RECO'],
+      },
+      {
+        id: 'q6_outdated',
+        label: 'Demode görünüm',
+        helper: 'Tasarımı güncellemek istiyorum',
+        icon: <Sparkles className="h-5 w-5" />,
+        score: { tech: 15, luxury: 10, social: 5 },
+      },
+      {
+        id: 'q6_dark',
+        label: 'Karanlık / Basık',
+        helper: 'Daha aydınlık ve ferah',
+        icon: <Leaf className="h-5 w-5" />,
+        score: { coastal: 20, eco: 10 },
+      },
+    ],
+  },
+  {
+    id: 'q7',
+    key: 'style',
+    title: 'Hangi tasarım dili size yakın?',
+    type: 'single',
+    options: [
+      {
+        id: 'q7_modern',
+        label: 'Modern & Minimal',
+        helper: 'Düz çizgiler, az detay',
+        icon: <Sparkles className="h-5 w-5" />,
+        score: { tech: 20, gourmet: 10, investor: 5 },
+      },
+      {
+        id: 'q7_classic',
+        label: 'Klasik & Gösterişli',
+        helper: 'Çerçeveli kapaklar, prestij',
+        icon: <Building2 className="h-5 w-5" />,
+        score: { luxury: 30, nostalgic: 10 },
+      },
+      {
+        id: 'q7_country',
+        label: 'Country & Doğal',
+        helper: 'Ahşap, sıcak atmosfer',
+        icon: <Leaf className="h-5 w-5" />,
+        score: { nostalgic: 30, eco: 20, coastal: 15 },
+      },
+      {
+        id: 'q7_industrial',
+        label: 'Endüstriyel',
+        helper: 'Metal, koyu tonlar, güçlü kontrast',
+        icon: <Palette className="h-5 w-5" />,
+        score: { tech: 15, gourmet: 15, social: 10 },
+      },
+    ],
+  },
+  {
+    id: 'q8',
+    key: 'materialTexture',
+    title: 'Malzeme ve doku tercihiniz?',
+    type: 'single',
+    options: [
+      {
+        id: 'q8_wood',
+        label: 'Doğal ahşap dokusu',
+        helper: 'Organik his, sıcak atmosfer',
+        icon: <Leaf className="h-5 w-5" />,
+        score: { eco: 25, nostalgic: 15, coastal: 10 },
+      },
+      {
+        id: 'q8_soft',
+        label: 'Mat ve soft renkler',
+        helper: 'Sakin ve modern',
+        icon: <Sparkles className="h-5 w-5" />,
+        score: { comfort: 15, coastal: 15, tech: 5 },
+      },
+      {
+        id: 'q8_gloss',
+        label: 'Parlak ve canlı',
+        helper: 'Premium ve iddialı',
+        icon: <Palette className="h-5 w-5" />,
+        score: { luxury: 25, social: 15 },
+      },
+      {
+        id: 'q8_dark',
+        label: 'Koyu ve maskülen',
+        helper: 'Grafit, antrasit, metal',
+        icon: <Building2 className="h-5 w-5" />,
+        score: { tech: 20, gourmet: 10 },
+      },
+    ],
+  },
+  {
+    id: 'q9',
+    key: 'cookingHabit',
+    title: 'Yemek pişirme alışkanlığınız?',
+    type: 'single',
+    options: [
+      {
+        id: 'q9_standard',
+        label: 'Standart pişirme',
+        helper: 'Günlük kullanım',
+        icon: <Utensils className="h-5 w-5" />,
+        score: { comfort: 10, nostalgic: 5 },
+      },
+      {
+        id: 'q9_gourmet',
+        label: 'Gurme / Profesyonel',
+        helper: 'Yoğun pişirme, ekipman odak',
+        icon: <Utensils className="h-5 w-5" />,
+        score: { gourmet: 40 },
+      },
+      {
+        id: 'q9_min',
+        label: 'Minimum / Pratik',
+        helper: 'Az pişirme, hızlı akış',
+        icon: <Timer className="h-5 w-5" />,
+        score: { fast: 20, investor: 15, tech: 5 },
+      },
+    ],
+  },
+  {
+    id: 'q10',
+    key: 'storageNeed',
+    title: 'Depolama ihtiyacınız?',
+    type: 'single',
+    options: [
+      {
+        id: 'q10_pantry',
+        label: 'Maksimum kiler / stok',
+        helper: 'Kiler, kiler mekanizması, düzen',
+        icon: <Building2 className="h-5 w-5" />,
+        score: { comfort: 15, gourmet: 15 },
+      },
+      {
+        id: 'q10_display',
+        label: 'Vitrin / sergileme',
+        helper: 'Cam modüller, açık raflar',
+        icon: <Sofa className="h-5 w-5" />,
+        score: { social: 20, luxury: 15, nostalgic: 10 },
+      },
+      {
+        id: 'q10_closed',
+        label: 'Standart / kapalı dolap',
+        helper: 'Gizli, düzenli görünüm',
+        icon: <Home className="h-5 w-5" />,
+        score: { investor: 10, tech: 5 },
+      },
+    ],
+  },
+  {
+    id: 'q11',
+    key: 'sustainability',
+    title: 'Sürdürülebilirlik önceliğiniz?',
+    type: 'single',
+    options: [
+      {
+        id: 'q11_must',
+        label: 'Çok önemli / Vazgeçilmez',
+        helper: 'Eco materyaller, sürdürülebilir yaklaşım',
+        icon: <Leaf className="h-5 w-5" />,
+        score: { eco: 40 },
+      },
+      {
+        id: 'q11_balanced',
+        label: 'Önemli ama estetik de önemli',
+        helper: 'Denge: eco + estetik',
+        icon: <Palette className="h-5 w-5" />,
+        score: { eco: 15, coastal: 10, comfort: 5 },
+      },
+      {
+        id: 'q11_not',
+        label: 'Öncelik değil',
+        helper: 'Diğer faktörler daha kritik',
+        icon: <Ruler className="h-5 w-5" />,
+        score: { investor: 5, fast: 5 },
+      },
+    ],
+  },
+  {
+    id: 'q12',
+    key: 'techIntegration',
+    title: 'Teknoloji entegrasyonu?',
+    type: 'single',
+    options: [
+      {
+        id: 'q12_hightech',
+        label: 'High-Tech (Akıllı sistemler)',
+        helper: 'Akıllı çözümler, entegre detaylar',
+        icon: <Sparkles className="h-5 w-5" />,
+        score: { tech: 30, gourmet: 5 },
+      },
+      {
+        id: 'q12_traditional',
+        label: 'Geleneksel / Manuel',
+        helper: 'Klasik kullanım, az teknoloji',
+        icon: <Home className="h-5 w-5" />,
+        score: { nostalgic: 25, eco: 10, coastal: 5 },
+      },
+    ],
+  },
+  {
+    id: 'q13',
+    key: 'budget',
+    title: 'Bütçe yaklaşımınız?',
+    type: 'single',
+    options: [
+      {
+        id: 'q13_flexible',
+        label: 'Esnek / Prestij odaklı',
+        helper: 'Kalite ve prestij öncelik',
+        icon: <Wallet className="h-5 w-5" />,
+        score: { luxury: 30, tech: 10, social: 10 },
+      },
+      {
+        id: 'q13_pp',
+        label: 'Fiyat / Performans',
+        helper: 'Denge, dayanıklılık',
+        icon: <Wallet className="h-5 w-5" />,
+        score: { comfort: 20, gourmet: 10, nostalgic: 5 },
+      },
+      {
+        id: 'q13_economic',
+        label: 'Ekonomik / Bütçe dostu',
+        helper: 'Uygun ve hızlı çözüm',
+        icon: <Wallet className="h-5 w-5" />,
+        score: { investor: 25, fast: 15 },
+      },
+    ],
+  },
+  {
+    id: 'q14',
+    key: 'decisionFactor',
+    title: 'Karar verme faktörünüz?',
+    type: 'single',
+    options: [
+      {
+        id: 'q14_design',
+        label: 'Tasarım heyecanı',
+        helper: 'Görsel etki, wow faktörü',
+        icon: <Sparkles className="h-5 w-5" />,
+        score: { tech: 10, luxury: 5, social: 5 },
+      },
+      {
+        id: 'q14_trust',
+        label: 'Güven / Garanti',
+        helper: 'Uzun ömür ve güven',
+        icon: <Clipboard className="h-5 w-5" />,
+        score: { comfort: 15, nostalgic: 5 },
+      },
+      {
+        id: 'q14_speed',
+        label: 'Hız / Teslimat',
+        helper: 'En kısa sürede bitmeli',
+        icon: <Timer className="h-5 w-5" />,
+        score: { fast: 30 },
+      },
+      {
+        id: 'q14_cost',
+        label: 'Maliyet',
+        helper: 'Bütçe ve verim',
+        icon: <Wallet className="h-5 w-5" />,
+        score: { investor: 15 },
+      },
+    ],
+  },
+];
+
+function cn(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(' ');
+}
+
+function computeAlerts(answers: Answers): AlertKey[] {
+  const alerts: AlertKey[] = [];
+
+  const hh = answers.household;
+  if (Array.isArray(hh)) {
+    const hasChildren = hh.includes('q4_children');
+    const hasPets = hh.includes('q4_pets');
+    if (hasChildren && hasPets) alerts.push('HIGH_DURABILITY_ALERT');
+  }
+
+  // PET material recommendation is triggered by cleaning/stains pain point
+  if (answers.painPoint === 'q6_cleaning') alerts.push('PET_MATERIAL_RECO');
+
+  return Array.from(new Set(alerts));
+}
+
+function isAnswered(q: Question, answers: Answers): boolean {
+  const v = answers[q.key];
+  if (q.type === 'single') return typeof v === 'string' && v.length > 0;
+  return Array.isArray(v) && v.length > 0;
+}
+
+function addScore(scores: Record<PersonaKey, number>, delta?: ScoreDelta) {
+  if (!delta) return;
+  for (const k of Object.keys(delta) as PersonaKey[]) {
+    const val = delta[k] ?? 0;
+    scores[k] += val;
+  }
+}
+
+function getSelectedOption(questionKey: string, answers: Answers): string | null {
+  const v = answers[questionKey];
+  if (typeof v === 'string') return v;
+  return null;
+}
+
+function getTriggerPersonasForQuestion(
+  q: Question,
+  answers: Answers
+): Array<{ persona: PersonaKey; weight: number }> {
+  const selectedId = getSelectedOption(q.key, answers);
+  if (!selectedId) return [];
+  const opt = q.options.find((o) => o.id === selectedId);
+  if (!opt?.score) return [];
+  return (Object.keys(opt.score) as PersonaKey[])
+    .map((persona) => ({ persona, weight: opt.score?.[persona] ?? 0 }))
+    .filter((x) => x.weight > 0)
+    .sort((a, b) => b.weight - a.weight);
+}
+
+function calculatePersona(answers: Answers): PersonaResult {
+  const scores: Record<PersonaKey, number> = {
+    tech: 0,
+    luxury: 0,
+    comfort: 0,
+    investor: 0,
+    gourmet: 0,
+    eco: 0,
+    social: 0,
+    coastal: 0,
+    fast: 0,
+    nostalgic: 0,
+  };
+
+  // Base scoring: sum option deltas
+  for (const q of QUESTIONS) {
+    const v = answers[q.key];
+
+    if (q.type === 'single') {
+      if (typeof v !== 'string') continue;
+      const opt = q.options.find((o) => o.id === v);
+      addScore(scores, opt?.score);
+      continue;
+    }
+
+    if (Array.isArray(v)) {
+      for (const optionId of v) {
+        const opt = q.options.find((o) => o.id === optionId);
+        addScore(scores, opt?.score);
+      }
+    }
+  }
+
+  // Special rule: Children AND Pets -> +20 Comfort
+  const hh = answers.household;
+  if (Array.isArray(hh)) {
+    const hasChildren = hh.includes('q4_children');
+    const hasPets = hh.includes('q4_pets');
+    if (hasChildren && hasPets) scores.comfort += 20;
+  }
+
+  const maxScore = Math.max(...Object.values(scores));
+  const tied = (Object.keys(scores) as PersonaKey[]).filter((k) => scores[k] === maxScore);
+
+  // Tie-break rule: Budget (Q13) then Style (Q7)
+  const budgetQ = QUESTIONS.find((q) => q.id === 'q13');
+  const styleQ = QUESTIONS.find((q) => q.id === 'q7');
+
+  const tryBreak = (candidates: PersonaKey[], q?: Question): PersonaKey | null => {
+    if (!q) return null;
+    const triggers = getTriggerPersonasForQuestion(q, answers);
+    for (const t of triggers) {
+      if (candidates.includes(t.persona)) return t.persona;
+    }
+    return null;
+  };
+
+  let winner: PersonaKey | null = null;
+  if (tied.length === 1) winner = tied[0];
+  if (!winner) winner = tryBreak(tied, budgetQ);
+  if (!winner) winner = tryBreak(tied, styleQ);
+
+  // Final deterministic fallback
+  if (!winner) winner = PERSONA_PRIORITY.find((p) => tied.includes(p)) ?? tied[0] ?? 'tech';
+
+  return {
+    winner,
+    scores,
+    tied,
+    alerts: computeAlerts(answers),
+  };
+}
+
+function ProgressBar({ current, total }: { current: number; total: number }) {
+  const pct = total === 0 ? 0 : Math.round((current / total) * 100);
+  return (
+    <div className="w-full">
+      <div className="flex items-center justify-between text-xs text-zinc-500">
+        <span>İlerleme</span>
+        <span>%{pct}</span>
+      </div>
+      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-zinc-200">
+        <div className="h-full rounded-full bg-zinc-900 transition-all" style={{ width: `${pct}%` }} />
+      </div>
+    </div>
+  );
+}
+
+function Chip({ children, tone = 'neutral' }: { children: React.ReactNode; tone?: 'neutral' | 'warn' }) {
+  const base = 'inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ring-1';
+  const styles =
+    tone === 'warn' ? 'bg-amber-50 text-amber-900 ring-amber-200' : 'bg-zinc-50 text-zinc-700 ring-zinc-200';
+  return <span className={cn(base, styles)}>{children}</span>;
+}
+
+function OptionCard({
+  option,
+  selected,
+  disabled,
+  onClick,
+}: {
+  option: Option;
+  selected: boolean;
+  disabled?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={onClick}
+      className={cn(
+        'group w-full rounded-2xl border p-4 text-left shadow-sm transition-all',
+        'bg-white hover:shadow-md active:scale-[0.99]',
+        selected ? 'border-zinc-900 ring-1 ring-zinc-900' : 'border-zinc-200',
+        disabled && 'opacity-50 cursor-not-allowed hover:shadow-sm'
+      )}
+    >
+      <div className="flex items-start gap-3">
+        <div
+          className={cn(
+            'flex h-10 w-10 items-center justify-center rounded-xl border',
+            selected ? 'border-zinc-900 bg-zinc-900 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-700'
+          )}
+        >
+          {option.icon}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-sm font-semibold text-zinc-900 truncate">{option.label}</div>
+            {selected && <Chip>Seçildi</Chip>}
+          </div>
+          {option.helper && <div className="mt-1 text-sm text-zinc-600 leading-snug">{option.helper}</div>}
+        </div>
+      </div>
+    </button>
+  );
+}
+
+function QuestionCard({
+  question,
+  answers,
+  setAnswers,
+  onAutoNext,
+}: {
+  question: Question;
+  answers: Answers;
+  setAnswers: React.Dispatch<React.SetStateAction<Answers>>;
+  onAutoNext?: () => void;
+}) {
+  const value = answers[question.key];
+
+  const onPickSingle = (optionId: string) => {
+    setAnswers((prev) => ({ ...prev, [question.key]: optionId }));
+    window.setTimeout(() => onAutoNext?.(), 120);
+  };
+
+  const onToggleMulti = (optionId: string) => {
+    setAnswers((prev) => {
+      const prevArr = Array.isArray(prev[question.key]) ? (prev[question.key] as string[]) : [];
+      const exists = prevArr.includes(optionId);
+      let nextArr = exists ? prevArr.filter((x) => x !== optionId) : [...prevArr, optionId];
+
+      // Household UX: single/couple is mutually exclusive with children/pets
+      if (question.key === 'household') {
+        const isSingleCouple = optionId === 'q4_single';
+        if (isSingleCouple && !exists) nextArr = ['q4_single'];
+        if (!isSingleCouple && !exists) nextArr = nextArr.filter((x) => x !== 'q4_single');
+      }
+
+      return { ...prev, [question.key]: nextArr };
+    });
+  };
+
+  return (
+    <div className="rounded-3xl border bg-white p-6 shadow-sm">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <div className="text-xs font-semibold tracking-wide text-zinc-500">{question.id.toUpperCase()}</div>
+          <h2 className="mt-1 text-xl font-semibold text-zinc-900">{question.title}</h2>
+          {question.subtitle && <p className="mt-1 text-sm text-zinc-600">{question.subtitle}</p>}
+        </div>
+        {question.type === 'multi' && <Chip>Çoklu Seçim</Chip>}
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-3 lg:grid-cols-2">
+        {question.options.map((opt) => {
+          const selected =
+            question.type === 'single' ? value === opt.id : Array.isArray(value) && value.includes(opt.id);
+
+          return (
+            <OptionCard
+              key={opt.id}
+              option={opt}
+              selected={selected}
+              onClick={() => (question.type === 'single' ? onPickSingle(opt.id) : onToggleMulti(opt.id))}
+            />
+          );
+        })}
+      </div>
+
+      {question.key === 'household' && (() => {
+        const hh = answers.household;
+        const hasChildren = Array.isArray(hh) && hh.includes('q4_children');
+        const hasPets = Array.isArray(hh) && hh.includes('q4_pets');
+        if (!hasChildren || !hasPets) return null;
+        return (
+          <div className="mt-5">
+            <Chip tone="warn">
+              <AlertTriangle className="h-4 w-4" />
+              High Durability Alert: Çocuk + Evcil hayvan seçildi.
+            </Chip>
+          </div>
+        );
+      })()}
+
+      {computeAlerts(answers).includes('PET_MATERIAL_RECO') && (
+        <div className="mt-4">
+          <Chip tone="warn">
+            <AlertTriangle className="h-4 w-4" />
+            PET materyal odağı: kolay temizlik ve iz yapmayan yüzey.
+          </Chip>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProductRecommendationCard({
+  label,
+  title,
+  detail,
+  icon,
+}: {
+  label: string;
+  title: string;
+  detail?: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-3xl border bg-white p-5 shadow-sm">
+      <div className="flex items-start gap-3">
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-zinc-200 bg-zinc-50 text-zinc-800">
+          {icon}
+        </div>
+        <div className="min-w-0">
+          <div className="text-xs font-semibold tracking-wide text-zinc-500">{label}</div>
+          <div className="mt-1 text-base font-semibold text-zinc-900">{title}</div>
+          {detail && <div className="mt-1 text-sm text-zinc-600">{detail}</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ScoreRow({ persona, value, max }: { persona: PersonaKey; value: number; max: number }) {
+  const pct = max === 0 ? 0 : Math.round((value / max) * 100);
+  return (
+    <div className="flex items-center gap-3">
+      <div className="w-40 truncate text-xs font-semibold text-zinc-700">{PERSONA_LABELS[persona]}</div>
+      <div className="flex-1">
+        <div className="h-2 overflow-hidden rounded-full bg-zinc-200">
+          <div className="h-full rounded-full bg-zinc-900" style={{ width: `${pct}%` }} />
+        </div>
+      </div>
+      <div className="w-10 text-right text-xs font-bold text-zinc-900">{value}</div>
+    </div>
+  );
+}
+
+function ResultMoodboard({
+  result,
+  answers,
+  onBack,
+}: {
+  result: PersonaResult;
+  answers: Answers;
+  onBack: () => void;
+}) {
+  const content = PERSONA_CONTENT[result.winner];
+  const max = Math.max(...Object.values(result.scores));
+
+  const top5 = useMemo(() => {
+    return (Object.keys(result.scores) as PersonaKey[])
+      .map((k) => ({ k, v: result.scores[k] }))
+      .sort((a, b) => b.v - a.v)
+      .slice(0, 5);
+  }, [result.scores]);
+
+  const summaryText = useMemo(() => {
+    const lines: string[] = [];
+    lines.push(`Persona: ${content.title}`);
+    lines.push(`Headline: ${content.headline}`);
+    lines.push(`Model: ${content.model}`);
+    lines.push(`Material: ${content.material}`);
+    lines.push(`Accessory: ${content.accessory}`);
+    if (content.feature) lines.push(`Feature: ${content.feature}`);
+    if (content.salesTip) lines.push(`Sales Tip: ${content.salesTip}`);
+
+    const alerts = computeAlerts(answers);
+    if (alerts.includes('HIGH_DURABILITY_ALERT')) lines.push('Alert: High Durability (Çocuk + Evcil Hayvan)');
+    if (alerts.includes('PET_MATERIAL_RECO')) lines.push('Alert: PET Materyal Odağı (Kolay temizlik)');
+
+    lines.push('');
+    lines.push('Scores:');
+    for (const item of top5) lines.push(`- ${PERSONA_LABELS[item.k]}: ${item.v}`);
+
+    return lines.join('\n');
+  }, [answers, content, top5]);
+
+  const copySummary = async () => {
+    try {
+      await navigator.clipboard.writeText(summaryText);
+    } catch {
+      // ignore
+    }
+  };
+
+  const downloadProposal = () => {
+    const payload = {
+      createdAt: new Date().toISOString(),
+      winner: result.winner,
+      persona: content,
+      alerts: result.alerts,
+      answers,
+      scores: result.scores,
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'intema-proposal.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="min-h-screen bg-zinc-100">
+      <div className="mx-auto max-w-6xl px-4 pb-28 pt-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="text-xs font-semibold tracking-wide text-zinc-500">Sonuç</div>
+            <h1 className="mt-1 text-2xl font-semibold text-zinc-900">{content.title}</h1>
+            <p className="mt-1 text-sm text-zinc-600">{content.headline}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            {result.alerts.includes('HIGH_DURABILITY_ALERT') && (
+              <Chip tone="warn">
+                <AlertTriangle className="h-4 w-4" />
+                Dayanıklılık
+              </Chip>
+            )}
+            {result.alerts.includes('PET_MATERIAL_RECO') && (
+              <Chip tone="warn">
+                <AlertTriangle className="h-4 w-4" />
+                PET Önerisi
+              </Chip>
+            )}
+            <Chip> Tie-break: Q13, sonra Q7 </Chip>
+          </div>
+        </div>
+
+        <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-12">
+          <div className="lg:col-span-7">
+            <div className="relative overflow-hidden rounded-3xl border bg-white shadow-sm">
+              <div className="h-72 bg-[radial-gradient(circle_at_30%_20%,rgba(0,0,0,0.08),transparent_55%),radial-gradient(circle_at_80%_70%,rgba(0,0,0,0.10),transparent_60%),linear-gradient(to_bottom,rgba(244,244,245,1),rgba(228,228,231,1))]" />
+              <div className="absolute inset-0 p-6">
+                <div className="flex h-full flex-col justify-between">
+                  <div className="flex items-center justify-between">
+                    <Chip>Hero Image Placeholder</Chip>
+                    <Chip>{content.model}</Chip>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div className="rounded-3xl border bg-white/80 p-4 backdrop-blur">
+                      <div className="text-xs font-semibold tracking-wide text-zinc-500">Material</div>
+                      <div className="mt-1 text-sm font-semibold text-zinc-900">{content.material}</div>
+                    </div>
+                    <div className="rounded-3xl border bg-white/80 p-4 backdrop-blur">
+                      <div className="text-xs font-semibold tracking-wide text-zinc-500">Accessory</div>
+                      <div className="mt-1 text-sm font-semibold text-zinc-900">{content.accessory}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {content.salesTip && (
+              <div className="mt-4 rounded-3xl border bg-white p-5 shadow-sm">
+                <div className="text-xs font-semibold tracking-wide text-zinc-500">Sales Tip</div>
+                <div className="mt-1 text-sm font-semibold text-zinc-900">{content.salesTip}</div>
+              </div>
+            )}
+          </div>
+
+          <div className="lg:col-span-5">
+            <div className="grid grid-cols-1 gap-4">
+              <ProductRecommendationCard
+                label="Önerilen Model"
+                title={content.model}
+                icon={<Building2 className="h-5 w-5" />}
+              />
+              <ProductRecommendationCard
+                label="Önerilen Materyal"
+                title={content.material}
+                detail={result.alerts.includes('PET_MATERIAL_RECO') ? 'Kolay temizlik odaklı yüzey yaklaşımı aktif.' : undefined}
+                icon={<Palette className="h-5 w-5" />}
+              />
+              <ProductRecommendationCard
+                label="Must Have Aksesuar"
+                title={content.accessory}
+                detail={result.alerts.includes('HIGH_DURABILITY_ALERT') ? 'Dayanıklılık ve yoğun kullanım senaryosu.' : undefined}
+                icon={<Sparkles className="h-5 w-5" />}
+              />
+
+              <div className="rounded-3xl border bg-white p-5 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-xs font-semibold tracking-wide text-zinc-500">Skor Özeti</div>
+                    <div className="mt-1 text-sm font-semibold text-zinc-900">Top 5 Persona</div>
+                  </div>
+                  <Chip>Max: {max}</Chip>
+                </div>
+                <div className="mt-4 space-y-3">
+                  {top5.map((x) => (
+                    <ScoreRow key={x.k} persona={x.k} value={x.v} max={max} />
+                  ))}
+                </div>
+                {result.tied.length > 1 && (
+                  <div className="mt-4">
+                    <Chip tone="warn">
+                      <AlertTriangle className="h-4 w-4" />
+                      Tie detected: {result.tied.map((p) => PERSONA_LABELS[p]).join(', ')}
+                    </Chip>
+                  </div>
+                )}
+              </div>
+
+              <div className="rounded-3xl border bg-white p-5 shadow-sm">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="text-xs font-semibold tracking-wide text-zinc-500">Proposal</div>
+                    <div className="mt-1 text-sm font-semibold text-zinc-900">Özet metnini kopyala veya JSON indir</div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={copySummary}
+                      className="inline-flex items-center gap-2 rounded-2xl border border-zinc-200 bg-white px-4 py-2 text-sm font-semibold shadow-sm hover:shadow-md"
+                    >
+                      <Clipboard className="h-4 w-4" />
+                      Kopyala
+                    </button>
+                    <button
+                      type="button"
+                      onClick={downloadProposal}
+                      className="inline-flex items-center gap-2 rounded-2xl bg-zinc-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:shadow-md"
+                    >
+                      <Download className="h-4 w-4" />
+                      JSON
+                    </button>
+                  </div>
+                </div>
+                <pre className="mt-3 max-h-40 overflow-auto rounded-2xl bg-zinc-50 p-3 text-xs text-zinc-700 ring-1 ring-zinc-200">
+                  {summaryText}
+                </pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-white/90 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+          <button
+            type="button"
+            onClick={onBack}
+            className="inline-flex items-center gap-2 rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm font-semibold shadow-sm hover:shadow-md"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Cevapları Düzenle
+          </button>
+
+          <div className="flex-1" />
+
+          <button
+            type="button"
+            onClick={downloadProposal}
+            className="inline-flex items-center gap-2 rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm font-semibold shadow-sm hover:shadow-md"
+          >
+            <Download className="h-4 w-4" />
+            Save Proposal
+          </button>
+
+          <button
+            type="button"
+            onClick={() => alert('CRM entegrasyonu: API endpoint bağlanınca aktif edilecek.')}
+            className="inline-flex items-center gap-2 rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:shadow-md"
+          >
+            <Send className="h-4 w-4" />
+            Send to CRM
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function createEmptyAnswers(): Answers {
+  return {
+    projectType: null,
+    timeline: null,
+    space: null,
+    household: [],
+    meaning: null,
+    painPoint: null,
+    style: null,
+    materialTexture: null,
+    cookingHabit: null,
+    storageNeed: null,
+    sustainability: null,
+    techIntegration: null,
+    budget: null,
+    decisionFactor: null,
+  };
+}
+
+function runSelfTestsOnce() {
+  if (typeof window === 'undefined') return;
+  // Avoid running multiple times during hot reload
+  const w = window as unknown as { __INTEMA_TESTS_DONE__?: boolean };
+  if (w.__INTEMA_TESTS_DONE__) return;
+  w.__INTEMA_TESTS_DONE__ = true;
+
+  // Test 1: Basic scoring from Q1 (Yeni Ev)
+  {
+    const a = createEmptyAnswers();
+    a.projectType = 'q1_newhouse';
+    const r = calculatePersona(a);
+    console.assert(r.scores.tech === 10, 'Test1: tech should be +10');
+    console.assert(r.scores.luxury === 10, 'Test1: luxury should be +10');
+    console.assert(r.scores.social === 5, 'Test1: social should be +5');
+  }
+
+  // Test 2: Household children + pets => +20 comfort bonus and durability alert
+  {
+    const a = createEmptyAnswers();
+    a.household = ['q4_children', 'q4_pets'];
+    const r = calculatePersona(a);
+    console.assert(r.alerts.includes('HIGH_DURABILITY_ALERT'), 'Test2: should include HIGH_DURABILITY_ALERT');
+    // comfort: children(20) + pets(10) + bonus(20) = 50
+    console.assert(r.scores.comfort === 50, 'Test2: comfort should be 20 + 10 + 20 = 50');
+    console.assert(r.scores.eco === 15, 'Test2: eco should be +15 from pets');
+  }
+
+  // Test 3: Tie-break prefers budget (Q13)
+  // Create a final tie at max between comfort and gourmet, then let budget resolve it.
+  // comfort: children(20) + budget(F/P)(20) = 40
+  // gourmet: space large(15) + style industrial(15) + budget(F/P)(10) = 40
+  {
+    const a = createEmptyAnswers();
+    a.household = ['q4_children'];
+    a.space = 'q3_large';
+    a.style = 'q7_industrial';
+    a.budget = 'q13_pp';
+    const r = calc
