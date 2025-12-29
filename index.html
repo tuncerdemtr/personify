@@ -1189,4 +1189,128 @@ function ResultMoodboard({
           <div className="flex-1" />
 
           <button
-            type
+            type="button"
+            onClick={onReset}
+            className="inline-flex items-center gap-2 rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:shadow-md"
+          >
+            <Sparkles className="h-4 w-4" />
+            Yeniden Başlat
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function IntemaKitchenAssistant() {
+  const [answers, setAnswers] = useState<Answers>({});
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [showResult, setShowResult] = useState(false);
+
+  const total = QUESTIONS.length;
+  const answeredCount = QUESTIONS.filter((q) => isAnswered(q, answers)).length;
+  const currentQuestion = QUESTIONS[currentIndex];
+  const result = useMemo(() => calculatePersona(answers), [answers]);
+
+  const goNext = () => {
+    if (currentIndex < total - 1) {
+      setCurrentIndex((prev) => prev + 1);
+      return;
+    }
+    setShowResult(true);
+  };
+
+  const goBack = () => {
+    if (showResult) {
+      setShowResult(false);
+      setCurrentIndex(total - 1);
+      return;
+    }
+    setCurrentIndex((prev) => Math.max(0, prev - 1));
+  };
+
+  const onReset = () => {
+    setAnswers({});
+    setCurrentIndex(0);
+    setShowResult(false);
+  };
+
+  if (showResult) {
+    return <ResultMoodboard result={result} answers={answers} onBack={goBack} onReset={onReset} />;
+  }
+
+  const isCurrentAnswered = currentQuestion ? isAnswered(currentQuestion, answers) : false;
+
+  return (
+    <div className="min-h-screen bg-zinc-100">
+      <div className="mx-auto max-w-5xl px-4 pb-28 pt-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="text-xs font-semibold tracking-wide text-zinc-500">Intema Kitchen Assistant</div>
+            <h1 className="mt-1 text-2xl font-semibold text-zinc-900">Mutfak Persona Analizi</h1>
+            <p className="mt-1 text-sm text-zinc-600">
+              Soruları yanıtlayarak en uygun persona ve ürün kombinasyonunu keşfedin.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Chip>Toplam: {total}</Chip>
+            <Chip>Yanıtlanan: {answeredCount}</Chip>
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <ProgressBar current={answeredCount} total={total} />
+        </div>
+
+        {currentQuestion && (
+          <div className="mt-6">
+            <QuestionCard
+              question={currentQuestion}
+              answers={answers}
+              setAnswers={setAnswers}
+              onAutoNext={currentQuestion.type === 'single' ? goNext : undefined}
+            />
+          </div>
+        )}
+      </div>
+
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-white/90 backdrop-blur">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
+          <button
+            type="button"
+            onClick={goBack}
+            disabled={currentIndex === 0}
+            className={cn(
+              'inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold shadow-sm hover:shadow-md',
+              currentIndex === 0 ? 'cursor-not-allowed border-zinc-100 bg-zinc-100 text-zinc-400' : 'border-zinc-200 bg-white'
+            )}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Geri
+          </button>
+
+          <div className="flex-1" />
+
+          <button
+            type="button"
+            onClick={goNext}
+            disabled={!isCurrentAnswered}
+            className={cn(
+              'inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold shadow-sm',
+              isCurrentAnswered
+                ? 'bg-zinc-900 text-white hover:shadow-md'
+                : 'cursor-not-allowed bg-zinc-200 text-zinc-500'
+            )}
+          >
+            {currentIndex === total - 1 ? 'Sonuçları Gör' : 'Sonraki'}
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  return <IntemaKitchenAssistant />;
+}
