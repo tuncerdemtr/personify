@@ -1,1316 +1,1831 @@
-'use client';
-
-import React, { useEffect, useMemo, useState } from 'react';
-import {
-  AlertTriangle,
-  ArrowLeft,
-  ArrowRight,
-  Baby,
-  Building2,
-  Clipboard,
-  Download,
-  Heart,
-  Home,
-  Leaf,
-  Palette,
-  PawPrint,
-  Ruler,
-  Send,
-  Sofa,
-  Sparkles,
-  Timer,
-  Users,
-  Utensils,
-  Wallet,
-} from 'lucide-react';
-
-/**
- * Intema Kitchen Digital Architect Assistant
- * Tablet-first Question Flow + Scoring + Result Moodboard
- *
- * UX rules
- * - Visual cards (no native radios)
- * - Q4 multi-select; others single-select
- * - Tie-break: Budget (Q13) then Style (Q7)
- */
-
-type PersonaKey =
-  | 'tech'
-  | 'luxury'
-  | 'comfort'
-  | 'investor'
-  | 'gourmet'
-  | 'eco'
-  | 'social'
-  | 'coastal'
-  | 'fast'
-  | 'nostalgic';
-
-type ScoreDelta = Partial<Record<PersonaKey, number>>;
-
-type AlertKey = 'HIGH_DURABILITY_ALERT' | 'PET_MATERIAL_RECO';
-
-type Option = {
-  id: string;
-  label: string;
-  helper?: string;
-  icon: React.ReactNode;
-  score?: ScoreDelta;
-  triggers?: AlertKey[];
-};
-
-type Question = {
-  id: string;
-  key: string;
-  title: string;
-  subtitle?: string;
-  type: 'single' | 'multi';
-  options: Option[];
-};
-
-type Answers = Record<string, string | string[] | null>;
-
-type PersonaContent = {
-  title: string;
-  headline: string;
-  model: string;
-  material: string;
-  accessory: string;
-  salesTip?: string;
-  feature?: string;
-};
-
-type PersonaResult = {
-  winner: PersonaKey;
-  scores: Record<PersonaKey, number>;
-  tied: PersonaKey[];
-  alerts: AlertKey[];
-};
-
-const PERSONA_LABELS: Record<PersonaKey, string> = {
-  tech: 'Teknoloji Tutkunu Vizyoner',
-  luxury: 'Klasik Lüks Sever',
-  comfort: 'Konfor Odaklı Aile',
-  investor: 'Akıllı Yatırımcı',
-  gourmet: 'Gurme Şef',
-  eco: 'Doğal Yaşam Savunucusu',
-  social: 'Sosyal Ev Sahibi',
-  coastal: 'Dinginlik Arayan',
-  fast: 'Hız ve Pratiklik Odaklı',
-  nostalgic: 'Nostaljik Romantik',
-};
-
-const PERSONA_PRIORITY: PersonaKey[] = [
-  'tech',
-  'luxury',
-  'comfort',
-  'investor',
-  'gourmet',
-  'eco',
-  'social',
-  'coastal',
-  'fast',
-  'nostalgic',
-];
-
-// Exact mapping provided for Result Pages
-const PERSONA_CONTENT: Record<PersonaKey, PersonaContent> = {
-  tech: {
-    title: 'Teknoloji Tutkunu Vizyoner',
-    headline: 'Mutfak Değil, Bir Teknoloji Üssü.',
-    model: 'INOVA (Kulpsuz)',
-    material: 'Mat Lake (Koyu Taupe / Antrasit)',
-    accessory: 'Ring Prizli Aydınlatma Ünitesi (USB Charging)',
-    salesTip: '+5 cm ekstra tezgah yüksekliğini vurgula.',
-  },
-  luxury: {
-    title: 'Klasik Lüks Sever',
-    headline: 'Zamanın Ötesinde Bir Prestij.',
-    model: 'TOSCANA (Çerçeveli kapaklar)',
-    material: 'Parlak Lake (Porselen Mavi)',
-    accessory: 'Tezgah Üstü Büfe Dolaplar (Cam vitrinler)',
-  },
-  comfort: {
-    title: 'Konfor Odaklı Aile',
-    headline: 'Hayatın Hızına Yetişen Dayanıklı Mutfak.',
-    model: 'SIENA veya NORDA',
-    material: 'Akrilik PET (Anti-fingerprint, Scratch-resistant)',
-    accessory: 'Boy Kiler Mekanizması (Pantry) + Pet Module',
-  },
-  investor: {
-    title: 'Akıllı Yatırımcı',
-    headline: 'Akıllı Metrekareler, Yüksek Değer.',
-    model: 'PRIME (F/P)',
-    material: 'Melamin (Sıcak Beyaz / Bej)',
-    accessory: 'Açılır Masa Mekanizması (Space saving)',
-  },
-  gourmet: {
-    title: 'Gurme Şef',
-    headline: 'Evinizin Profesyonel Lezzet İstasyonu.',
-    model: 'INOVA (Yüksek kapasite)',
-    material: 'Soft Lak veya Metal Look (Grafit)',
-    accessory: 'Ergonomik Bulaşık Makinesi Ünitesi + Çekmece içi organizer',
-  },
-  eco: {
-    title: 'Doğal Yaşam Savunucusu',
-    headline: 'Doğanın Huzuru Mutfağınızda.',
-    model: 'NORDA (Scandinavian)',
-    material: 'Natural Wood Veneer + Recycled Mat PET',
-    accessory: 'Micro Garden Ünitesi (Ot yetiştirme)',
-  },
-  social: {
-    title: 'Sosyal Ev Sahibi',
-    headline: 'Sadece Yemek Değil, Sohbet Pişirilen Yer.',
-    model: 'INOVA (Ada plan)',
-    material: 'Kontrast Renkler (Ceviz + Cashmere)',
-    accessory: 'Wine/Glass modüller + Metal açık raflar',
-  },
-  coastal: {
-    title: 'Dinginlik Arayan (Yazlık)',
-    headline: 'Her Gün Tatil Sabahına Uyanmak Gibi.',
-    model: 'FRESCA (Dikey oluklar)',
-    material: 'Mat PET (Ocean Blue / Sage Green)',
-    accessory: 'Pencere altı evye planı + Hasır sepetler',
-  },
-  fast: {
-    title: 'Hız Odaklı',
-    headline: 'Beklemeden Yeni Mutfağınıza Kavuşun.',
-    model: 'PRIME (Stok)',
-    material: 'Laminate tezgah (3 haftalık teslim)',
-    accessory: 'Raylı aksesuar setleri (delme yok)',
-    feature: '3 haftalık teslim odağı',
-  },
-  nostalgic: {
-    title: 'Nostaljik Romantik',
-    headline: 'Geçmişin Sıcaklığı, Bugünün Konforu.',
-    model: 'VEGA (Country/Vintage)',
-    material: 'Polymeric (Magnolia / Baltic Blue)',
-    accessory: 'Rustik pirinç kulplar',
-  },
-};
-
-// --- REVİZE EDİLMİŞ DENGELİ SORU HAVUZU (MAX PUAN ~100 EŞİTLENDİ) ---
-const QUESTIONS: Question[] = [
-  {
-    id: 'q1',
-    key: 'projectType',
-    title: 'Bu mutfak projesinin niteliği nedir?',
-    type: 'single',
-    options: [
-      {
-        id: 'q1_renovation',
-        label: 'Kendi evim / Tadilat',
-        helper: 'Mevcut evi iyileştirme, daha konforlu kullanım',
-        icon: <Home className="h-5 w-5" />,
-        score: { comfort: 5, nostalgic: 5 },
-      },
-      {
-        id: 'q1_newhouse',
-        label: 'Yeni Ev / Sıfır Proje',
-        helper: 'Yeni taşınma ya da sıfırdan kurulum',
-        icon: <Building2 className="h-5 w-5" />,
-        score: { tech: 10, luxury: 10, social: 5 },
-      },
-      {
-        id: 'q1_invest',
-        label: 'Yatırım / Stüdyo / Kiraya verilecek',
-        helper: 'Hızlı geri dönüş, metrekare verimliliği',
-        icon: <Building2 className="h-5 w-5" />,
-        score: { investor: 30 },
-      },
-      {
-        id: 'q1_summer',
-        label: 'Yazlık / İkinci Ev',
-        helper: 'Rahat, ferah, tatil modu',
-        icon: <Sparkles className="h-5 w-5" />,
-        score: { coastal: 40 },
-      },
-    ],
-  },
-  {
-    id: 'q2',
-    key: 'timeline',
-    title: 'Zaman kısıtınız nedir?',
-    type: 'single',
-    options: [
-      {
-        id: 'q2_urgent',
-        label: 'Çok acil, hemen bitmeli',
-        helper: 'Stok ve hızlı planlama',
-        icon: <Timer className="h-5 w-5" />,
-        score: { fast: 40, investor: 10 },
-      },
-      {
-        id: 'q2_standard',
-        label: 'Standart süreç (1-2 ay)',
-        helper: 'Normal proje akışı',
-        icon: <Ruler className="h-5 w-5" />,
-        score: { comfort: 5, gourmet: 5 },
-      },
-      {
-        id: 'q2_perfection',
-        label: 'Zaman sorun değil, mükemmel olsun',
-        helper: 'Detay ve rafine seçim',
-        icon: <Palette className="h-5 w-5" />,
-        score: { luxury: 15, nostalgic: 15, eco: 10 },
-      },
-    ],
-  },
-  {
-    id: 'q3',
-    key: 'space',
-    title: 'Mutfak alanının durumu?',
-    type: 'single',
-    options: [
-      {
-        id: 'q3_small',
-        label: 'Dar / Küçük',
-        helper: 'Metrekare verimliliği öncelik',
-        icon: <Ruler className="h-5 w-5" />,
-        score: { investor: 15, fast: 10 },
-      },
-      {
-        id: 'q3_large',
-        label: 'Geniş / Ada müsait',
-        helper: 'Ada, misafir, geniş tezgah',
-        icon: <Sofa className="h-5 w-5" />,
-        score: { social: 25, gourmet: 15, luxury: 10 },
-      },
-      {
-        id: 'q3_standard',
-        label: 'Standart',
-        helper: 'Klasik plan, dengeli ihtiyaç',
-        icon: <Home className="h-5 w-5" />,
-        score: { comfort: 5 },
-      },
-    ],
-  },
-  {
-    id: 'q4',
-    key: 'household',
-    title: 'Hane Halkı (Birden fazla seçebilirsiniz)',
-    type: 'multi',
-    options: [
-      {
-        id: 'q4_single',
-        label: 'Yalnız / Çift',
-        helper: 'Daha sade kullanım',
-        icon: <Users className="h-5 w-5" />,
-        score: { tech: 15, investor: 10, gourmet: 5 },
-      },
-      {
-        id: 'q4_children',
-        label: 'Çocuklar var',
-        helper: 'Hijyen, güvenlik, dayanıklılık',
-        icon: <Baby className="h-5 w-5" />,
-        score: { comfort: 20 },
-      },
-      {
-        id: 'q4_pets',
-        label: 'Evcil hayvan var',
-        helper: 'Kolay temizlik, çizilme direnci',
-        icon: <PawPrint className="h-5 w-5" />,
-        score: { eco: 15, comfort: 10 },
-      },
-      {
-        id: 'q4_crowd',
-        label: 'Kalabalık aile',
-        helper: 'Yoğun kullanım, büyük düzen',
-        icon: <Users className="h-5 w-5" />,
-        score: { social: 15, nostalgic: 10, comfort: 10 },
-      },
-    ],
-  },
-  {
-    id: 'q5',
-    key: 'meaning',
-    title: 'Mutfak sizin için ne ifade ediyor?',
-    type: 'single',
-    options: [
-      {
-        id: 'q5_showcase',
-        label: 'Vitrin (Sosyal alan)',
-        helper: 'Misafir, sohbet, sunum',
-        icon: <Sofa className="h-5 w-5" />,
-        score: { social: 30, tech: 10, luxury: 10 },
-      },
-      {
-        id: 'q5_operation',
-        label: 'Operasyon (Yemek yapma)',
-        helper: 'Yoğun pişirme, ekipman, düzen',
-        icon: <Utensils className="h-5 w-5" />,
-        score: { gourmet: 35 },
-      },
-      {
-        id: 'q5_sanctuary',
-        label: 'Sığınak (Huzur)',
-        helper: 'Sakinlik, doğal his, ferahlık',
-        icon: <Leaf className="h-5 w-5" />,
-        score: { coastal: 25, eco: 20 },
-      },
-      {
-        id: 'q5_heart',
-        label: 'Kalp (Aile odaklı)',
-        helper: 'Günlük yaşamın merkezi',
-        icon: <Heart className="h-5 w-5" />,
-        score: { nostalgic: 25, comfort: 10 },
-      },
-      {
-        id: 'q5_station',
-        label: 'İstasyon (Pratik)',
-        helper: 'Hızlı çözüm, net iş',
-        icon: <Timer className="h-5 w-5" />,
-        score: { fast: 20, investor: 15 },
-      },
-    ],
-  },
-  {
-    id: 'q6',
-    key: 'painPoint',
-    title: 'Şu anki mutfakta en büyük şikayetiniz?',
-    type: 'single',
-    options: [
-      {
-        id: 'q6_clutter',
-        label: 'Dağınıklık / Yer yok',
-        helper: 'Kiler, organizer, akıllı depolama',
-        icon: <Utensils className="h-5 w-5" />,
-        score: { gourmet: 15, comfort: 5, investor: 5 },
-      },
-      {
-        id: 'q6_cleaning',
-        label: 'Temizlik zorluğu / Lekeler',
-        helper: 'Kolay silinebilir yüzeyler',
-        icon: <AlertTriangle className="h-5 w-5" />,
-        score: { comfort: 15, fast: 10 },
-        triggers: ['PET_MATERIAL_RECO'],
-      },
-      {
-        id: 'q6_outdated',
-        label: 'Demode görünüm',
-        helper: 'Tasarımı güncellemek istiyorum',
-        icon: <Sparkles className="h-5 w-5" />,
-        score: { tech: 15, luxury: 10, social: 5 },
-      },
-      {
-        id: 'q6_dark',
-        label: 'Karanlık / Basık',
-        helper: 'Daha aydınlık ve ferah',
-        icon: <Leaf className="h-5 w-5" />,
-        score: { coastal: 20, eco: 10 },
-      },
-    ],
-  },
-  {
-    id: 'q7',
-    key: 'style',
-    title: 'Hangi tasarım dili size yakın?',
-    type: 'single',
-    options: [
-      {
-        id: 'q7_modern',
-        label: 'Modern & Minimal',
-        helper: 'Düz çizgiler, az detay',
-        icon: <Sparkles className="h-5 w-5" />,
-        score: { tech: 20, gourmet: 10, investor: 5 },
-      },
-      {
-        id: 'q7_classic',
-        label: 'Klasik & Gösterişli',
-        helper: 'Çerçeveli kapaklar, prestij',
-        icon: <Building2 className="h-5 w-5" />,
-        score: { luxury: 30, nostalgic: 10 },
-      },
-      {
-        id: 'q7_country',
-        label: 'Country & Doğal',
-        helper: 'Ahşap, sıcak atmosfer',
-        icon: <Leaf className="h-5 w-5" />,
-        score: { nostalgic: 30, eco: 20, coastal: 15 },
-      },
-      {
-        id: 'q7_industrial',
-        label: 'Endüstriyel',
-        helper: 'Metal, koyu tonlar, güçlü kontrast',
-        icon: <Palette className="h-5 w-5" />,
-        score: { tech: 15, gourmet: 15, social: 10 },
-      },
-    ],
-  },
-  {
-    id: 'q8',
-    key: 'materialTexture',
-    title: 'Malzeme ve doku tercihiniz?',
-    type: 'single',
-    options: [
-      {
-        id: 'q8_wood',
-        label: 'Doğal ahşap dokusu',
-        helper: 'Organik his, sıcak atmosfer',
-        icon: <Leaf className="h-5 w-5" />,
-        score: { eco: 25, nostalgic: 15, coastal: 10 },
-      },
-      {
-        id: 'q8_soft',
-        label: 'Mat ve soft renkler',
-        helper: 'Sakin ve modern',
-        icon: <Sparkles className="h-5 w-5" />,
-        score: { comfort: 15, coastal: 15, tech: 5 },
-      },
-      {
-        id: 'q8_gloss',
-        label: 'Parlak ve canlı',
-        helper: 'Premium ve iddialı',
-        icon: <Palette className="h-5 w-5" />,
-        score: { luxury: 25, social: 15 },
-      },
-      {
-        id: 'q8_dark',
-        label: 'Koyu ve maskülen',
-        helper: 'Grafit, antrasit, metal',
-        icon: <Building2 className="h-5 w-5" />,
-        score: { tech: 20, gourmet: 10 },
-      },
-    ],
-  },
-  {
-    id: 'q9',
-    key: 'cookingHabit',
-    title: 'Yemek pişirme alışkanlığınız?',
-    type: 'single',
-    options: [
-      {
-        id: 'q9_standard',
-        label: 'Standart pişirme',
-        helper: 'Günlük kullanım',
-        icon: <Utensils className="h-5 w-5" />,
-        score: { comfort: 10, nostalgic: 5 },
-      },
-      {
-        id: 'q9_gourmet',
-        label: 'Gurme / Profesyonel',
-        helper: 'Yoğun pişirme, ekipman odak',
-        icon: <Utensils className="h-5 w-5" />,
-        score: { gourmet: 40 },
-      },
-      {
-        id: 'q9_min',
-        label: 'Minimum / Pratik',
-        helper: 'Az pişirme, hızlı akış',
-        icon: <Timer className="h-5 w-5" />,
-        score: { fast: 20, investor: 15, tech: 5 },
-      },
-    ],
-  },
-  {
-    id: 'q10',
-    key: 'storageNeed',
-    title: 'Depolama ihtiyacınız?',
-    type: 'single',
-    options: [
-      {
-        id: 'q10_pantry',
-        label: 'Maksimum kiler / stok',
-        helper: 'Kiler, kiler mekanizması, düzen',
-        icon: <Building2 className="h-5 w-5" />,
-        score: { comfort: 15, gourmet: 15 },
-      },
-      {
-        id: 'q10_display',
-        label: 'Vitrin / sergileme',
-        helper: 'Cam modüller, açık raflar',
-        icon: <Sofa className="h-5 w-5" />,
-        score: { social: 20, luxury: 15, nostalgic: 10 },
-      },
-      {
-        id: 'q10_closed',
-        label: 'Standart / kapalı dolap',
-        helper: 'Gizli, düzenli görünüm',
-        icon: <Home className="h-5 w-5" />,
-        score: { investor: 10, tech: 5 },
-      },
-    ],
-  },
-  {
-    id: 'q11',
-    key: 'sustainability',
-    title: 'Sürdürülebilirlik önceliğiniz?',
-    type: 'single',
-    options: [
-      {
-        id: 'q11_must',
-        label: 'Çok önemli / Vazgeçilmez',
-        helper: 'Eco materyaller, sürdürülebilir yaklaşım',
-        icon: <Leaf className="h-5 w-5" />,
-        score: { eco: 40 },
-      },
-      {
-        id: 'q11_balanced',
-        label: 'Önemli ama estetik de önemli',
-        helper: 'Denge: eco + estetik',
-        icon: <Palette className="h-5 w-5" />,
-        score: { eco: 15, coastal: 10, comfort: 5 },
-      },
-      {
-        id: 'q11_not',
-        label: 'Öncelik değil',
-        helper: 'Diğer faktörler daha kritik',
-        icon: <Ruler className="h-5 w-5" />,
-        score: { investor: 5, fast: 5 },
-      },
-    ],
-  },
-  {
-    id: 'q12',
-    key: 'techIntegration',
-    title: 'Teknoloji entegrasyonu?',
-    type: 'single',
-    options: [
-      {
-        id: 'q12_hightech',
-        label: 'High-Tech (Akıllı sistemler)',
-        helper: 'Akıllı çözümler, entegre detaylar',
-        icon: <Sparkles className="h-5 w-5" />,
-        score: { tech: 30, gourmet: 5 },
-      },
-      {
-        id: 'q12_traditional',
-        label: 'Geleneksel / Manuel',
-        helper: 'Klasik kullanım, az teknoloji',
-        icon: <Home className="h-5 w-5" />,
-        score: { nostalgic: 25, eco: 10, coastal: 5 },
-      },
-    ],
-  },
-  {
-    id: 'q13',
-    key: 'budget',
-    title: 'Bütçe yaklaşımınız?',
-    type: 'single',
-    options: [
-      {
-        id: 'q13_flexible',
-        label: 'Esnek / Prestij odaklı',
-        helper: 'Kalite ve prestij öncelik',
-        icon: <Wallet className="h-5 w-5" />,
-        score: { luxury: 30, tech: 10, social: 10 },
-      },
-      {
-        id: 'q13_pp',
-        label: 'Fiyat / Performans',
-        helper: 'Denge, dayanıklılık',
-        icon: <Wallet className="h-5 w-5" />,
-        score: { comfort: 20, gourmet: 10, nostalgic: 5 },
-      },
-      {
-        id: 'q13_economic',
-        label: 'Ekonomik / Bütçe dostu',
-        helper: 'Uygun ve hızlı çözüm',
-        icon: <Wallet className="h-5 w-5" />,
-        score: { investor: 25, fast: 15 },
-      },
-    ],
-  },
-  {
-    id: 'q14',
-    key: 'decisionFactor',
-    title: 'Karar verme faktörünüz?',
-    type: 'single',
-    options: [
-      {
-        id: 'q14_design',
-        label: 'Tasarım heyecanı',
-        helper: 'Görsel etki, wow faktörü',
-        icon: <Sparkles className="h-5 w-5" />,
-        score: { tech: 10, luxury: 5, social: 5 },
-      },
-      {
-        id: 'q14_trust',
-        label: 'Güven / Garanti',
-        helper: 'Uzun ömür ve güven',
-        icon: <Clipboard className="h-5 w-5" />,
-        score: { comfort: 15, nostalgic: 5 },
-      },
-      {
-        id: 'q14_speed',
-        label: 'Hız / Teslimat',
-        helper: 'En kısa sürede bitmeli',
-        icon: <Timer className="h-5 w-5" />,
-        score: { fast: 30 },
-      },
-      {
-        id: 'q14_cost',
-        label: 'Maliyet',
-        helper: 'Bütçe ve verim',
-        icon: <Wallet className="h-5 w-5" />,
-        score: { investor: 15 },
-      },
-    ],
-  },
-];
-
-function cn(...classes: Array<string | false | null | undefined>) {
-  return classes.filter(Boolean).join(' ');
-}
-
-function computeAlerts(answers: Answers): AlertKey[] {
-  const alerts: AlertKey[] = [];
-
-  const hh = answers.household;
-  if (Array.isArray(hh)) {
-    const hasChildren = hh.includes('q4_children');
-    const hasPets = hh.includes('q4_pets');
-    if (hasChildren && hasPets) alerts.push('HIGH_DURABILITY_ALERT');
-  }
-
-  if (answers.painPoint === 'q6_cleaning') alerts.push('PET_MATERIAL_RECO');
-
-  return Array.from(new Set(alerts));
-}
-
-function isAnswered(q: Question, answers: Answers): boolean {
-  const v = answers[q.key];
-  if (q.type === 'single') return typeof v === 'string' && v.length > 0;
-  return Array.isArray(v) && v.length > 0;
-}
-
-function addScore(scores: Record<PersonaKey, number>, delta?: ScoreDelta) {
-  if (!delta) return;
-  for (const k of Object.keys(delta) as PersonaKey[]) {
-    const val = delta[k] ?? 0;
-    scores[k] += val;
-  }
-}
-
-function getSelectedOption(questionKey: string, answers: Answers): string | null {
-  const v = answers[questionKey];
-  if (typeof v === 'string') return v;
-  return null;
-}
-
-function getTriggerPersonasForQuestion(
-  q: Question,
-  answers: Answers
-): Array<{ persona: PersonaKey; weight: number }> {
-  const selectedId = getSelectedOption(q.key, answers);
-  if (!selectedId) return [];
-  const opt = q.options.find((o) => o.id === selectedId);
-  if (!opt?.score) return [];
-  return (Object.keys(opt.score) as PersonaKey[])
-    .map((persona) => ({ persona, weight: opt.score?.[persona] ?? 0 }))
-    .filter((x) => x.weight > 0)
-    .sort((a, b) => b.weight - a.weight);
-}
-
-function calculatePersona(answers: Answers): PersonaResult {
-  const scores: Record<PersonaKey, number> = {
-    tech: 0,
-    luxury: 0,
-    comfort: 0,
-    investor: 0,
-    gourmet: 0,
-    eco: 0,
-    social: 0,
-    coastal: 0,
-    fast: 0,
-    nostalgic: 0,
-  };
-
-  for (const q of QUESTIONS) {
-    const v = answers[q.key];
-
-    if (q.type === 'single') {
-      if (typeof v !== 'string') continue;
-      const opt = q.options.find((o) => o.id === v);
-      addScore(scores, opt?.score);
-      continue;
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>İntema | Müşteri Analiz Asistanı</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --bg2:#070a0f;
+      --card:rgba(255,255,255,.06);
+      --card2:rgba(255,255,255,.04);
+      --ring:rgba(255,255,255,.12);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.62);
+      --muted2:rgba(255,255,255,.45);
+      --accentA: rgba(155, 246, 255, .35);
+      --accentB: rgba(199, 249, 204, .25);
+      --accentC: rgba(189, 178, 255, .28);
+      --danger: rgba(255, 193, 7, .18);
+      --ok: rgba(16, 185, 129, .18);
+      --shadow: 0 18px 50px rgba(0,0,0,.45);
+      --shadow2: 0 10px 28px rgba(0,0,0,.35);
+      --radius: 22px;
+      --radius2: 28px;
+      --tap: 54px;
+      --max: 1120px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
 
-    if (Array.isArray(v)) {
-      for (const optionId of v) {
-        const opt = q.options.find((o) => o.id === optionId);
-        addScore(scores, opt?.score);
-      }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: var(--font);
+      color: var(--text);
+      background: radial-gradient(1200px 700px at 20% 15%, var(--accentA), transparent 55%),
+                  radial-gradient(900px 600px at 80% 10%, var(--accentC), transparent 60%),
+                  radial-gradient(900px 700px at 50% 90%, var(--accentB), transparent 55%),
+                  linear-gradient(180deg, var(--bg2) 0%, var(--bg) 55%, #06080c 100%);
+      overflow-x:hidden;
     }
-  }
 
-  // Special rule: Children AND Pets -> +20 Comfort
-  const hh = answers.household;
-  if (Array.isArray(hh)) {
-    const hasChildren = hh.includes('q4_children');
-    const hasPets = hh.includes('q4_pets');
-    if (hasChildren && hasPets) scores.comfort += 20;
-  }
-
-  const maxScore = Math.max(...Object.values(scores));
-  const tied = (Object.keys(scores) as PersonaKey[]).filter((k) => scores[k] === maxScore);
-
-  const budgetQ = QUESTIONS.find((q) => q.id === 'q13');
-  const styleQ = QUESTIONS.find((q) => q.id === 'q7');
-
-  const tryBreak = (candidates: PersonaKey[], q?: Question): PersonaKey | null => {
-    if (!q) return null;
-    const triggers = getTriggerPersonasForQuestion(q, answers);
-    for (const t of triggers) {
-      if (candidates.includes(t.persona)) return t.persona;
+    .wrap{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 22px 18px 90px;
     }
-    return null;
-  };
 
-  let winner: PersonaKey | null = null;
-  if (tied.length === 1) winner = tied[0];
-  if (!winner) winner = tryBreak(tied, budgetQ);
-  if (!winner) winner = tryBreak(tied, styleQ);
-  if (!winner) winner = PERSONA_PRIORITY.find((p) => tied.includes(p)) ?? tied[0] ?? 'tech';
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding: 10px 2px 14px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width: 220px;
+    }
+    .logo{
+      width:40px;height:40px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.05);
+      border:1px solid var(--ring);
+      box-shadow: var(--shadow2);
+    }
+    .brand small{
+      display:block;
+      text-transform:uppercase;
+      letter-spacing:.22em;
+      font-size:11px;
+      color: var(--muted2);
+    }
+    .brand strong{
+      display:block;
+      font-size:14px;
+      color: rgba(255,255,255,.86);
+      font-weight:700;
+      letter-spacing: .02em;
+    }
 
-  return {
-    winner,
-    scores,
-    tied,
-    alerts: computeAlerts(answers),
-  };
-}
+    .actions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
 
-function ProgressBar({ current, total }: { current: number; total: number }) {
-  const pct = total === 0 ? 0 : Math.round((current / total) * 100);
-  return (
-    <div className="w-full">
-      <div className="flex items-center justify-between text-xs text-zinc-500">
-        <span>İlerleme</span>
-        <span>%{pct}</span>
-      </div>
-      <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-zinc-200">
-        <div className="h-full rounded-full bg-zinc-900 transition-all" style={{ width: `${pct}%` }} />
-      </div>
-    </div>
-  );
-}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.05);
+      border:1px solid var(--ring);
+      color: var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
 
-function Chip({ children, tone = 'neutral' }: { children: React.ReactNode; tone?: 'neutral' | 'warn' }) {
-  const base = 'inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ring-1';
-  const styles =
-    tone === 'warn'
-      ? 'bg-amber-50 text-amber-900 ring-amber-200'
-      : 'bg-zinc-50 text-zinc-700 ring-zinc-200';
-  return <span className={cn(base, styles)}>{children}</span>;
-}
+    .btn{
+      height: 42px;
+      padding: 0 14px;
+      border-radius: 16px;
+      border: 1px solid var(--ring);
+      background: rgba(255,255,255,.03);
+      color: rgba(255,255,255,.86);
+      font-weight:700;
+      font-size: 13px;
+      cursor:pointer;
+      transition: transform .08s ease, background .12s ease, border-color .12s ease;
+      user-select:none;
+    }
+    .btn:hover{ background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.18); }
+    .btn:active{ transform: scale(.99); }
+    .btn:disabled{ opacity:.45; cursor:not-allowed; }
+    .btn.primary{
+      border-color: rgba(155,246,255,.22);
+      background: linear-gradient(135deg, rgba(155,246,255,.18), rgba(199,249,204,.10));
+    }
+    .btn.primary:hover{
+      background: linear-gradient(135deg, rgba(155,246,255,.24), rgba(199,249,204,.12));
+    }
 
-function OptionCard({
-  option,
-  selected,
-  disabled,
-  onClick,
-}: {
-  option: Option;
-  selected: boolean;
-  disabled?: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      disabled={disabled}
-      onClick={onClick}
-      className={cn(
-        'group w-full rounded-2xl border p-4 text-left shadow-sm transition-all',
-        'bg-white hover:shadow-md active:scale-[0.99]',
-        selected ? 'border-zinc-900 ring-1 ring-zinc-900' : 'border-zinc-200',
-        disabled && 'cursor-not-allowed opacity-50 hover:shadow-sm'
-      )}
-    >
-      <div className="flex items-start gap-3">
-        <div
-          className={cn(
-            'flex h-10 w-10 items-center justify-center rounded-xl border',
-            selected ? 'border-zinc-900 bg-zinc-900 text-white' : 'border-zinc-200 bg-zinc-50 text-zinc-700'
-          )}
-        >
-          {option.icon}
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center justify-between gap-3">
-            <div className="truncate text-sm font-semibold text-zinc-900">{option.label}</div>
-            {selected && <Chip>Seçildi</Chip>}
-          </div>
-          {option.helper && <div className="mt-1 text-sm leading-snug text-zinc-600">{option.helper}</div>}
-        </div>
-      </div>
-    </button>
-  );
-}
+    .grid{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap:16px;
+      align-items:start;
+      margin-top: 10px;
+    }
 
-function QuestionCard({
-  question,
-  answers,
-  setAnswers,
-  onAutoNext,
-}: {
-  question: Question;
-  answers: Answers;
-  setAnswers: React.Dispatch<React.SetStateAction<Answers>>;
-  onAutoNext?: () => void;
-}) {
-  const value = answers[question.key];
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+      .wrap{ padding-bottom: 120px; }
+    }
 
-  const onPickSingle = (optionId: string) => {
-    setAnswers((prev) => ({ ...prev, [question.key]: optionId }));
-    window.setTimeout(() => onAutoNext?.(), 120);
-  };
+    .card{
+      border-radius: var(--radius2);
+      background: var(--card);
+      border: 1px solid var(--ring);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardHeader{
+      padding: 18px 18px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+    }
+    .kicker{
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .22em;
+      color: var(--muted2);
+    }
+    .h1{
+      margin: 10px 0 0;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+      font-weight: 800;
+      color: rgba(255,255,255,.92);
+    }
+    .sub{
+      margin: 8px 0 0;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--muted);
+      max-width: 72ch;
+    }
+    .cardBody{ padding: 18px; }
 
-  const onToggleMulti = (optionId: string) => {
-    setAnswers((prev) => {
-      const prevArr = Array.isArray(prev[question.key]) ? (prev[question.key] as string[]) : [];
-      const exists = prevArr.includes(optionId);
-      let nextArr = exists ? prevArr.filter((x) => x !== optionId) : [...prevArr, optionId];
+    .progressRow{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .progress{
+      min-width: 260px;
+      width: 320px;
+      max-width: 100%;
+    }
+    .progressTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      font-size: 11px;
+      color: var(--muted2);
+      margin-bottom: 8px;
+    }
+    .bar{
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.10);
+      overflow:hidden;
+    }
+    .bar > div{
+      height:100%;
+      width:0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(155,246,255,.70), rgba(199,249,204,.70));
+      transition: width .18s ease;
+    }
 
-      // Household UX: single/couple is mutually exclusive with children/pets/crowd
-      if (question.key === 'household') {
-        const isSingleCouple = optionId === 'q4_single';
-        if (isSingleCouple && !exists) nextArr = ['q4_single'];
-        if (!isSingleCouple && !exists) nextArr = nextArr.filter((x) => x !== 'q4_single');
-      }
+    .chips{
+      margin-top: 12px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      color: rgba(255,255,255,.78);
+      font-size: 12px;
+      font-weight: 700;
+      backdrop-filter: blur(10px);
+    }
+    .chip.warn{ border-color: rgba(255,193,7,.22); background: var(--danger); color: rgba(255,243,205,.92); }
+    .chip.ok{ border-color: rgba(16,185,129,.22); background: var(--ok); color: rgba(209,250,229,.92); }
 
-      return { ...prev, [question.key]: nextArr };
-    });
-  };
+    .qMeta{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .qMeta strong{ color: rgba(255,255,255,.86); }
+    .qid{
+      font-size: 11px;
+      letter-spacing: .18em;
+      color: var(--muted2);
+      text-transform: uppercase;
+    }
 
-  return (
-    <div className="rounded-3xl border bg-white p-6 shadow-sm">
-      <div className="flex items-start justify-between gap-4">
+    .qCard{
+      border-radius: var(--radius2);
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+    }
+    .qHead{
+      padding: 16px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+    }
+    .qType{
+      font-size: 11px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--muted2);
+    }
+    .qTitle{
+      margin: 10px 0 0;
+      font-size: 18px;
+      font-weight: 850;
+      letter-spacing: -0.02em;
+      color: rgba(255,255,255,.92);
+    }
+    .qSub{
+      margin: 8px 0 0;
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--muted);
+      max-width: 70ch;
+    }
+
+    .options{
+      padding: 16px 18px 18px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 740px){
+      .options{ grid-template-columns: 1fr; }
+    }
+
+    .opt{
+      min-height: var(--tap);
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      padding: 14px;
+      display:flex;
+      align-items:flex-start;
+      gap: 12px;
+      cursor:pointer;
+      transition: transform .08s ease, background .12s ease, border-color .12s ease;
+      user-select:none;
+    }
+    .opt:hover{ background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.18); }
+    .opt:active{ transform: scale(.99); }
+    .opt.selected{
+      background: linear-gradient(135deg, rgba(155,246,255,.14), rgba(199,249,204,.08));
+      border-color: rgba(155,246,255,.22);
+    }
+    .ico{
+      width: 42px; height: 42px;
+      border-radius: 18px;
+      background: rgba(0,0,0,.20);
+      border: 1px solid rgba(255,255,255,.10);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex: 0 0 auto;
+    }
+    .optMain{ min-width:0; }
+    .optLabel{
+      font-weight: 850;
+      color: rgba(255,255,255,.90);
+      font-size: 14px;
+      line-height: 1.25;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    .optHint{
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .tag{
+      font-size: 11px;
+      color: rgba(255,255,255,.55);
+      white-space:nowrap;
+    }
+
+    .navRow{
+      margin-top: 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap:wrap;
+    }
+    .navRow .status{
+      font-size: 12px;
+      color: var(--muted2);
+    }
+
+    .side{
+      border-radius: var(--radius2);
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+    }
+    .sideHeader{
+      padding: 16px 18px 14px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+    }
+    .sideBody{ padding: 16px 18px 18px; }
+
+    .field{
+      margin-top: 12px;
+    }
+    .field label{
+      display:block;
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--muted2);
+      margin-bottom: 7px;
+    }
+    .input, .textarea{
+      width:100%;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.20);
+      color: rgba(255,255,255,.88);
+      padding: 12px 14px;
+      outline:none;
+      font-size: 14px;
+      transition: border-color .12s ease, box-shadow .12s ease;
+    }
+    .textarea{ min-height: 110px; resize: vertical; }
+    .input:focus, .textarea:focus{
+      border-color: rgba(155,246,255,.28);
+      box-shadow: 0 0 0 4px rgba(155,246,255,.08);
+    }
+    .input::placeholder, .textarea::placeholder{ color: rgba(255,255,255,.33); }
+
+    /* Welcome */
+    .welcome{
+      display:grid;
+      place-items:center;
+      min-height: calc(100vh - 140px);
+      padding: 18px 0 80px;
+    }
+    .welcomeCard{
+      width: min(720px, 100%);
+      border-radius: 32px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .welcomeHero{
+      height: 220px;
+      background:
+        radial-gradient(900px 320px at 15% 10%, rgba(155,246,255,.18), transparent 62%),
+        radial-gradient(900px 320px at 80% 10%, rgba(189,178,255,.18), transparent 62%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border-bottom: 1px solid rgba(255,255,255,.10);
+    }
+    .welcomeBody{ padding: 18px; }
+    .welcomeTitle{
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+      font-weight: 900;
+      color: rgba(255,255,255,.94);
+    }
+    .welcomeText{
+      margin: 10px 0 0;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--muted);
+      max-width: 70ch;
+    }
+    .welcomeActions{
+      margin-top: 16px;
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+    }
+
+    /* Result */
+    .resultHero{
+      position:relative;
+      height: 320px;
+      background:
+        radial-gradient(900px 320px at 20% 0%, rgba(155,246,255,.14), transparent 60%),
+        radial-gradient(900px 320px at 80% 10%, rgba(199,249,204,.12), transparent 62%),
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+    }
+    .resultHero.hasImg{
+      background-size: cover;
+      background-position:center;
+    }
+    .resultShade{
+      position:absolute; inset:0;
+      background: linear-gradient(180deg, transparent 0%, rgba(11,15,20,.35) 45%, rgba(11,15,20,.90) 100%);
+    }
+    .resultOverlay{
+      position:absolute;
+      inset: 0;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      padding: 18px;
+      gap: 10px;
+    }
+    .resultTitle{
+      margin:0;
+      font-size: 30px;
+      letter-spacing: -0.02em;
+      font-weight: 900;
+      color: rgba(255,255,255,.96);
+    }
+    .resultHeadline{
+      margin:0;
+      font-size: 15px;
+      line-height: 1.55;
+      color: rgba(255,255,255,.72);
+      max-width: 78ch;
+    }
+
+    .moodGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      padding: 16px 18px 0;
+    }
+    @media (max-width: 980px){
+      .moodGrid{ grid-template-columns: 1fr; }
+    }
+
+    .pcard{
+      border-radius: 26px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: var(--shadow2);
+      overflow:hidden;
+    }
+    .pcHead{
+      padding: 14px 14px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .pcChip{
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.10);
+      font-size: 12px;
+      font-weight: 850;
+      color: rgba(255,255,255,.76);
+    }
+    .pcBody{ padding: 14px; }
+    .pcBody .t{
+      font-weight: 900;
+      font-size: 16px;
+      color: rgba(255,255,255,.92);
+      letter-spacing: -0.01em;
+      margin:0;
+    }
+    .pcBody .s{
+      margin: 10px 0 0;
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+    .pcBody .m{
+      margin: 10px 0 0;
+      font-size: 12px;
+      line-height: 1.55;
+      color: var(--muted2);
+    }
+
+    .resultLower{
+      padding: 16px 18px 18px;
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    @media (max-width: 980px){
+      .resultLower{ grid-template-columns: 1fr; }
+    }
+
+    .box{
+      border-radius: 26px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.10);
+      padding: 14px;
+    }
+    .box h3{
+      margin:0;
+      font-size: 12px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--muted2);
+    }
+    .box ul{
+      margin: 12px 0 0;
+      padding: 0 0 0 18px;
+      color: rgba(255,255,255,.74);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .box p{
+      margin: 12px 0 0;
+      color: rgba(255,255,255,.72);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .note{
+      margin-top: 12px;
+      border-radius: 18px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+    }
+
+    .summary{
+      margin-top: 12px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 980px){
+      .summary{ grid-template-columns: 1fr; }
+    }
+    .summaryItem{
+      border-radius: 18px;
+      padding: 10px 12px;
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.10);
+      color: rgba(255,255,255,.72);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    /* Sticky footer */
+    .sticky{
+      position:fixed;
+      left:0; right:0; bottom:0;
+      border-top: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.28);
+      backdrop-filter: blur(12px);
+      padding-bottom: env(safe-area-inset-bottom);
+      z-index: 20;
+    }
+    .stickyInner{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 10px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .stickyLeft{
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .stickyLeft strong{ color: rgba(255,255,255,.86); }
+    .stickyBtns{
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .toast{
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 50;
+      padding: 10px 12px;
+      border-radius: 16px;
+      background: rgba(0,0,0,.45);
+      border: 1px solid rgba(255,255,255,.14);
+      color: rgba(255,255,255,.85);
+      font-size: 13px;
+      box-shadow: var(--shadow2);
+      opacity: 0;
+      transform: translateY(-8px);
+      pointer-events:none;
+      transition: opacity .16s ease, transform .16s ease;
+      max-width: min(420px, calc(100vw - 32px));
+    }
+    .toast.show{
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hidden{ display:none !important; }
+
+    /* Small helper */
+    .mutedLine{
+      margin-top: 12px;
+      border-radius: 22px;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="toast" id="toast"></div>
+
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
         <div>
-          <div className="text-xs font-semibold tracking-wide text-zinc-500">{question.id.toUpperCase()}</div>
-          <h2 className="mt-1 text-xl font-semibold text-zinc-900">{question.title}</h2>
-          {question.subtitle && <p className="mt-1 text-sm text-zinc-600">{question.subtitle}</p>}
+          <small>İntema</small>
+          <strong>Müşteri Analiz Asistanı</strong>
         </div>
-        {question.type === 'multi' && <Chip>Çoklu Seçim</Chip>}
       </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-3 lg:grid-cols-2">
-        {question.options.map((opt) => {
-          const selected =
-            question.type === 'single' ? value === opt.id : Array.isArray(value) && value.includes(opt.id);
-
-          return (
-            <OptionCard
-              key={opt.id}
-              option={opt}
-              selected={selected}
-              onClick={() => (question.type === 'single' ? onPickSingle(opt.id) : onToggleMulti(opt.id))}
-            />
-          );
-        })}
+      <div class="actions">
+        <div class="pill" id="savedPill">Kayıtlı teklif: <b id="savedCount" style="color:rgba(255,255,255,.86);">0</b></div>
+        <button class="btn" id="resetBtn" type="button">Sıfırla</button>
       </div>
+    </div>
 
-      {question.key === 'household' && (() => {
-        const hh = answers.household;
-        const hasChildren = Array.isArray(hh) && hh.includes('q4_children');
-        const hasPets = Array.isArray(hh) && hh.includes('q4_pets');
-        if (!hasChildren || !hasPets) return null;
-        return (
-          <div className="mt-5">
-            <Chip tone="warn">
-              <AlertTriangle className="h-4 w-4" />
-              High Durability Alert: Çocuk + evcil hayvan seçildi.
-            </Chip>
+    <!-- WELCOME -->
+    <section class="welcome" id="screenWelcome">
+      <div class="welcomeCard">
+        <div class="welcomeHero"></div>
+        <div class="welcomeBody">
+          <h1 class="welcomeTitle">Müşteri Analiz Asistanı</h1>
+          <p class="welcomeText">
+            Showroom’da müşteriyi hızlı profille. Cevaplara göre persona çıkar, model ve aksesuar önerisini moodboard gibi sun.
+            Tie-break kuralı: önce Bütçe (Q13), sonra Stil (Q7).
+          </p>
+
+          <div class="welcomeActions">
+            <button class="btn primary" id="startBtn" type="button" style="height:46px;padding:0 18px;border-radius:18px;">Analize Başla</button>
+            <button class="btn" id="demoBtn" type="button" style="height:46px;padding:0 18px;border-radius:18px;">Demo Doldur</button>
           </div>
-        );
-      })()}
 
-      {computeAlerts(answers).includes('PET_MATERIAL_RECO') && (
-        <div className="mt-4">
-          <Chip tone="warn">
-            <AlertTriangle className="h-4 w-4" />
-            PET materyal odağı: kolay temizlik ve iz yapmayan yüzey.
-          </Chip>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ProductRecommendationCard({
-  label,
-  title,
-  detail,
-  icon,
-}: {
-  label: string;
-  title: string;
-  detail?: string;
-  icon: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-3xl border bg-white p-5 shadow-sm">
-      <div className="flex items-start gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-zinc-200 bg-zinc-50 text-zinc-800">
-          {icon}
-        </div>
-        <div className="min-w-0">
-          <div className="text-xs font-semibold tracking-wide text-zinc-500">{label}</div>
-          <div className="mt-1 text-base font-semibold text-zinc-900">{title}</div>
-          {detail && <div className="mt-1 text-sm text-zinc-600">{detail}</div>}
+          <div class="mutedLine">
+            İpucu: Hero görselleri eklemek istersen <code>public/hero</code> gibi bir klasörde lokal görsel kullanıp mapping’te yolu tanımlayabilirsin.
+            Görsel yoksa sistem otomatik gradient ile çalışır.
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
+    </section>
 
-function ScoreRow({ persona, value, max }: { persona: PersonaKey; value: number; max: number }) {
-  const pct = max === 0 ? 0 : Math.round((value / max) * 100);
-  return (
-    <div className="flex items-center gap-3">
-      <div className="w-40 truncate text-xs font-semibold text-zinc-700">{PERSONA_LABELS[persona]}</div>
-      <div className="flex-1">
-        <div className="h-2 overflow-hidden rounded-full bg-zinc-200">
-          <div className="h-full rounded-full bg-zinc-900" style={{ width: `${pct}%` }} />
+    <!-- QUIZ -->
+    <section class="grid hidden" id="screenQuiz">
+      <div class="card">
+        <div class="cardHeader">
+          <div class="progressRow">
+            <div>
+              <div class="kicker">Question Flow</div>
+              <div class="h1">Kart seçimleri ile ilerle</div>
+              <p class="sub">Q4 çoklu seçim. Sonuç sayfası moodboard formatında.</p>
+            </div>
+
+            <div class="progress">
+              <div class="progressTop">
+                <span>İlerleme</span>
+                <span id="progressPct">0%</span>
+              </div>
+              <div class="bar"><div id="progressBar"></div></div>
+            </div>
+          </div>
+
+          <div class="chips" id="triggerChips"></div>
+        </div>
+
+        <div class="cardBody">
+          <div class="qMeta">
+            <div><strong id="qCount">Soru 1</strong> <span id="qTotal">/ 13</span></div>
+            <div class="qid" id="qId">Q1</div>
+          </div>
+
+          <div class="qCard">
+            <div class="qHead">
+              <div class="qType" id="qType">Tek seçim</div>
+              <div class="qTitle" id="qTitle">-</div>
+              <div class="qSub" id="qSub">-</div>
+            </div>
+            <div class="options" id="options"></div>
+          </div>
+
+          <div class="navRow">
+            <button class="btn" id="backBtn" type="button">Geri</button>
+            <div class="status" id="navStatus">Seçim yap</div>
+            <button class="btn primary" id="nextBtn" type="button">Devam</button>
+          </div>
+
+          <div class="mutedLine" id="winnerPreviewLine">
+            Winner preview: <b id="winnerPreview">-</b>
+            <span style="color:rgba(255,255,255,.35)"> | </span>
+            Tie-break: Bütçe <span id="tbBudget">yok</span>, Stil <span id="tbStyle">yok</span>
+          </div>
         </div>
       </div>
-      <div className="w-10 text-right text-xs font-bold text-zinc-900">{value}</div>
+
+      <aside class="side">
+        <div class="sideHeader">
+          <div class="kicker">Müşteri</div>
+          <div class="h1" style="margin-top:8px;font-size:18px;">Profil Bilgileri</div>
+          <p class="sub" style="margin-top:8px;">İstersen doldur. Teklif dosyasına gömülür.</p>
+        </div>
+        <div class="sideBody">
+          <div class="field">
+            <label for="cName">Ad Soyad</label>
+            <input class="input" id="cName" placeholder="Örn: Ayşe Yılmaz" />
+          </div>
+          <div class="field">
+            <label for="cPhone">Telefon</label>
+            <input class="input" id="cPhone" placeholder="Örn: +90 5xx xxx xx xx" />
+          </div>
+          <div class="field">
+            <label for="cCity">Şehir / Bölge</label>
+            <input class="input" id="cCity" placeholder="Örn: İstanbul, Ataşehir" />
+          </div>
+          <div class="field">
+            <label for="cNote">Not</label>
+            <textarea class="textarea" id="cNote" placeholder="Örn: Ada istiyor, evcil hayvan var, hızlı teslimat önemli"></textarea>
+          </div>
+
+          <div class="mutedLine" style="margin-top:14px;">
+            Anlık sonuç: <b id="livePersona">-</b><br/>
+            <span style="color:rgba(255,255,255,.62);" id="liveHeadline">-</span>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- RESULT -->
+    <section class="grid hidden" id="screenResult">
+      <div class="card" id="resultCard">
+        <div class="resultHero" id="resultHero">
+          <div class="resultShade"></div>
+          <div class="resultOverlay">
+            <div class="chip" style="align-self:flex-start;">Persona</div>
+            <h2 class="resultTitle" id="rTitle">-</h2>
+            <p class="resultHeadline" id="rHeadline">-</p>
+            <div class="chips" id="rChips"></div>
+          </div>
+        </div>
+
+        <div class="moodGrid" id="productCards"></div>
+
+        <div class="resultLower">
+          <div class="box">
+            <h3>Kritik Özellikler</h3>
+            <ul id="rFeatures"></ul>
+
+            <div class="note">
+              <h3 style="margin:0;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.55);">Mimar Notu</h3>
+              <p id="rArchitectNote" style="margin-top:10px;">-</p>
+
+              <div id="rPetBox" class="note hidden" style="margin-top:12px;border-color:rgba(16,185,129,.22);background:rgba(16,185,129,.10);">
+                <div style="font-weight:900;color:rgba(209,250,229,.92);">PET önerisi</div>
+                <div style="margin-top:6px;color:rgba(255,255,255,.72);font-size:13px;line-height:1.6;">
+                  Temizlik ve leke hassasiyeti geldi. Anti-fingerprint ve çizik dayanımı mesajını öne çıkar.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="box">
+            <h3>Teklif Bilgisi</h3>
+            <p style="margin-top:12px;">
+              <b id="rSalesTip">-</b>
+            </p>
+
+            <div class="note">
+              <h3 style="margin:0;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.55);">Tie-break</h3>
+              <p id="rTieBreak" style="margin-top:10px;">-</p>
+            </div>
+
+            <div class="note">
+              <h3 style="margin:0;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.55);">Seçim Özeti</h3>
+              <div class="summary" id="rSummary"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="side">
+        <div class="sideHeader">
+          <div class="kicker">Teklif</div>
+          <div class="h1" style="margin-top:8px;font-size:18px;">Kaydet / CRM</div>
+          <p class="sub" style="margin-top:8px;">Teklif JSON olarak indirilebilir. CRM butonu JSON’u kopyalar.</p>
+        </div>
+        <div class="sideBody">
+          <div class="mutedLine" style="margin-top:0;">
+            Müşteri: <b id="rCustomerName">-</b><br/>
+            Telefon: <span id="rCustomerPhone">-</span><br/>
+            Bölge: <span id="rCustomerCity">-</span>
+          </div>
+
+          <div class="mutedLine">
+            Not:<br/>
+            <span id="rCustomerNote">-</span>
+          </div>
+
+          <button class="btn" id="editBtn" type="button" style="width:100%;height:46px;border-radius:18px;margin-top:12px;">Cevapları Düzenle</button>
+          <button class="btn" id="newBtn" type="button" style="width:100%;height:46px;border-radius:18px;margin-top:10px;">Yeni Analiz</button>
+        </div>
+      </aside>
+    </section>
+  </div>
+
+  <div class="sticky hidden" id="sticky">
+    <div class="stickyInner">
+      <div class="stickyLeft">
+        <strong>Showroom Tool</strong> <span style="color:rgba(255,255,255,.35)">|</span> iPad uyumlu moodboard teklif
+      </div>
+      <div class="stickyBtns">
+        <button class="btn" id="crmBtn" type="button">CRM’ye Gönder</button>
+        <button class="btn primary" id="saveBtn" type="button">Teklifi Kaydet</button>
+      </div>
     </div>
-  );
-}
+  </div>
 
-function ResultMoodboard({
-  result,
-  answers,
-  onBack,
-  onReset,
-}: {
-  result: PersonaResult;
-  answers: Answers;
-  onBack: () => void;
-  onReset: () => void;
-}) {
-  const content = PERSONA_CONTENT[result.winner];
-  const max = Math.max(...Object.values(result.scores));
+  <script>
+    // -----------------------------
+    // DATA: Personas + Mapping
+    // -----------------------------
+    const PERSONA_ORDER = ["tech","luxury","comfort","smart","gourmet","eco","social","coastal","quick","nostalgic"];
 
-  const top5 = useMemo(() => {
-    return (Object.keys(result.scores) as PersonaKey[])
-      .map((k) => ({ k, v: result.scores[k] }))
-      .sort((a, b) => b.v - a.v)
-      .slice(0, 5);
-  }, [result.scores]);
-
-  const summaryText = useMemo(() => {
-    const lines: string[] = [];
-    lines.push(`Persona: ${content.title}`);
-    lines.push(`Headline: ${content.headline}`);
-    lines.push(`Model: ${content.model}`);
-    lines.push(`Material: ${content.material}`);
-    lines.push(`Accessory: ${content.accessory}`);
-    if (content.feature) lines.push(`Feature: ${content.feature}`);
-    if (content.salesTip) lines.push(`Sales Tip: ${content.salesTip}`);
-
-    const alerts = computeAlerts(answers);
-    if (alerts.includes('HIGH_DURABILITY_ALERT')) lines.push('Alert: High Durability (Çocuk + Evcil Hayvan)');
-    if (alerts.includes('PET_MATERIAL_RECO')) lines.push('Alert: PET Materyal Odağı (Kolay temizlik)');
-
-    lines.push('');
-    lines.push('Scores:');
-    for (const item of top5) lines.push(`- ${PERSONA_LABELS[item.k]}: ${item.v}`);
-
-    return lines.join('\n');
-  }, [answers, content, top5]);
-
-  const copySummary = async () => {
-    try {
-      await navigator.clipboard.writeText(summaryText);
-    } catch {
-      // ignore
-    }
-  };
-
-  const downloadProposal = () => {
-    const payload = {
-      createdAt: new Date().toISOString(),
-      winner: result.winner,
-      persona: content,
-      alerts: result.alerts,
-      answers,
-      scores: result.scores,
+    const PERSONA_DB = {
+      tech: {
+        titleTR: "Teknoloji Tutkunu Vizyoner",
+        headline: "Mutfak Değil, Bir Teknoloji Üssü.",
+        heroImage: "", // optional local path e.g. "hero/inova.jpg"
+        products: [
+          { kind:"Model", title:"INOVA (Handle-less)", subtitle:"Kulpsuz, net çizgiler, modern dil", meta:"" },
+          { kind:"Material", title:"Mat Lake", subtitle:"Koyu Taupe / Antrasit", meta:"Low-glare, güçlü kontrast" },
+          { kind:"Accessory", title:"Ring Prizli Aydınlatma Ünitesi", subtitle:"USB Charging", meta:"Teknoloji hissi + pratiklik" },
+        ],
+        features: [
+          "Kulpsuz çizgi ve net geometriler",
+          "Yüksek kontrast, düşük parlamalı yüzey",
+          "Akıllı aksesuarlarla kullanım ritmi",
+          "Tezgah ergonomisi ve istasyon düzeni",
+        ],
+        salesTip: "+5cm ekstra tezgah yüksekliğini özellikle vurgula."
+      },
+      luxury: {
+        titleTR: "Klasik Lüks Sever",
+        headline: "Zamanın Ötesinde Bir Prestij.",
+        heroImage: "",
+        products: [
+          { kind:"Model", title:"TOSCANA (Framed doors)", subtitle:"Çerçeveli kapak, prestij hissi", meta:"" },
+          { kind:"Material", title:"Parlak Lake", subtitle:"Porselen Mavi", meta:"Güçlü yüzey kalitesi" },
+          { kind:"Accessory", title:"Tezgah Üstü Büfe Dolaplar", subtitle:"Glass cabinets", meta:"Sergileme ve servis" },
+        ],
+        features: [
+          "Klasik oranlar, çerçeveli kapak dili",
+          "Parlak lake ile güçlü premium algı",
+          "Vitrin ve büfe ile sergileme etkisi",
+          "Detaylarda yüksek işçilik hissi",
+        ],
+        salesTip: "Prestij dilini üç kelimeyle kilitle: oran, yüzey, detay."
+      },
+      comfort: {
+        titleTR: "Konfor Odaklı Aile",
+        headline: "Hayatın Hızına Yetişen Dayanıklı Mutfak.",
+        heroImage: "",
+        products: [
+          { kind:"Model", title:"SIENA veya NORDA", subtitle:"Aile rutini için dayanım", meta:"" },
+          { kind:"Material", title:"Akrilik PET", subtitle:"Anti-fingerprint, Scratch-resistant", meta:"Hijyen + bakım kolaylığı" },
+          { kind:"Accessory", title:"Boy Kiler Mekanizması (Pantry) & Pet Module", subtitle:"Düzen + evcil senaryosu", meta:"Günlük akış kolaylaşır" },
+        ],
+        features: [
+          "Kolay temizlenen, iz tutmayan yüzey",
+          "Çizik ve leke toleransı yüksek yapı",
+          "Pantry ile düzen ve hızlı erişim",
+          "Evcil/çocuk senaryosuna uygun akış",
+        ],
+        salesTip: "Müşteriye günlük rutini anlat: temizlik, düzen, hijyen, hız."
+      },
+      smart: {
+        titleTR: "Akıllı Yatırımcı (Micro-Living)",
+        headline: "Akıllı Metrekareler, Yüksek Değer.",
+        heroImage: "",
+        products: [
+          { kind:"Model", title:"PRIME (Budget-friendly)", subtitle:"Net bütçe kontrolü", meta:"" },
+          { kind:"Material", title:"Melamin", subtitle:"Sıcak Beyaz / Bej", meta:"Dayanım + maliyet dengesi" },
+          { kind:"Accessory", title:"Açılır Masa Mekanizması", subtitle:"Space saving", meta:"Küçük alanda büyük etki" },
+        ],
+        features: [
+          "Metrekare verimliliği ve hızlı kurulum",
+          "Maliyet kontrolü ve dengeli malzeme",
+          "Katlanır/çok amaçlı kullanım",
+          "Yatırım senaryosunda risksiz seçim",
+        ],
+        salesTip: "Rakam odaklı konuş: teslim süresi, maliyet, dayanım, değer."
+      },
+      gourmet: {
+        titleTR: "Gurme Şef",
+        headline: "Evinizin Profesyonel Lezzet İstasyonu.",
+        heroImage: "",
+        products: [
+          { kind:"Model", title:"INOVA (High capacity)", subtitle:"Güçlü depolama, istasyon mantığı", meta:"" },
+          { kind:"Material", title:"Soft Lak veya Metal Look", subtitle:"Grafit", meta:"Profesyonel, kontrollü görünüm" },
+          { kind:"Accessory", title:"Ergonomik Bulaşık Makinesi Ünitesi & Drawer Organizers", subtitle:"Akış ve düzen", meta:"Daha az eğilme, daha hızlı servis" },
+        ],
+        features: [
+          "Pişirme hattı ve istasyon düzeni",
+          "Organizer ile dağınıklığı bitiren kurgu",
+          "Ergonomi: daha az eğilme, daha hızlı akış",
+          "Yüksek kapasite depolama ve erişim",
+        ],
+        salesTip: "Müşteriye mutfakta yaptığı hareketleri adım adım anlattır, ona göre planı bağla."
+      },
+      eco: {
+        titleTR: "Doğal Yaşam Savunucusu",
+        headline: "Doğanın Huzuru Mutfağınızda.",
+        heroImage: "",
+        products: [
+          { kind:"Model", title:"NORDA (Scandinavian)", subtitle:"Sakin, doğal çizgi", meta:"" },
+          { kind:"Material", title:"Natural Wood Veneer & Recycled Mat PET", subtitle:"Sürdürülebilir yüzey dili", meta:"Doğal doku + sorumlu seçim" },
+          { kind:"Accessory", title:"Micro Garden Ünitesi", subtitle:"Grow herbs", meta:"Yaşayan mutfak hissi" },
+        ],
+        features: [
+          "Doğal doku ve yumuşak ton dengesi",
+          "Sürdürülebilir malzeme vurgusu",
+          "Herb garden ile yaşayan mutfak hissi",
+          "Sade, dingin, zamansız görünüm",
+        ],
+        salesTip: "Sürdürülebilirlik mesajını ürün davranışıyla bağla: bakım, ömür, günlük kullanım."
+      },
+      social: {
+        titleTR: "Sosyal Ev Sahibi",
+        headline: "Sadece Yemek Değil, Sohbet Pişirilen Yer.",
+        heroImage: "",
+        products: [
+          { kind:"Model", title:"INOVA (Island Layout)", subtitle:"Ada etrafında sosyal akış", meta:"" },
+          { kind:"Material", title:"Contrast Colors", subtitle:"Walnut & Cashmere", meta:"Kontrastla sahne etkisi" },
+          { kind:"Accessory", title:"Wine/Glass Modules & Metal Open Shelves", subtitle:"Sergileme + servis", meta:"Misafir senaryosu" },
+        ],
+        features: [
+          "Ada ile sosyal akış ve servis hattı",
+          "Sergileme ve vitrin etkisi",
+          "Kontrast materyal ile sahne hissi",
+          "Misafir senaryosuna uygun depolama",
+        ],
+        salesTip: "Müşteriye bir akşam yemeği senaryosu çiz: servis, sohbet, hazırlık, toparlama."
+      },
+      coastal: {
+        titleTR: "Dinginlik Arayan (Yazlık)",
+        headline: "Her Gün Tatil Sabahına Uyanmak Gibi.",
+        heroImage: "",
+        products: [
+          { kind:"Model", title:"FRESCA (Vertical grooves)", subtitle:"Dikey oluklarla hafif ritim", meta:"" },
+          { kind:"Material", title:"Mat PET", subtitle:"Ocean Blue / Sage Green", meta:"Ferahlık ve yumuşak ton" },
+          { kind:"Accessory", title:"Under-window Sink Layout & Wicker Baskets", subtitle:"Ritüel ve düzen", meta:"Pencere önü hissi" },
+        ],
+        features: [
+          "Ferahlık veren ton paleti",
+          "Dikey doku ile sakin ritim",
+          "Pencere önü ritüeli ve doğal aksesuar",
+          "Yazlık kullanımında kolay bakım",
+        ],
+        salesTip: "Huzur hissini ışık ve renk üzerinden anlat, müşterinin zihninde sabah sahnesi kur."
+      },
+      quick: {
+        titleTR: "Hız ve Pratiklik Odaklı",
+        headline: "Beklemeden Yeni Mutfağınıza Kavuşun.",
+        heroImage: "",
+        products: [
+          { kind:"Model", title:"PRIME (Stock)", subtitle:"Hazır sistem, düşük risk", meta:"" },
+          { kind:"Material", title:"Laminate Countertop", subtitle:"3-week delivery", meta:"Hız odaklı paket" },
+          { kind:"Accessory", title:"Rail Accessory Sets", subtitle:"No drilling", meta:"Hızlı düzen, hızlı kullanım" },
+        ],
+        features: [
+          "Stok sistem ile hız",
+          "Kurulum ve teslimatta pratiklik",
+          "Delmeden aksesuarla hızlı düzen",
+          "Risk azaltan standart çözüm",
+        ],
+        salesTip: "Süreyi netleştir: ölçü, onay, üretim/teslim, kurulum. Müşteri bunu duymak ister."
+      },
+      nostalgic: {
+        titleTR: "Nostaljik Romantik",
+        headline: "Geçmişin Sıcaklığı, Bugünün Konforu.",
+        heroImage: "",
+        products: [
+          { kind:"Model", title:"VEGA (Country/Vintage)", subtitle:"Duygusal bağ kuran çizgi", meta:"" },
+          { kind:"Material", title:"Polymeric", subtitle:"Magnolia / Baltic Blue", meta:"Sıcak ve davetkar tonlar" },
+          { kind:"Accessory", title:"Rustic Brass Handles", subtitle:"Rustik pirinç kulplar", meta:"Karakteri kulp taşır" },
+        ],
+        features: [
+          "Country oranlar ve sıcak detay dili",
+          "Tonlarla duygu ve ev hissi",
+          "Pirinç kulplarla güçlü karakter",
+          "Vintage çizgide modern konfor",
+        ],
+        salesTip: "Müşterinin anılarına bağlan: aile masası, pazar kahvaltısı, koku ve doku."
+      }
     };
 
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'intema-proposal.json';
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+    // -----------------------------
+    // DATA: Questions (Q4 multi)
+    // Full set Q1-Q13 (Q8-Q12 included)
+    // Tie-break: Q13 then Q7
+    // -----------------------------
+    const QUESTIONS = [
+      {
+        id:"q1", label:"Q1", type:"single",
+        title:"Proje niteliği nedir?",
+        subtitle:"Müşterinin ana bağlamı: yeni ev mi, yatırım mı, yazlık mı?",
+        options:[
+          { id:"newHouse", label:"Yeni Ev / Sıfır Proje", desc:"Yeni taşınma veya yeni inşaat.", icon:"home", points:{ tech:5, luxury:5 } },
+          { id:"investment", label:"Yatırım / Stüdyo", desc:"Kiralık veya satış odaklı.", icon:"home", points:{ smart:20 } },
+          { id:"summer", label:"Yazlık", desc:"Sahil, sezonluk kullanım.", icon:"home", points:{ coastal:20 } }
+        ]
+      },
+      {
+        id:"q2", label:"Q2", type:"single",
+        title:"Zaman kısıtı var mı?",
+        subtitle:"Teslimat ve karar hızını ölçer.",
+        options:[
+          { id:"urgent", label:"Acil", desc:"Hızlı karar, hızlı uygulama.", icon:"clock", points:{ quick:20, smart:10 } },
+          { id:"perfectionist", label:"Acele yok, mükemmeliyetçi", desc:"Detay odaklı, kusursuzluk arar.", icon:"clock", points:{ luxury:10, nostalgic:5 } }
+        ]
+      },
+      {
+        id:"q3", label:"Q3", type:"single",
+        title:"Alan durumu nasıl?",
+        subtitle:"Metrekare ve plan, öneri tipini değiştirir.",
+        options:[
+          { id:"small", label:"Küçük / Dar", desc:"Verimlilik ve kompakt çözümler.", icon:"area", points:{ smart:10 } },
+          { id:"large", label:"Geniş / Ada mümkün", desc:"Sosyal akış ve güçlü pişirme hattı.", icon:"area", points:{ social:15, gourmet:10 } }
+        ]
+      },
+      {
+        id:"q4", label:"Q4", type:"multi",
+        title:"Hane halkı hangilerine uyuyor?",
+        subtitle:"Çoklu seçim. Çocuk + Evcil hayvan seçilirse High Durability Alert tetikler.",
+        options:[
+          { id:"singleCouple", label:"Tek kişi / Çift", desc:"Minimal düzen, teknolojiye açık.", icon:"users", points:{ tech:10 } },
+          { id:"children", label:"Çocuk", desc:"Dayanım, hijyen, güvenlik.", icon:"users", points:{ comfort:15 } },
+          { id:"pets", label:"Evcil hayvan", desc:"Sürdürülebilirlik ve kolay bakım.", icon:"users", points:{ eco:10 } }
+        ]
+      },
+      {
+        id:"q5", label:"Q5", type:"single",
+        title:"Ana motivasyon ne?",
+        subtitle:"Mutfak, müşterinin hayatında neyi temsil ediyor?",
+        options:[
+          { id:"showcase", label:"Showcase / Sosyal", desc:"Misafir, sunum, eğlence.", icon:"spark", points:{ social:20 } },
+          { id:"operation", label:"Operasyon / Pişirme", desc:"Fonksiyon, istasyon mantığı.", icon:"spark", points:{ gourmet:20 } },
+          { id:"sanctuary", label:"Sanctuary / Huzur", desc:"Sakinlik, doğal his.", icon:"spark", points:{ coastal:15, eco:10 } },
+          { id:"heart", label:"Heart / Aile", desc:"Rutinler, dayanım, sıcaklık.", icon:"spark", points:{ comfort:15, nostalgic:10 } }
+        ]
+      },
+      {
+        id:"q6", label:"Q6", type:"single",
+        title:"En büyük acı noktası ne?",
+        subtitle:"Problemi seç, sistem çözümü bağlasın.",
+        options:[
+          { id:"cleaning", label:"Temizlik / Leke", desc:"Kolay silinebilir, dayanıklı yüzeyler.", icon:"broom", points:{ comfort:20 }, trigger:"petMaterial" },
+          { id:"clutter", label:"Dağınıklık", desc:"Organizer ve depolama ihtiyacı.", icon:"broom", points:{ gourmet:10 } },
+          { id:"outdated", label:"Eski görünüm", desc:"Modernleşme isteği.", icon:"broom", points:{ tech:10 } }
+        ]
+      },
+      {
+        id:"q7", label:"Q7", type:"single",
+        title:"Tasarım dili hangisi?",
+        subtitle:"Tie-break için kritik (2. öncelik).",
+        options:[
+          { id:"modern", label:"Modern / Minimal", desc:"Kulpsuz, net çizgiler.", icon:"style", points:{ tech:20 } },
+          { id:"classic", label:"Klasik / Grand", desc:"Çerçeveli kapak, prestij.", icon:"style", points:{ luxury:20 } },
+          { id:"country", label:"Country / Natural", desc:"Ahşap dokular, sıcaklık.", icon:"style", points:{ eco:15, nostalgic:15 } },
+          { id:"industrial", label:"Industrial", desc:"Kontrast, metal hissi.", icon:"style", points:{ tech:10 } }
+        ]
+      },
 
-  return (
-    <div className="min-h-screen bg-zinc-100">
-      <div className="mx-auto max-w-6xl px-4 pb-28 pt-6">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <div className="text-xs font-semibold tracking-wide text-zinc-500">Sonuç</div>
-            <h1 className="mt-1 text-2xl font-semibold text-zinc-900">{content.title}</h1>
-            <p className="mt-1 text-sm text-zinc-600">{content.headline}</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {result.alerts.includes('HIGH_DURABILITY_ALERT') && (
-              <Chip tone="warn">
-                <AlertTriangle className="h-4 w-4" />
-                Dayanıklılık
-              </Chip>
-            )}
-            {result.alerts.includes('PET_MATERIAL_RECO') && (
-              <Chip tone="warn">
-                <AlertTriangle className="h-4 w-4" />
-                PET Önerisi
-              </Chip>
-            )}
-            <Chip>Tie-break: Q13, sonra Q7</Chip>
-          </div>
-        </div>
+      // Added from original 13-question set
+      {
+        id:"q8", label:"Q8", type:"single",
+        title:"Malzeme hissi hangisi?",
+        subtitle:"Yüzey ve dokunun karakterini seç.",
+        options:[
+          { id:"wood", label:"Ahşap", desc:"Doğal doku ve sıcaklık.", icon:"material", points:{ eco:20 } },
+          { id:"matsoft", label:"Mat / Soft", desc:"Yumuşak, sakin yüzey.", icon:"material", points:{ comfort:10 } },
+          { id:"gloss", label:"Yüksek parlak", desc:"Gösterişli ve premium algı.", icon:"material", points:{ luxury:15 } },
+          { id:"dark", label:"Koyu ton", desc:"Kontrast ve modern güç.", icon:"material", points:{ tech:15 } }
+        ]
+      },
+      {
+        id:"q9", label:"Q9", type:"single",
+        title:"Pişirme yaklaşımı nasıl?",
+        subtitle:"Kullanım yoğunluğu öneriyi değiştirir.",
+        options:[
+          { id:"gourmet", label:"Gurme", desc:"Sık pişirir, ekipman kullanır.", icon:"cook", points:{ gourmet:25 } },
+          { id:"practical", label:"Pratik", desc:"Hız, basit rutinler.", icon:"cook", points:{ smart:10 } }
+        ]
+      },
+      {
+        id:"q10", label:"Q10", type:"single",
+        title:"Depolamada öncelik ne?",
+        subtitle:"Düzen ve sergileme tercihleri.",
+        options:[
+          { id:"pantry", label:"Kiler / Pantry", desc:"Gizli düzen, hızlı erişim.", icon:"storage", points:{ comfort:10 } },
+          { id:"vitrine", label:"Vitrin / Sergileme", desc:"Görsel etki ve sunum.", icon:"storage", points:{ social:15 } }
+        ]
+      },
+      {
+        id:"q11", label:"Q11", type:"single",
+        title:"Sürdürülebilirlik önemi ne kadar?",
+        subtitle:"Malzeme ve seçim önceliği.",
+        options:[
+          { id:"high", label:"Yüksek", desc:"Sürdürülebilir seçim çok önemli.", icon:"leaf", points:{ eco:25 } },
+          { id:"normal", label:"Normal", desc:"Denge önemli.", icon:"leaf", points:{} }
+        ]
+      },
+      {
+        id:"q12", label:"Q12", type:"single",
+        title:"Teknoloji yaklaşımı nasıl?",
+        subtitle:"Akıllı çözümler mi, geleneksel mi?",
+        options:[
+          { id:"hightech", label:"High-Tech", desc:"Entegre, akıllı aksesuarlar.", icon:"chip", points:{ tech:20 } },
+          { id:"traditional", label:"Geleneksel", desc:"Klasik kullanım, sıcak his.", icon:"chip", points:{ nostalgic:15 } }
+        ]
+      },
+      {
+        id:"q13", label:"Q13", type:"single",
+        title:"Bütçe yaklaşımı nasıl?",
+        subtitle:"Tie-break için kritik (1. öncelik).",
+        options:[
+          { id:"flexible", label:"Esnek / Prestij", desc:"Premium kararlar.", icon:"wallet", points:{ luxury:20 } },
+          { id:"pp", label:"Fiyat / Performans", desc:"Dengeli seçim.", icon:"wallet", points:{ comfort:10 } },
+          { id:"economic", label:"Ekonomik", desc:"Net bütçe, verim.", icon:"wallet", points:{ smart:15 } }
+        ]
+      }
+    ];
 
-        <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-12">
-          <div className="lg:col-span-7">
-            <div className="relative overflow-hidden rounded-3xl border bg-white shadow-sm">
-              <div className="h-72 bg-[radial-gradient(circle_at_30%_20%,rgba(0,0,0,0.08),transparent_55%),radial-gradient(circle_at_80%_70%,rgba(0,0,0,0.10),transparent_60%),linear-gradient(to_bottom,rgba(244,244,245,1),rgba(228,228,231,1))]" />
-              <div className="absolute inset-0 p-6">
-                <div className="flex h-full flex-col justify-between">
-                  <div className="flex items-center justify-between">
-                    <Chip>Hero Image Placeholder</Chip>
-                    <Chip>{content.model}</Chip>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    <div className="rounded-3xl border bg-white/80 p-4 backdrop-blur">
-                      <div className="text-xs font-semibold tracking-wide text-zinc-500">Material</div>
-                      <div className="mt-1 text-sm font-semibold text-zinc-900">{content.material}</div>
-                    </div>
-                    <div className="rounded-3xl border bg-white/80 p-4 backdrop-blur">
-                      <div className="text-xs font-semibold tracking-wide text-zinc-500">Accessory</div>
-                      <div className="mt-1 text-sm font-semibold text-zinc-900">{content.accessory}</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {content.salesTip && (
-              <div className="mt-4 rounded-3xl border bg-white p-5 shadow-sm">
-                <div className="text-xs font-semibold tracking-wide text-zinc-500">Sales Tip</div>
-                <div className="mt-1 text-sm font-semibold text-zinc-900">{content.salesTip}</div>
-              </div>
-            )}
-          </div>
-
-          <div className="lg:col-span-5">
-            <div className="grid grid-cols-1 gap-4">
-              <ProductRecommendationCard
-                label="Önerilen Model"
-                title={content.model}
-                icon={<Building2 className="h-5 w-5" />}
-              />
-              <ProductRecommendationCard
-                label="Önerilen Materyal"
-                title={content.material}
-                detail={result.alerts.includes('PET_MATERIAL_RECO') ? 'Kolay temizlik odaklı yüzey yaklaşımı aktif.' : undefined}
-                icon={<Palette className="h-5 w-5" />}
-              />
-              <ProductRecommendationCard
-                label="Must Have Aksesuar"
-                title={content.accessory}
-                detail={result.alerts.includes('HIGH_DURABILITY_ALERT') ? 'Dayanıklılık ve yoğun kullanım senaryosu.' : undefined}
-                icon={<Sparkles className="h-5 w-5" />}
-              />
-
-              <div className="rounded-3xl border bg-white p-5 shadow-sm">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="text-xs font-semibold tracking-wide text-zinc-500">Skor Özeti</div>
-                    <div className="mt-1 text-sm font-semibold text-zinc-900">Top 5 Persona</div>
-                  </div>
-                  <Chip>Max: {max}</Chip>
-                </div>
-                <div className="mt-4 space-y-3">
-                  {top5.map((x) => (
-                    <ScoreRow key={x.k} persona={x.k} value={x.v} max={max} />
-                  ))}
-                </div>
-                {result.tied.length > 1 && (
-                  <div className="mt-4">
-                    <Chip tone="warn">
-                      <AlertTriangle className="h-4 w-4" />
-                      Tie detected: {result.tied.map((p) => PERSONA_LABELS[p]).join(', ')}
-                    </Chip>
-                  </div>
-                )}
-              </div>
-
-              <div className="rounded-3xl border bg-white p-5 shadow-sm">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="text-xs font-semibold tracking-wide text-zinc-500">Proposal</div>
-                    <div className="mt-1 text-sm font-semibold text-zinc-900">Özet metnini kopyala veya JSON indir</div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={copySummary}
-                      className="inline-flex items-center gap-2 rounded-2xl border border-zinc-200 bg-white px-4 py-2 text-sm font-semibold shadow-sm hover:shadow-md"
-                    >
-                      <Clipboard className="h-4 w-4" />
-                      Kopyala
-                    </button>
-                    <button
-                      type="button"
-                      onClick={downloadProposal}
-                      className="inline-flex items-center gap-2 rounded-2xl bg-zinc-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:shadow-md"
-                    >
-                      <Download className="h-4 w-4" />
-                      JSON
-                    </button>
-                  </div>
-                </div>
-                <pre className="mt-3 max-h-40 overflow-auto rounded-2xl bg-zinc-50 p-3 text-xs text-zinc-700 ring-1 ring-zinc-200">
-                  {summaryText}
-                </pre>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
-          <button
-            type="button"
-            onClick={onBack}
-            className="inline-flex items-center gap-2 rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm font-semibold shadow-sm hover:shadow-md"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Cevapları Düzenle
-          </button>
-
-          <div className="flex-1" />
-
-          <button
-            type="button"
-            onClick={onReset}
-            className="inline-flex items-center gap-2 rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:shadow-md"
-          >
-            <Sparkles className="h-4 w-4" />
-            Yeniden Başlat
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function IntemaKitchenAssistant() {
-  const [answers, setAnswers] = useState<Answers>({});
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [showResult, setShowResult] = useState(false);
-
-  const total = QUESTIONS.length;
-  const answeredCount = QUESTIONS.filter((q) => isAnswered(q, answers)).length;
-  const currentQuestion = QUESTIONS[currentIndex];
-  const result = useMemo(() => calculatePersona(answers), [answers]);
-
-  const goNext = () => {
-    if (currentIndex < total - 1) {
-      setCurrentIndex((prev) => prev + 1);
-      return;
+    // -----------------------------
+    // UI: icons (inline SVG)
+    // -----------------------------
+    function iconSVG(name){
+      const cls = 'width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
+      switch(name){
+        case "home":
+          return `<svg ${cls}><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z"/></svg>`;
+        case "clock":
+          return `<svg ${cls}><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>`;
+        case "area":
+          return `<svg ${cls}><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 8h8v8H8z"/></svg>`;
+        case "users":
+          return `<svg ${cls}><circle cx="12" cy="10" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>`;
+        case "spark":
+          return `<svg ${cls}><path d="M12 2l1.4 5.2L18 9l-4.6 1.8L12 16l-1.4-5.2L6 9l4.6-1.8L12 2Z"/><path d="M19 13l.8 2.8L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-1.2L19 13Z"/></svg>`;
+        case "broom":
+          return `<svg ${cls}><path d="M14 3l7 7"/><path d="M3 21l8-8"/><path d="M11 13l3 3"/><path d="M12 12c2.5-2.5 6-3 9-1"/></svg>`;
+        case "style":
+          return `<svg ${cls}><path d="M4 6h16"/><path d="M4 12h10"/><path d="M4 18h16"/></svg>`;
+        case "wallet":
+          return `<svg ${cls}><path d="M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v1H6a2 2 0 0 0-2 2v9a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-9H6"/><path d="M17 14h3"/></svg>`;
+        case "leaf":
+          return `<svg ${cls}><path d="M20 3c-7 1-12 6-13 13 7-1 12-6 13-13Z"/><path d="M7 16c-2 1-3 3-3 5 2 0 4-1 5-3"/></svg>`;
+        case "chip":
+          return `<svg ${cls}><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M9 1v4M15 1v4M9 19v4M15 19v4M1 9h4M1 15h4M19 9h4M19 15h4"/></svg>`;
+        case "cook":
+          return `<svg ${cls}><path d="M8 6c0-2 1.5-3 3-3s3 1 3 3"/><path d="M6 10h12"/><path d="M7 10v10a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V10"/><path d="M9 14h6"/></svg>`;
+        case "storage":
+          return `<svg ${cls}><rect x="4" y="6" width="16" height="14" rx="2"/><path d="M8 6V4h8v2"/><path d="M9 12h6"/></svg>`;
+        case "material":
+          return `<svg ${cls}><path d="M12 2l8 6v8l-8 6-8-6V8l8-6Z"/><path d="M12 2v20"/><path d="M4 8l8 6 8-6"/></svg>`;
+        default:
+          return `<svg ${cls}><circle cx="12" cy="12" r="9"/></svg>`;
+      }
     }
-    setShowResult(true);
-  };
 
-  const goBack = () => {
-    if (showResult) {
-      setShowResult(false);
-      setCurrentIndex(total - 1);
-      return;
+    // -----------------------------
+    // State
+    // -----------------------------
+    const STATE = {
+      screen: "welcome", // welcome | quiz | result
+      index: 0,
+      answers: {}, // qid -> string or string[]
+      customer: { name:"", phone:"", city:"", note:"" }
+    };
+
+    const STORAGE_KEY = "intema_proposals_v1";
+
+    // -----------------------------
+    // Helpers
+    // -----------------------------
+    const $ = (id)=>document.getElementById(id);
+
+    function toast(msg){
+      const t = $("toast");
+      t.textContent = msg;
+      t.classList.add("show");
+      clearTimeout(toast._tm);
+      toast._tm = setTimeout(()=>t.classList.remove("show"), 1600);
     }
-    setCurrentIndex((prev) => Math.max(0, prev - 1));
-  };
 
-  const onReset = () => {
-    setAnswers({});
-    setCurrentIndex(0);
-    setShowResult(false);
-  };
+    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
 
-  if (showResult) {
-    return <ResultMoodboard result={result} answers={answers} onBack={goBack} onReset={onReset} />;
-  }
+    function getSavedCount(){
+      try{
+        const arr = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        return Array.isArray(arr) ? arr.length : 0;
+      }catch(e){ return 0; }
+    }
 
-  const isCurrentAnswered = currentQuestion ? isAnswered(currentQuestion, answers) : false;
+    function updateSavedPill(){
+      $("savedCount").textContent = String(getSavedCount());
+    }
 
-  return (
-    <div className="min-h-screen bg-zinc-100">
-      <div className="mx-auto max-w-5xl px-4 pb-28 pt-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <div className="text-xs font-semibold tracking-wide text-zinc-500">Intema Kitchen Assistant</div>
-            <h1 className="mt-1 text-2xl font-semibold text-zinc-900">Mutfak Persona Analizi</h1>
-            <p className="mt-1 text-sm text-zinc-600">
-              Soruları yanıtlayarak en uygun persona ve ürün kombinasyonunu keşfedin.
-            </p>
+    function safeJSON(obj){
+      return JSON.stringify(obj, null, 2);
+    }
+
+    function downloadJSON(payload){
+      const blob = new Blob([safeJSON(payload)], { type:"application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const base = (payload.customer?.name || "musteri")
+        .toLowerCase()
+        .replaceAll("ı","i").replaceAll("ğ","g").replaceAll("ü","u")
+        .replaceAll("ş","s").replaceAll("ö","o").replaceAll("ç","c")
+        .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"")
+        .slice(0,42) || "musteri";
+      a.href = url;
+      a.download = `intema-proposal-${base}-${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function saveLocal(payload){
+      try{
+        const arr = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+        const list = Array.isArray(arr) ? arr : [];
+        list.unshift(payload);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+        updateSavedPill();
+        return list.length;
+      }catch(e){
+        return 0;
+      }
+    }
+
+    function selectionsReadable(answers){
+      const out = [];
+      for(const q of QUESTIONS){
+        const a = answers[q.id];
+        if(!a) continue;
+        if(Array.isArray(a)){
+          const labels = a.map(id => (q.options.find(o=>o.id===id)||{}).label).filter(Boolean);
+          if(labels.length) out.push(`${q.title} -> ${labels.join(", ")}`);
+        }else{
+          const label = (q.options.find(o=>o.id===a)||{}).label;
+          if(label) out.push(`${q.title} -> ${label}`);
+        }
+      }
+      return out;
+    }
+
+    // -----------------------------
+    // Scoring + Tie-break
+    // -----------------------------
+    function initScores(){
+      const s = {};
+      PERSONA_ORDER.forEach(k=>s[k]=0);
+      return s;
+    }
+
+    function addPoints(scores, points){
+      if(!points) return;
+      for(const k in points){
+        if(scores[k] == null) continue;
+        scores[k] += points[k] || 0;
+      }
+    }
+
+    function calculate(answers){
+      const scores = initScores();
+      const tieBudget = initScores();
+      const tieStyle = initScores();
+
+      const triggers = {
+        highDurabilityAlert: false,
+        petMaterialRecommendation: false
+      };
+
+      for(const q of QUESTIONS){
+        const a = answers[q.id];
+        if(!a) continue;
+
+        if(q.type === "multi"){
+          const arr = Array.isArray(a) ? a : [];
+          arr.forEach(optId=>{
+            const opt = q.options.find(o=>o.id===optId);
+            if(!opt) return;
+            addPoints(scores, opt.points);
+          });
+        }else{
+          const opt = q.options.find(o=>o.id===a);
+          if(!opt) continue;
+          addPoints(scores, opt.points);
+
+          if(q.id === "q13") addPoints(tieBudget, opt.points);
+          if(q.id === "q7") addPoints(tieStyle, opt.points);
+
+          if(q.id === "q6" && opt.trigger === "petMaterial"){
+            triggers.petMaterialRecommendation = true;
+          }
+        }
+      }
+
+      // Special Q4 logic: Children + Pets => +20 comfort + High Durability Alert
+      const q4 = answers.q4;
+      const q4arr = Array.isArray(q4) ? q4 : [];
+      const hasChildren = q4arr.includes("children");
+      const hasPets = q4arr.includes("pets");
+      if(hasChildren && hasPets){
+        scores.comfort += 20;
+        triggers.highDurabilityAlert = true;
+      }
+
+      const max = Math.max(...PERSONA_ORDER.map(k=>scores[k]));
+      const candidates = PERSONA_ORDER.filter(k=>scores[k]===max);
+
+      let usedBudget = false;
+      let usedStyle = false;
+      let winner = candidates[0];
+
+      if(candidates.length > 1){
+        const bMax = Math.max(...candidates.map(k=>tieBudget[k]));
+        const bW = candidates.filter(k=>tieBudget[k]===bMax);
+        usedBudget = true;
+
+        if(bW.length === 1){
+          winner = bW[0];
+        }else{
+          const sMax = Math.max(...bW.map(k=>tieStyle[k]));
+          const sW = bW.filter(k=>tieStyle[k]===sMax);
+          usedStyle = true;
+
+          if(sW.length === 1) winner = sW[0];
+          else winner = sW[0]; // stable order
+        }
+      }
+
+      return { winner, scores, triggers, tieBreak:{ usedBudget, usedStyle } };
+    }
+
+    // -----------------------------
+    // UI Rendering
+    // -----------------------------
+    function setScreen(name){
+      STATE.screen = name;
+      $("screenWelcome").classList.toggle("hidden", name !== "welcome");
+      $("screenQuiz").classList.toggle("hidden", name !== "quiz");
+      $("screenResult").classList.toggle("hidden", name !== "result");
+      $("sticky").classList.toggle("hidden", name !== "result");
+
+      // Reset button is always useful
+      $("resetBtn").style.opacity = "1";
+    }
+
+    function isAnswered(q, answers){
+      const v = answers[q.id];
+      if(!v) return false;
+      if(Array.isArray(v)) return v.length > 0;
+      return String(v).length > 0;
+    }
+
+    function renderChips(triggers, targetEl){
+      targetEl.innerHTML = "";
+      if(triggers.highDurabilityAlert){
+        const c = document.createElement("div");
+        c.className = "chip warn";
+        c.textContent = "High Durability Alert";
+        targetEl.appendChild(c);
+      }
+      if(triggers.petMaterialRecommendation){
+        const c = document.createElement("div");
+        c.className = "chip ok";
+        c.textContent = "PET yüzey önerisi tetiklendi";
+        targetEl.appendChild(c);
+      }
+    }
+
+    function renderQuestion(){
+      const q = QUESTIONS[STATE.index];
+      const total = QUESTIONS.length;
+
+      $("qCount").textContent = `Soru ${STATE.index + 1}`;
+      $("qTotal").textContent = `/ ${total}`;
+      $("qId").textContent = q.label;
+
+      $("qType").textContent = q.type === "multi" ? "Çoklu seçim" : "Tek seçim";
+      $("qTitle").textContent = q.title;
+      $("qSub").textContent = q.subtitle || "";
+
+      const pct = Math.round(((STATE.index + 1) / total) * 100);
+      $("progressPct").textContent = `${pct}%`;
+      $("progressBar").style.width = `${pct}%`;
+
+      const calc = calculate(STATE.answers);
+      $("winnerPreview").textContent = PERSONA_DB[calc.winner].titleTR;
+      $("tbBudget").textContent = calc.tieBreak.usedBudget ? "var" : "yok";
+      $("tbStyle").textContent = calc.tieBreak.usedStyle ? "var" : "yok";
+      $("livePersona").textContent = PERSONA_DB[calc.winner].titleTR;
+      $("liveHeadline").textContent = PERSONA_DB[calc.winner].headline;
+
+      renderChips(calc.triggers, $("triggerChips"));
+
+      const selected = STATE.answers[q.id];
+      const selectedArr = Array.isArray(selected) ? selected : [];
+      const selectedOne = (typeof selected === "string") ? selected : "";
+
+      const optionsEl = $("options");
+      optionsEl.innerHTML = "";
+
+      q.options.forEach(opt=>{
+        const el = document.createElement("div");
+        const isSel = q.type === "multi" ? selectedArr.includes(opt.id) : selectedOne === opt.id;
+        el.className = `opt ${isSel ? "selected" : ""}`;
+        el.setAttribute("role","button");
+        el.setAttribute("tabindex","0");
+
+        el.innerHTML = `
+          <div class="ico" aria-hidden="true" style="color:rgba(255,255,255,.75);">
+            ${iconSVG(opt.icon)}
           </div>
-          <div className="flex items-center gap-2">
-            <Chip>Toplam: {total}</Chip>
-            <Chip>Yanıtlanan: {answeredCount}</Chip>
+          <div class="optMain">
+            <div class="optLabel">
+              <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${opt.label}</span>
+              <span class="tag">${isSel ? (q.type==="multi" ? "Seçildi" : "Aktif") : ""}</span>
+            </div>
+            ${opt.desc ? `<div class="optHint">${opt.desc}</div>` : ""}
           </div>
-        </div>
+        `;
 
-        <div className="mt-6">
-          <ProgressBar current={answeredCount} total={total} />
-        </div>
+        const toggle = ()=>{
+          if(q.type === "multi"){
+            const arr = Array.isArray(STATE.answers[q.id]) ? [...STATE.answers[q.id]] : [];
+            const ix = arr.indexOf(opt.id);
+            if(ix >= 0) arr.splice(ix, 1);
+            else arr.push(opt.id);
+            STATE.answers[q.id] = arr;
+          }else{
+            STATE.answers[q.id] = opt.id;
+          }
+          renderQuestion();
+          updateNav();
+        };
 
-        {currentQuestion && (
-          <div className="mt-6">
-            <QuestionCard
-              question={currentQuestion}
-              answers={answers}
-              setAnswers={setAnswers}
-              onAutoNext={currentQuestion.type === 'single' ? goNext : undefined}
-            />
+        el.addEventListener("click", toggle);
+        el.addEventListener("keydown", (e)=>{
+          if(e.key === "Enter" || e.key === " "){ e.preventDefault(); toggle(); }
+        });
+
+        optionsEl.appendChild(el);
+      });
+
+      updateNav();
+    }
+
+    function updateNav(){
+      const q = QUESTIONS[STATE.index];
+      const canNext = isAnswered(q, STATE.answers);
+
+      $("backBtn").disabled = STATE.index === 0;
+      $("nextBtn").disabled = !canNext;
+
+      const isLast = STATE.index === QUESTIONS.length - 1;
+      $("nextBtn").textContent = isLast ? "Sonucu Gör" : "Devam";
+      $("navStatus").textContent = canNext ? "Hazır" : "Seçim yap";
+    }
+
+    function buildProposal(){
+      const calc = calculate(STATE.answers);
+      const selections = selectionsReadable(STATE.answers);
+      const db = PERSONA_DB[calc.winner];
+
+      return {
+        createdAtISO: new Date().toISOString(),
+        customer: { ...STATE.customer },
+        answers: JSON.parse(JSON.stringify(STATE.answers)),
+        selectionsReadable: selections,
+        persona: {
+          key: calc.winner,
+          titleTR: db.titleTR,
+          headline: db.headline,
+          scores: calc.scores,
+          triggers: calc.triggers,
+          tieBreak: calc.tieBreak,
+          products: db.products,
+          features: db.features,
+          salesTip: db.salesTip || "Öneriyi 3 cümleyle kilitle: model dili, malzeme hissi, aksesuar farkı."
+        }
+      };
+    }
+
+    function renderResult(){
+      const payload = buildProposal();
+      const db = PERSONA_DB[payload.persona.key];
+
+      // Hero
+      const heroEl = $("resultHero");
+      heroEl.classList.remove("hasImg");
+      heroEl.style.backgroundImage = "";
+
+      if(db.heroImage){
+        heroEl.classList.add("hasImg");
+        heroEl.style.backgroundImage = `url('${db.heroImage}')`;
+      }
+
+      $("rTitle").textContent = db.titleTR;
+      $("rHeadline").textContent = db.headline;
+
+      const chipsEl = $("rChips");
+      chipsEl.innerHTML = "";
+      renderChips(payload.persona.triggers, chipsEl);
+
+      // Product cards
+      const pc = $("productCards");
+      pc.innerHTML = "";
+      db.products.forEach(p=>{
+        const el = document.createElement("div");
+        el.className = "pcard";
+        el.innerHTML = `
+          <div class="pcHead">
+            <div class="pcChip">${p.kind === "Model" ? "Önerilen Model" : (p.kind === "Material" ? "Malzeme / Özellik" : "Must-have Aksesuar")}</div>
+            <div class="kicker" style="letter-spacing:.18em;">${p.kind}</div>
           </div>
-        )}
-      </div>
+          <div class="pcBody">
+            <p class="t">${p.title}</p>
+            ${p.subtitle ? `<p class="s">${p.subtitle}</p>` : ""}
+            ${p.meta ? `<p class="m">${p.meta}</p>` : ""}
+          </div>
+        `;
+        pc.appendChild(el);
+      });
 
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t bg-white/90 backdrop-blur">
-        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3">
-          <button
-            type="button"
-            onClick={goBack}
-            disabled={currentIndex === 0}
-            className={cn(
-              'inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold shadow-sm hover:shadow-md',
-              currentIndex === 0 ? 'cursor-not-allowed border-zinc-100 bg-zinc-100 text-zinc-400' : 'border-zinc-200 bg-white'
-            )}
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Geri
-          </button>
+      // Features
+      const f = $("rFeatures");
+      f.innerHTML = "";
+      (db.features || []).forEach(x=>{
+        const li = document.createElement("li");
+        li.textContent = x;
+        f.appendChild(li);
+      });
 
-          <div className="flex-1" />
+      // Architect note
+      const note = buildArchitectNote(payload);
+      $("rArchitectNote").textContent = note;
 
-          <button
-            type="button"
-            onClick={goNext}
-            disabled={!isCurrentAnswered}
-            className={cn(
-              'inline-flex items-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold shadow-sm',
-              isCurrentAnswered
-                ? 'bg-zinc-900 text-white hover:shadow-md'
-                : 'cursor-not-allowed bg-zinc-200 text-zinc-500'
-            )}
-          >
-            {currentIndex === total - 1 ? 'Sonuçları Gör' : 'Sonraki'}
-            <ArrowRight className="h-4 w-4" />
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+      // Pet box
+      $("rPetBox").classList.toggle("hidden", !payload.persona.triggers.petMaterialRecommendation);
 
-export default function App() {
-  return <IntemaKitchenAssistant />;
-}
+      // Sales tip
+      $("rSalesTip").textContent = payload.persona.salesTip;
+
+      // Tie break
+      $("rTieBreak").textContent =
+        `Bütçe: ${payload.persona.tieBreak.usedBudget ? "Kullanıldı" : "Kullanılmadı"} | Stil: ${payload.persona.tieBreak.usedStyle ? "Kullanıldı" : "Kullanılmadı"}`;
+
+      // Summary
+      const sum = $("rSummary");
+      sum.innerHTML = "";
+      payload.selectionsReadable.forEach(s=>{
+        const d = document.createElement("div");
+        d.className = "summaryItem";
+        d.textContent = s;
+        sum.appendChild(d);
+      });
+
+      // Customer
+      $("rCustomerName").textContent = payload.customer.name || "-";
+      $("rCustomerPhone").textContent = payload.customer.phone || "-";
+      $("rCustomerCity").textContent = payload.customer.city || "-";
+      $("rCustomerNote").textContent = payload.customer.note || "-";
+
+      // Attach payload to buttons
+      $("saveBtn").onclick = ()=>{
+        const p = buildProposal();
+        saveLocal(p);
+        downloadJSON(p);
+        toast("Teklif kaydedildi ve indirildi.");
+      };
+
+      $("crmBtn").onclick = async ()=>{
+        const p = buildProposal();
+        const txt = safeJSON(p);
+        try{
+          await navigator.clipboard.writeText(txt);
+          toast("CRM için JSON kopyalandı.");
+        }catch(e){
+          window.prompt("Kopyala (Ctrl/Cmd + C):", txt);
+        }
+      };
+    }
+
+    function buildArchitectNote(payload){
+      const t = payload.persona.triggers;
+      const key = payload.persona.key;
+
+      if(t.highDurabilityAlert){
+        return "Çocuk + evcil hayvan senaryosu var. Darbe, çizik ve leke toleransı yüksek yüzeylere git. Akrilik PET ve bakım kolaylığını satışta öne çıkar. Pantry ile düzeni kilitle.";
+      }
+
+      if(t.petMaterialRecommendation){
+        return "Temizlik ve leke hassasiyeti çıktı. Anti-fingerprint ve hızlı bakım mesajını net kur. Kullanım ritmini basitleştiren organizer ve yüzey seçimiyle kararı hızlandır.";
+      }
+
+      if(key === "quick"){
+        return "Müşteri hız istiyor. Süreci 4 adıma indir: ölçü, onay, teslim, kurulum. Stok model ve aksesuar setleriyle riski düşür.";
+      }
+
+      if(key === "social"){
+        return "Sosyal senaryoyu sahnele: ada etrafında servis ve sohbet. Sergileme modülleri ve depolamayı misafir akışına bağla.";
+      }
+
+      if(key === "gourmet"){
+        return "İstasyon mantığını kur: hazırlık, pişirme, servis, toparlama. Organizer ve ergonomi üzerinden değer yarat.";
+      }
+
+      if(key === "luxury"){
+        return "Prestij dili: oran, yüzey, detay. Vitrin ve cam büfe ile katmanlı bir kalite hissi oluştur.";
+      }
+
+      if(key === "eco"){
+        return "Doğallık ve sürdürülebilirliği aynı cümlede bağla: doku, ömür, bakım. Micro garden ile yaşayan mutfak hissini güçlendir.";
+      }
+
+      if(key === "coastal"){
+        return "Huzur hissini renk, ışık ve ritim üzerinden anlat. Pencere önü senaryosu ve doğal aksesuarlarla anlatıyı tamamla.";
+      }
+
+      if(key === "nostalgic"){
+        return "Duygusal bağ üzerinden ilerle. Tonlar ve kulp detaylarıyla karakteri belirginleştir. Modern konforu vintage dilin içine göm.";
+      }
+
+      // tech or fallback
+      return "Öneriyi senaryo ile kilitle: müşterinin günlük ritmi, kullanım kolaylığı ve net fark yaratan aksesuar. Karar noktalarını sadeleştir.";
+    }
+
+    // -----------------------------
+    // Events
+    // -----------------------------
+    function syncCustomerFromInputs(){
+      STATE.customer.name = $("cName").value.trim();
+      STATE.customer.phone = $("cPhone").value.trim();
+      STATE.customer.city = $("cCity").value.trim();
+      STATE.customer.note = $("cNote").value.trim();
+    }
+
+    ["cName","cPhone","cCity","cNote"].forEach(id=>{
+      $(id).addEventListener("input", ()=>{
+        syncCustomerFromInputs();
+        if(STATE.screen === "quiz"){
+          const calc = calculate(STATE.answers);
+          $("livePersona").textContent = PERSONA_DB[calc.winner].titleTR;
+          $("liveHeadline").textContent = PERSONA_DB[calc.winner].headline;
+        }
+      });
+    });
+
+    $("startBtn").addEventListener("click", ()=>{
+      setScreen("quiz");
+      STATE.index = 0;
+      renderQuestion();
+      toast("Analiz başladı.");
+    });
+
+    $("demoBtn").addEventListener("click", ()=>{
+      // Quick demo answers to show result
+      STATE.answers = {
+        q1:"newHouse",
+        q2:"urgent",
+        q3:"large",
+        q4:["children","pets"],
+        q5:"operation",
+        q6:"cleaning",
+        q7:"modern",
+        q8:"matsoft",
+        q9:"gourmet",
+        q10:"pantry",
+        q11:"high",
+        q12:"hightech",
+        q13:"pp"
+      };
+      setScreen("quiz");
+      STATE.index = 0;
+      renderQuestion();
+      toast("Demo dolduruldu.");
+    });
+
+    $("resetBtn").addEventListener("click", ()=>{
+      STATE.index = 0;
+      STATE.answers = {};
+      STATE.customer = { name:"", phone:"", city:"", note:"" };
+      $("cName").value = "";
+      $("cPhone").value = "";
+      $("cCity").value = "";
+      $("cNote").value = "";
+      setScreen("welcome");
+      updateSavedPill();
+      toast("Sıfırlandı.");
+    });
+
+    $("backBtn").addEventListener("click", ()=>{
+      STATE.index = clamp(STATE.index - 1, 0, QUESTIONS.length - 1);
+      renderQuestion();
+    });
+
+    $("nextBtn").addEventListener("click", ()=>{
+      const q = QUESTIONS[STATE.index];
+      if(!isAnswered(q, STATE.answers)){
+        toast("Devam etmek için seçim yap.");
+        return;
+      }
+
+      const isLast = STATE.index === QUESTIONS.length - 1;
+      if(isLast){
+        syncCustomerFromInputs();
+        setScreen("result");
+        renderResult();
+        toast("Sonuç hazır.");
+        return;
+      }
+
+      STATE.index = clamp(STATE.index + 1, 0, QUESTIONS.length - 1);
+      renderQuestion();
+    });
+
+    $("editBtn").addEventListener("click", ()=>{
+      setScreen("quiz");
+      renderQuestion();
+      toast("Düzenleme modu.");
+    });
+
+    $("newBtn").addEventListener("click", ()=>{
+      // keep customer but reset answers by default
+      STATE.index = 0;
+      STATE.answers = {};
+      setScreen("quiz");
+      renderQuestion();
+      toast("Yeni analiz.");
+    });
+
+    // -----------------------------
+    // Init
+    // -----------------------------
+    updateSavedPill();
+    setScreen("welcome");
+  </script>
+</body>
+</html>
