@@ -118,7 +118,7 @@ const PERSONA_CONTENT: Record<PersonaKey, PersonaContent> = {
   tech: {
     title: 'Teknoloji Tutkunu Vizyoner',
     headline: 'Mutfak Değil, Bir Teknoloji Üssü.',
-    model: 'INOVA (Kulp’suz)',
+    model: 'INOVA (Kulpsuz)',
     material: 'Mat Lake (Koyu Taupe / Antrasit)',
     accessory: 'Ring Prizli Aydınlatma Ünitesi (USB Charging)',
     salesTip: '+5 cm ekstra tezgah yüksekliğini vurgula.',
@@ -189,10 +189,8 @@ const PERSONA_CONTENT: Record<PersonaKey, PersonaContent> = {
   },
 };
 
+// --- REVİZE EDİLMİŞ DENGELİ SORU HAVUZU (MAX PUAN ~100 EŞİTLENDİ) ---
 const QUESTIONS: Question[] = [
-  // --- REVİZE EDİLMİŞ DENGELİ SORU HAVUZU (MAX PUAN ~100 EŞİTLENDİ) ---
-  // p1: tech, p2: luxury, p3: comfort, p4: investor, p5: gourmet,
-  // p6: eco, p7: social, p8: coastal, p9: fast, p10: nostalgic
   {
     id: 'q1',
     key: 'projectType',
@@ -665,7 +663,6 @@ function computeAlerts(answers: Answers): AlertKey[] {
     if (hasChildren && hasPets) alerts.push('HIGH_DURABILITY_ALERT');
   }
 
-  // PET material recommendation is triggered by cleaning/stains pain point
   if (answers.painPoint === 'q6_cleaning') alerts.push('PET_MATERIAL_RECO');
 
   return Array.from(new Set(alerts));
@@ -719,7 +716,6 @@ function calculatePersona(answers: Answers): PersonaResult {
     nostalgic: 0,
   };
 
-  // Base scoring: sum option deltas
   for (const q of QUESTIONS) {
     const v = answers[q.key];
 
@@ -749,7 +745,6 @@ function calculatePersona(answers: Answers): PersonaResult {
   const maxScore = Math.max(...Object.values(scores));
   const tied = (Object.keys(scores) as PersonaKey[]).filter((k) => scores[k] === maxScore);
 
-  // Tie-break rule: Budget (Q13) then Style (Q7)
   const budgetQ = QUESTIONS.find((q) => q.id === 'q13');
   const styleQ = QUESTIONS.find((q) => q.id === 'q7');
 
@@ -766,8 +761,6 @@ function calculatePersona(answers: Answers): PersonaResult {
   if (tied.length === 1) winner = tied[0];
   if (!winner) winner = tryBreak(tied, budgetQ);
   if (!winner) winner = tryBreak(tied, styleQ);
-
-  // Final deterministic fallback
   if (!winner) winner = PERSONA_PRIORITY.find((p) => tied.includes(p)) ?? tied[0] ?? 'tech';
 
   return {
@@ -796,7 +789,9 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
 function Chip({ children, tone = 'neutral' }: { children: React.ReactNode; tone?: 'neutral' | 'warn' }) {
   const base = 'inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-medium ring-1';
   const styles =
-    tone === 'warn' ? 'bg-amber-50 text-amber-900 ring-amber-200' : 'bg-zinc-50 text-zinc-700 ring-zinc-200';
+    tone === 'warn'
+      ? 'bg-amber-50 text-amber-900 ring-amber-200'
+      : 'bg-zinc-50 text-zinc-700 ring-zinc-200';
   return <span className={cn(base, styles)}>{children}</span>;
 }
 
@@ -820,7 +815,7 @@ function OptionCard({
         'group w-full rounded-2xl border p-4 text-left shadow-sm transition-all',
         'bg-white hover:shadow-md active:scale-[0.99]',
         selected ? 'border-zinc-900 ring-1 ring-zinc-900' : 'border-zinc-200',
-        disabled && 'opacity-50 cursor-not-allowed hover:shadow-sm'
+        disabled && 'cursor-not-allowed opacity-50 hover:shadow-sm'
       )}
     >
       <div className="flex items-start gap-3">
@@ -834,10 +829,10 @@ function OptionCard({
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-between gap-3">
-            <div className="text-sm font-semibold text-zinc-900 truncate">{option.label}</div>
+            <div className="truncate text-sm font-semibold text-zinc-900">{option.label}</div>
             {selected && <Chip>Seçildi</Chip>}
           </div>
-          {option.helper && <div className="mt-1 text-sm text-zinc-600 leading-snug">{option.helper}</div>}
+          {option.helper && <div className="mt-1 text-sm leading-snug text-zinc-600">{option.helper}</div>}
         </div>
       </div>
     </button>
@@ -868,7 +863,7 @@ function QuestionCard({
       const exists = prevArr.includes(optionId);
       let nextArr = exists ? prevArr.filter((x) => x !== optionId) : [...prevArr, optionId];
 
-      // Household UX: single/couple is mutually exclusive with children/pets
+      // Household UX: single/couple is mutually exclusive with children/pets/crowd
       if (question.key === 'household') {
         const isSingleCouple = optionId === 'q4_single';
         if (isSingleCouple && !exists) nextArr = ['q4_single'];
@@ -915,7 +910,7 @@ function QuestionCard({
           <div className="mt-5">
             <Chip tone="warn">
               <AlertTriangle className="h-4 w-4" />
-              High Durability Alert: Çocuk + Evcil hayvan seçildi.
+              High Durability Alert: Çocuk + evcil hayvan seçildi.
             </Chip>
           </div>
         );
@@ -979,10 +974,12 @@ function ResultMoodboard({
   result,
   answers,
   onBack,
+  onReset,
 }: {
   result: PersonaResult;
   answers: Answers;
   onBack: () => void;
+  onReset: () => void;
 }) {
   const content = PERSONA_CONTENT[result.winner];
   const max = Math.max(...Object.values(result.scores));
@@ -1064,7 +1061,7 @@ function ResultMoodboard({
                 PET Önerisi
               </Chip>
             )}
-            <Chip> Tie-break: Q13, sonra Q7 </Chip>
+            <Chip>Tie-break: Q13, sonra Q7</Chip>
           </div>
         </div>
 
@@ -1192,83 +1189,4 @@ function ResultMoodboard({
           <div className="flex-1" />
 
           <button
-            type="button"
-            onClick={downloadProposal}
-            className="inline-flex items-center gap-2 rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm font-semibold shadow-sm hover:shadow-md"
-          >
-            <Download className="h-4 w-4" />
-            Save Proposal
-          </button>
-
-          <button
-            type="button"
-            onClick={() => alert('CRM entegrasyonu: API endpoint bağlanınca aktif edilecek.')}
-            className="inline-flex items-center gap-2 rounded-2xl bg-zinc-900 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:shadow-md"
-          >
-            <Send className="h-4 w-4" />
-            Send to CRM
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function createEmptyAnswers(): Answers {
-  return {
-    projectType: null,
-    timeline: null,
-    space: null,
-    household: [],
-    meaning: null,
-    painPoint: null,
-    style: null,
-    materialTexture: null,
-    cookingHabit: null,
-    storageNeed: null,
-    sustainability: null,
-    techIntegration: null,
-    budget: null,
-    decisionFactor: null,
-  };
-}
-
-function runSelfTestsOnce() {
-  if (typeof window === 'undefined') return;
-  // Avoid running multiple times during hot reload
-  const w = window as unknown as { __INTEMA_TESTS_DONE__?: boolean };
-  if (w.__INTEMA_TESTS_DONE__) return;
-  w.__INTEMA_TESTS_DONE__ = true;
-
-  // Test 1: Basic scoring from Q1 (Yeni Ev)
-  {
-    const a = createEmptyAnswers();
-    a.projectType = 'q1_newhouse';
-    const r = calculatePersona(a);
-    console.assert(r.scores.tech === 10, 'Test1: tech should be +10');
-    console.assert(r.scores.luxury === 10, 'Test1: luxury should be +10');
-    console.assert(r.scores.social === 5, 'Test1: social should be +5');
-  }
-
-  // Test 2: Household children + pets => +20 comfort bonus and durability alert
-  {
-    const a = createEmptyAnswers();
-    a.household = ['q4_children', 'q4_pets'];
-    const r = calculatePersona(a);
-    console.assert(r.alerts.includes('HIGH_DURABILITY_ALERT'), 'Test2: should include HIGH_DURABILITY_ALERT');
-    // comfort: children(20) + pets(10) + bonus(20) = 50
-    console.assert(r.scores.comfort === 50, 'Test2: comfort should be 20 + 10 + 20 = 50');
-    console.assert(r.scores.eco === 15, 'Test2: eco should be +15 from pets');
-  }
-
-  // Test 3: Tie-break prefers budget (Q13)
-  // Create a final tie at max between comfort and gourmet, then let budget resolve it.
-  // comfort: children(20) + budget(F/P)(20) = 40
-  // gourmet: space large(15) + style industrial(15) + budget(F/P)(10) = 40
-  {
-    const a = createEmptyAnswers();
-    a.household = ['q4_children'];
-    a.space = 'q3_large';
-    a.style = 'q7_industrial';
-    a.budget = 'q13_pp';
-    const r = calc
+            type
