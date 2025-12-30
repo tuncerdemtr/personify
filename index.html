@@ -25,7 +25,7 @@
       --btn: rgba(255,255,255,.85);
       --btn2: rgba(255,255,255,1);
       --focus: rgba(120,170,255,.24);
-      --maxw: 1020px;
+      --maxw: 100%;
       --tap: 52px;
     }
 
@@ -144,14 +144,7 @@
       border-color: rgba(255,160,160,.4);
     }
 
-    .grid{
-      display:grid;
-      grid-template-columns: 1.1fr .9fr;
-      gap: 14px;
-    }
-
     @media (max-width: 920px){
-      .grid{ grid-template-columns: 1fr; }
       header{ align-items:flex-start; }
       .topActions{ justify-content:flex-start; }
     }
@@ -461,34 +454,6 @@
       border-color: rgba(120,255,180,.28);
     }
 
-    .toggleRow{
-      display:flex;
-      gap: 10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    .seg{
-      display:inline-flex;
-      border-radius: 999px;
-      border: 1px solid var(--stroke2);
-      overflow:hidden;
-      background: rgba(255,255,255,.8);
-    }
-    .seg button{
-      height: 40px;
-      padding: 0 12px;
-      border:0;
-      background: transparent;
-      color: var(--muted);
-      font-weight: 750;
-      cursor:pointer;
-      letter-spacing:.1px;
-    }
-    .seg button.on{
-      background: rgba(160,205,255,.4);
-      color: var(--text);
-    }
-
     table{
       width:100%;
       border-collapse: collapse;
@@ -542,7 +507,7 @@
       <div class="brand">
         <div class="kicker">Sales Point Tablet App</div>
         <h1>İntema Mutfak Dijital Mimar Asistanı</h1>
-        <p>14 soruluk akış. 10 arketip skoru. Sonuç ekranında reçete, hibrit profil ve mimar modu.</p>
+        <p>14 soruluk akış. 10 arketip skoru. Sonuç ekranında reçete ve hibrit profil öne çıkar.</p>
       </div>
       <div class="topActions">
         <div class="pill" id="sessionPill"><strong>Oturum:</strong> <span id="sessionState">Yeni</span></div>
@@ -551,26 +516,7 @@
       </div>
     </header>
 
-    <div class="grid">
-      <div class="card" id="mainCard"></div>
-
-      <div class="stack">
-        <div class="card" id="sideCard">
-          <div class="cardHeader">
-            <div>
-              <h2>Özet</h2>
-              <div class="sub">Seçim durumu</div>
-            </div>
-          </div>
-          <div class="cardBody">
-            <div class="panel">
-              <p id="sideSummary" style="margin:0;">Başlamak için sol taraftan görüşme aç.</p>
-            </div>
-            <div class="mini">Otomatik kaydedilir. Tarayıcı kapanırsa kaldığın yerden devam eder.</div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div class="card" id="mainCard"></div>
 
     <div class="footerNote">
       Bu uygulama tek dosya çalışır. Veri sadece bu cihazın tarayıcısında saklanır (LocalStorage).
@@ -897,8 +843,7 @@
       step: "start",
       qIndex: 0,
       answers: {},
-      meta: { name:"", phone:"", email:"", note:"" },
-      mode: "client"
+      meta: { name:"", phone:"", email:"", note:"" }
     };
 
     const el = (sel, root=document) => root.querySelector(sel);
@@ -932,7 +877,6 @@
       state.step = "start";
       state.qIndex = 0;
       state.answers = {};
-      state.mode = "client";
       state.meta = preserved;
       save();
       render();
@@ -1276,8 +1220,6 @@
         ? buildHybridRec(personas[hybrid.top1.p], personas[hybrid.top2.p])
         : buildRec(winnerData);
 
-      const modeClientOn = state.mode === "client" ? "on" : "";
-      const modeArchOn = state.mode === "architect" ? "on" : "";
 
       const scoreTableRows = res.list.map(row => `
         <tr>
@@ -1287,24 +1229,13 @@
         </tr>
       `).join("");
 
-      const archOnly = state.mode === "architect" ? "" : "hide";
-      const clientOnly = state.mode === "client" ? "" : "hide";
-
       return `
         <div class="resultHero">
           <div class="resultTop">
             <div>
               <div class="badge"><strong>${escapeHtml(topLabel)}:</strong> ${escapeHtml(badgeText)}</div>
               <h2 class="resultTitle">${escapeHtml(isHybrid ? "İki güçlü persona öne çıkıyor." : winnerData.headline)}</h2>
-              <p class="resultDesc ${clientOnly}">${escapeHtml(buildClientSummary(res))}</p>
-              <p class="resultDesc ${archOnly}">${escapeHtml(buildArchitectSummary(res))}</p>
-            </div>
-
-            <div class="toggleRow">
-              <div class="seg" role="tablist" aria-label="Mod">
-                <button id="btnModeClient" class="${modeClientOn}" role="tab" aria-selected="${state.mode==="client"}">Müşteri Modu</button>
-                <button id="btnModeArch" class="${modeArchOn}" role="tab" aria-selected="${state.mode==="architect"}">Mimar Modu</button>
-              </div>
+              <p class="resultDesc">${escapeHtml(buildClientSummary(res))}</p>
             </div>
           </div>
         </div>
@@ -1337,7 +1268,7 @@
             </div>
           ` : ""}
 
-          <div class="panel ${archOnly}">
+          <div class="panel">
             <h3>Skor Dağılımı</h3>
             <table>
               <thead>
@@ -1371,7 +1302,6 @@
 
     function buildRec(p){
       const feats = (p.features || []).map(x=>`<li>${escapeHtml(x)}</li>`).join("");
-      const archOnly = state.mode === "architect" ? "" : "hide";
       const modelImage = p.modelImage;
       const colorImage = p.colorImage;
       const accessoryImage = p.accessoryImage;
@@ -1420,7 +1350,7 @@
             <ul>${feats}</ul>
           </div>
 
-          <div class="panel ${archOnly}">
+          <div class="panel">
             <h3>Mimar Notu (Öneri)</h3>
             <p>${escapeHtml(p.architectNote || "")}</p>
           </div>
@@ -1432,8 +1362,6 @@
       const headline = `Hibrit: ${a.title} + ${b.title}`;
       const mergedFeatures = unique([...(a.features||[]), ...(b.features||[])]).slice(0, 8);
       const feats = mergedFeatures.map(x=>`<li>${escapeHtml(x)}</li>`).join("");
-      const archOnly = state.mode === "architect" ? "" : "hide";
-
       return `
         <div class="stack" style="gap:10px;">
           <div class="panel">
@@ -1495,7 +1423,7 @@
             <ul>${feats}</ul>
           </div>
 
-          <div class="panel ${archOnly}">
+          <div class="panel">
             <h3>Mimar Notları (Öneri)</h3>
             <ul>
               <li><strong>${escapeHtml(a.title)}:</strong> ${escapeHtml(a.architectNote || "")}</li>
@@ -1643,17 +1571,6 @@
     }
 
     function bindResult(){
-      el("#btnModeClient").addEventListener("click", ()=>{
-        state.mode = "client";
-        save();
-        render();
-      });
-      el("#btnModeArch").addEventListener("click", ()=>{
-        state.mode = "architect";
-        save();
-        render();
-      });
-
       el("#btnBackToQuiz").addEventListener("click", ()=>{
         state.step = "quiz";
         state.qIndex = questions.length - 1;
