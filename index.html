@@ -6,25 +6,25 @@
   <title>İntema Mutfak Dijital Mimar Asistanı</title>
   <style>
     :root{
-      --bg0:#0b0f14;
-      --bg1:#0f1620;
-      --card: rgba(255,255,255,.06);
-      --card2: rgba(255,255,255,.085);
-      --stroke: rgba(255,255,255,.12);
-      --stroke2: rgba(255,255,255,.18);
-      --text:#eaf0f7;
-      --muted: rgba(234,240,247,.72);
-      --muted2: rgba(234,240,247,.54);
-      --good: rgba(120,255,180,.18);
-      --warn: rgba(255,190,120,.16);
-      --bad: rgba(255,120,120,.14);
-      --shadow: 0 18px 55px rgba(0,0,0,.45);
+      --bg0:#f7f9fc;
+      --bg1:#eef3f9;
+      --card: rgba(255,255,255,.82);
+      --card2: rgba(255,255,255,.94);
+      --stroke: rgba(15,32,56,.08);
+      --stroke2: rgba(15,32,56,.12);
+      --text:#1a2433;
+      --muted: rgba(26,36,51,.7);
+      --muted2: rgba(26,36,51,.48);
+      --good: rgba(114,210,170,.2);
+      --warn: rgba(255,200,140,.2);
+      --bad: rgba(255,140,140,.2);
+      --shadow: 0 24px 60px rgba(21,40,70,.12);
       --r: 18px;
       --r2: 14px;
       --pad: 18px;
-      --btn: rgba(255,255,255,.09);
-      --btn2: rgba(255,255,255,.13);
-      --focus: rgba(140,200,255,.18);
+      --btn: rgba(255,255,255,.85);
+      --btn2: rgba(255,255,255,1);
+      --focus: rgba(120,170,255,.24);
       --maxw: 1020px;
       --tap: 52px;
     }
@@ -35,9 +35,9 @@
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       background:
-        radial-gradient(1200px 600px at 20% 10%, rgba(255,255,255,.06), transparent 55%),
-        radial-gradient(900px 520px at 80% 0%, rgba(120,200,255,.08), transparent 60%),
-        radial-gradient(900px 520px at 70% 95%, rgba(255,220,140,.06), transparent 60%),
+        radial-gradient(1200px 700px at 15% 10%, rgba(255,255,255,.9), transparent 55%),
+        radial-gradient(900px 540px at 80% 0%, rgba(190,220,255,.45), transparent 60%),
+        radial-gradient(900px 560px at 70% 95%, rgba(255,225,190,.42), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
       color: var(--text);
       -webkit-font-smoothing: antialiased;
@@ -96,8 +96,8 @@
       gap:8px;
       padding: 8px 10px;
       border-radius: 999px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.75);
+      border: 1px solid var(--stroke);
       color: var(--muted);
       font-size: 12px;
       user-select:none;
@@ -108,7 +108,7 @@
       height: var(--tap);
       padding: 0 14px;
       border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.12);
+      border: 1px solid var(--stroke2);
       background: var(--btn);
       color: var(--text);
       font-size: 14px;
@@ -121,7 +121,7 @@
       cursor:pointer;
       user-select:none;
       transition: transform .06s ease, background .15s ease, border-color .15s ease;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      box-shadow: 0 14px 30px rgba(18,34,60,.12);
       touch-action: manipulation;
     }
     .btn:active{ transform: translateY(1px) scale(.995); }
@@ -132,16 +132,16 @@
       box-shadow:none;
     }
     .btn.primary{
-      background: rgba(140,200,255,.18);
-      border-color: rgba(140,200,255,.30);
+      background: rgba(160,205,255,.4);
+      border-color: rgba(120,170,255,.45);
     }
     .btn.primary:hover{
-      background: rgba(140,200,255,.24);
-      border-color: rgba(140,200,255,.40);
+      background: rgba(160,205,255,.52);
+      border-color: rgba(120,170,255,.6);
     }
     .btn.danger{
-      background: rgba(255,120,120,.14);
-      border-color: rgba(255,120,120,.26);
+      background: rgba(255,160,160,.24);
+      border-color: rgba(255,160,160,.4);
     }
 
     .grid{
@@ -157,15 +157,15 @@
     }
 
     .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.045));
-      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.86));
+      border: 1px solid var(--stroke);
       border-radius: var(--r);
       box-shadow: var(--shadow);
       overflow:hidden;
     }
     .cardHeader{
       padding: 14px var(--pad);
-      border-bottom: 1px solid rgba(255,255,255,.08);
+      border-bottom: 1px solid var(--stroke);
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -211,8 +211,8 @@
     input[type="text"], input[type="tel"], input[type="email"], textarea{
       width:100%;
       border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
+      border: 1px solid var(--stroke2);
+      background: rgba(255,255,255,.85);
       color: var(--text);
       padding: 12px 12px;
       font-size: 14px;
@@ -233,7 +233,7 @@
 
     .progressWrap{
       padding: 12px var(--pad);
-      border-bottom: 1px solid rgba(255,255,255,.08);
+      border-bottom: 1px solid var(--stroke);
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -260,16 +260,16 @@
       width: 260px;
       height: 10px;
       border-radius: 999px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(15,32,56,.06);
+      border: 1px solid var(--stroke);
       overflow:hidden;
       flex: 0 0 auto;
     }
     .bar > div{
       height:100%;
       width:0%;
-      background: rgba(140,200,255,.28);
-      border-right: 1px solid rgba(140,200,255,.40);
+      background: rgba(120,170,255,.45);
+      border-right: 1px solid rgba(120,170,255,.6);
       transition: width .18s ease;
     }
     @media (max-width: 560px){
@@ -284,8 +284,8 @@
     }
     .opt{
       border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.16);
+      border: 1px solid var(--stroke2);
+      background: rgba(255,255,255,.8);
       padding: 14px 14px;
       display:flex;
       align-items:flex-start;
@@ -296,11 +296,11 @@
       user-select:none;
       min-height: 56px;
     }
-    .opt:hover{ background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); }
+    .opt:hover{ background: rgba(255,255,255,.95); border-color: rgba(120,170,255,.35); }
     .opt:active{ transform: translateY(1px); }
     .opt.sel{
-      background: rgba(140,200,255,.16);
-      border-color: rgba(140,200,255,.34);
+      background: rgba(160,205,255,.35);
+      border-color: rgba(120,170,255,.5);
     }
     .opt .t{
       font-size: 15px;
@@ -315,15 +315,15 @@
     .opt .mark{
       width: 18px; height: 18px;
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.22);
-      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(80,110,150,.3);
+      background: rgba(255,255,255,.7);
       margin-top: 2px;
       flex: 0 0 auto;
       position:relative;
     }
     .opt.sel .mark{
-      border-color: rgba(140,200,255,.55);
-      background: rgba(140,200,255,.22);
+      border-color: rgba(120,170,255,.6);
+      background: rgba(160,205,255,.4);
     }
     .opt.sel .mark::after{
       content:"";
@@ -354,7 +354,7 @@
 
     .resultHero{
       padding: 16px var(--pad);
-      border-bottom: 1px solid rgba(255,255,255,.08);
+      border-bottom: 1px solid var(--stroke);
       display:flex;
       flex-direction:column;
       gap: 10px;
@@ -372,8 +372,8 @@
       gap: 8px;
       padding: 8px 10px;
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.75);
       color: var(--muted);
       font-size: 12px;
       user-select:none;
@@ -403,8 +403,8 @@
 
     .panel{
       border-radius: var(--r2);
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.14);
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.8);
       padding: 12px 12px;
     }
 
@@ -446,9 +446,9 @@
     .seg{
       display:inline-flex;
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.12);
+      border: 1px solid var(--stroke2);
       overflow:hidden;
-      background: rgba(255,255,255,.06);
+      background: rgba(255,255,255,.8);
     }
     .seg button{
       height: 40px;
@@ -461,7 +461,7 @@
       letter-spacing:.1px;
     }
     .seg button.on{
-      background: rgba(140,200,255,.18);
+      background: rgba(160,205,255,.4);
       color: var(--text);
     }
 
@@ -470,13 +470,13 @@
       border-collapse: collapse;
       overflow:hidden;
       border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.12);
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.85);
     }
     th, td{
       text-align:left;
       padding: 10px 10px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
+      border-bottom: 1px solid var(--stroke);
       font-size: 12px;
       color: var(--muted);
     }
@@ -486,7 +486,7 @@
       letter-spacing:.08em;
       text-transform: uppercase;
       font-size: 11px;
-      background: rgba(255,255,255,.04);
+      background: rgba(15,32,56,.04);
     }
     tr:last-child td{ border-bottom: 0; }
     td strong{ color: var(--text); font-weight: 750; }
@@ -503,8 +503,8 @@
     .kbd{
       padding: 3px 7px;
       border-radius: 9px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.18);
+      border: 1px solid var(--stroke2);
+      background: rgba(255,255,255,.9);
       color: var(--muted);
       font-weight: 750;
       font-size: 11px;
@@ -531,35 +531,6 @@
       <div class="card" id="mainCard"></div>
 
       <div class="stack">
-        <div class="card">
-          <div class="cardHeader">
-            <div>
-              <h2>Hızlı Kontrol</h2>
-              <div class="sub">Mimar için kısa notlar</div>
-            </div>
-          </div>
-          <div class="cardBody">
-            <div class="stack" style="gap:10px;">
-              <div class="panel ok">
-                <h3>Skor Mantığı</h3>
-                <p>Her cevap ilgili persona(lar)a puan ekler. S4 çoklu seçim, kümülatiftir.</p>
-              </div>
-              <div class="panel">
-                <h3>Eşitlik Kuralı</h3>
-                <p>Skorlar eşitse önce S13 (bütçe), sonra S7 (stil) katkısı daha yüksek persona kazanır.</p>
-              </div>
-              <div class="panel">
-                <h3>Hibrit Profil</h3>
-                <p>Kazanan skor, toplam skorun %30 altındaysa Top1 + Top2 hibrit gösterilir.</p>
-              </div>
-              <div class="panel">
-                <h3>Kısayollar</h3>
-                <p><span class="kbd">←</span> geri, <span class="kbd">→</span> ileri, <span class="kbd">Esc</span> yeni görüşme</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div class="card" id="sideCard">
           <div class="cardHeader">
             <div>
