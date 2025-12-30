@@ -428,6 +428,30 @@
       font-size: 13px;
     }
 
+    .mediaGrid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+    }
+    .mediaCard{
+      border-radius: 14px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.85);
+      overflow:hidden;
+    }
+    .mediaCard img{
+      display:block;
+      width:100%;
+      height: 140px;
+      object-fit: cover;
+    }
+    .mediaCard .label{
+      padding: 8px 10px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
     .alert{
       background: var(--warn);
       border-color: rgba(255,190,120,.32);
@@ -687,6 +711,9 @@
         model: "INOVA",
         material: "Mat Lake / Metal Görünümlü",
         color: "Renk: M104_Grafit / T112_Koyu Taupe / M007_Siyah",
+        modelImage: "https://images.unsplash.com/photo-1502005097973-6a7082348e28?auto=format&fit=crop&w=900&q=80",
+        colorImage: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=900&q=80",
+        accessoryImage: "https://images.unsplash.com/photo-1506368249639-73a05d6f6488?auto=format&fit=crop&w=900&q=80",
         features: [
           "Kulpsuz Tasarım (Gola Profil)",
           "Ring Aydınlatma Ünitesi",
@@ -702,6 +729,9 @@
         model: "TOSCANA",
         material: "Parlak Lake / Mat Lake",
         color: "Renk: P019_Orman Yeşili / P020_Uzay Mavi / P017_İnci Beyaz",
+        modelImage: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=900&q=80",
+        colorImage: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
+        accessoryImage: "https://images.unsplash.com/photo-1523413651479-597eb2da0ad6?auto=format&fit=crop&w=900&q=80",
         features: [
           "Çerçeveli Kapaklar",
           "Büfe Tipi Camlı Üst Dolaplar",
@@ -717,6 +747,9 @@
         model: "SIENA",
         material: "Akrilik PET / Mat PET",
         color: "Renk: T125_Manolya / T123_Kaşmir / T122_Açık Gri",
+        modelImage: "https://images.unsplash.com/photo-1481278403982-f2d9f387cdcc?auto=format&fit=crop&w=900&q=80",
+        colorImage: "https://images.unsplash.com/photo-1501045661006-fcebe0257c3f?auto=format&fit=crop&w=900&q=80",
+        accessoryImage: "https://images.unsplash.com/photo-1481931715705-36f5f79f1f3d?auto=format&fit=crop&w=900&q=80",
         features: [
           "Parmak İzi Bırakmayan Yüzey",
           "Boy Kiler Mekanizması (Dispensa)",
@@ -732,6 +765,9 @@
         model: "PRIME",
         material: "Melamin",
         color: "Renk: Beyaz / Kum Beji / Meşe",
+        modelImage: "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=900&q=80",
+        colorImage: "https://images.unsplash.com/photo-1481277542470-605612bd2d61?auto=format&fit=crop&w=900&q=80",
+        accessoryImage: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=900&q=80",
         features: [
           "Yerden Tasarruf Sağlayan Açılır Masa",
           "Kör Köşe Mekanizması (Le Mans)",
@@ -748,6 +784,9 @@
         model: "INOVA (+5cm Yüksek Gövde)",
         material: "Mat Lake",
         color: "Renk: Koyu Gri / Beyaz",
+        modelImage: "https://images.unsplash.com/photo-1501876725168-00c445821c9e?auto=format&fit=crop&w=900&q=80",
+        colorImage: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=80",
+        accessoryImage: "https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=900&q=80",
         features: [
           "Orgalux Ahşap Çekmece İçi Düzenleyiciler",
           "78 cm Yüksek Gövde (%20 Fazla Hacim)",
@@ -764,6 +803,9 @@
         model: "NORDA",
         material: "Doğal Ahşap Kaplama / Geri Dönüştürülmüş PET",
         color: "Renk: W009_Düşey Hareli Naturel Meşe / T1_121_Adaçayı Yeşili / M023_Beton Yeşili",
+        modelImage: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=900&q=80",
+        colorImage: "https://images.unsplash.com/photo-1493770348161-369560ae357d?auto=format&fit=crop&w=900&q=80",
+        accessoryImage: "https://images.unsplash.com/photo-1472220625704-91e1462799b2?auto=format&fit=crop&w=900&q=80",
         features: [
           "Micro Garden Ünitesi (Bitki Yetiştirme)",
           "Ahşap Açık Raflar",
@@ -779,6 +821,9 @@
         model: "INOVA (Ada Planlaması)",
         material: "Kombinasyon: Mat Lake ve Doğal Kaplama",
         color: "Renk: Siyah (Ada) ve Ceviz (Dolaplar)",
+        modelImage: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=900&q=80",
+        colorImage: "https://images.unsplash.com/photo-1495567720989-cebdbdd97913?auto=format&fit=crop&w=900&q=80",
+        accessoryImage: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80",
         features: [
           "Ada Çevresi Oturma Alanı (Bar)",
           "Şaraplık ve Kadehlik Modülleri",
@@ -795,6 +840,9 @@
         model: "FRESCA",
         material: "Mat Lake / Mat PET",
         color: "Renk: F1_M021_Baltık Mavi / F1_M001_Buz Beyaz / T1_120_Baltık Mavi",
+        modelImage: "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=900&q=80",
+        colorImage: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
+        accessoryImage: "https://images.unsplash.com/photo-1502055887010-bba4e8f7b21b?auto=format&fit=crop&w=900&q=80",
         features: [
           "Düşey Fugalı Kapaklar",
           "Cam Önü Eviye Yerleşimi",
@@ -810,6 +858,9 @@
         model: "PRIME",
         material: "Laminant / Düz Melamin",
         color: "Renk: M104_Grafit / M103_Latte / M101_Mat Beyaz",
+        modelImage: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=900&q=80",
+        colorImage: "https://images.unsplash.com/photo-1487014679447-9f8336841d58?auto=format&fit=crop&w=900&q=80",
+        accessoryImage: "https://images.unsplash.com/photo-1506368249639-73a05d6f6488?auto=format&fit=crop&w=900&q=80",
         features: [
           "Hızlı Teslimat",
           "Açılır Masa Mekanizmaları",
@@ -825,6 +876,9 @@
         model: "VEGA",
         material: "Mat Lake / Polimerik",
         color: "Renk: V1_M021_Baltık Mavi / T125_Manolya / V1_M024_Buz Gri",
+        modelImage: "https://images.unsplash.com/photo-1449844908441-8829872d2607?auto=format&fit=crop&w=900&q=80",
+        colorImage: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=900&q=80",
+        accessoryImage: "https://images.unsplash.com/photo-1481931715705-36f5f79f1f3d?auto=format&fit=crop&w=900&q=80",
         features: [
           "Kafesli Tel Dolaplar",
           "Rustik Kulplar",
@@ -1303,11 +1357,9 @@
             <textarea id="archNote" placeholder="Kısa satış yönlendirmesi, kritik istekler, takip notu...">${escapeHtml(state.meta.note || "")}</textarea>
             <div class="navRow" style="margin-top:10px;">
               <div class="left">
-                <button class="btn" id="btnSaveNote">Notu Kaydet</button>
                 <button class="btn ghost" id="btnBackToQuiz">Ankete Dön</button>
               </div>
               <div class="right">
-                <button class="btn" id="btnCopy">Özeti Kopyala</button>
                 <button class="btn ghost" id="btnPrint">Yazdır</button>
                 <button class="btn primary" id="btnNewFromResult">Yeni Görüşme</button>
               </div>
@@ -1320,6 +1372,9 @@
     function buildRec(p){
       const feats = (p.features || []).map(x=>`<li>${escapeHtml(x)}</li>`).join("");
       const archOnly = state.mode === "architect" ? "" : "hide";
+      const modelImage = p.modelImage;
+      const colorImage = p.colorImage;
+      const accessoryImage = p.accessoryImage;
 
       return `
         <div class="stack" style="gap:10px;">
@@ -1340,6 +1395,24 @@
               <li><strong>Malzeme:</strong> ${escapeHtml(p.material)}</li>
         <li><strong>Renk:</strong> ${escapeHtml(p.color)}</li>
             </ul>
+          </div>
+
+          <div class="panel">
+            <h3>Görsel Referanslar</h3>
+            <div class="mediaGrid">
+              <div class="mediaCard">
+                <img src="${escapeHtml(modelImage)}" alt="Model görseli" loading="lazy" />
+                <div class="label">Model</div>
+              </div>
+              <div class="mediaCard">
+                <img src="${escapeHtml(colorImage)}" alt="Renk paleti görseli" loading="lazy" />
+                <div class="label">Renk</div>
+              </div>
+              <div class="mediaCard">
+                <img src="${escapeHtml(accessoryImage)}" alt="Aksesuar görseli" loading="lazy" />
+                <div class="label">Aksesuarlar</div>
+              </div>
+            </div>
           </div>
 
           <div class="panel">
@@ -1385,6 +1458,36 @@
         <li><strong>${escapeHtml(a.title)}:</strong> Malzeme: ${escapeHtml(a.material)} | Renk: ${escapeHtml(a.color)}</li>
         <li><strong>${escapeHtml(b.title)}:</strong> Malzeme: ${escapeHtml(b.material)} | Renk: ${escapeHtml(b.color)}</li>
             </ul>
+          </div>
+
+          <div class="panel">
+            <h3>Görsel Referanslar</h3>
+            <div class="mediaGrid">
+              <div class="mediaCard">
+                <img src="${escapeHtml(a.modelImage)}" alt="${escapeHtml(a.title)} model görseli" loading="lazy" />
+                <div class="label">${escapeHtml(a.title)} • Model</div>
+              </div>
+              <div class="mediaCard">
+                <img src="${escapeHtml(a.colorImage)}" alt="${escapeHtml(a.title)} renk görseli" loading="lazy" />
+                <div class="label">${escapeHtml(a.title)} • Renk</div>
+              </div>
+              <div class="mediaCard">
+                <img src="${escapeHtml(a.accessoryImage)}" alt="${escapeHtml(a.title)} aksesuar görseli" loading="lazy" />
+                <div class="label">${escapeHtml(a.title)} • Aksesuar</div>
+              </div>
+              <div class="mediaCard">
+                <img src="${escapeHtml(b.modelImage)}" alt="${escapeHtml(b.title)} model görseli" loading="lazy" />
+                <div class="label">${escapeHtml(b.title)} • Model</div>
+              </div>
+              <div class="mediaCard">
+                <img src="${escapeHtml(b.colorImage)}" alt="${escapeHtml(b.title)} renk görseli" loading="lazy" />
+                <div class="label">${escapeHtml(b.title)} • Renk</div>
+              </div>
+              <div class="mediaCard">
+                <img src="${escapeHtml(b.accessoryImage)}" alt="${escapeHtml(b.title)} aksesuar görseli" loading="lazy" />
+                <div class="label">${escapeHtml(b.title)} • Aksesuar</div>
+              </div>
+            </div>
           </div>
 
           <div class="panel">
@@ -1561,46 +1664,12 @@
       el("#btnNewFromResult").addEventListener("click", ()=> resetAll({ keepMeta:true }));
 
       const note = el("#archNote");
-      el("#btnSaveNote").addEventListener("click", ()=>{
+      const syncNote = () => {
         state.meta.note = note.value.trim();
         save();
-        render();
-      });
-
-      el("#btnCopy").addEventListener("click", async ()=>{
-        const res = resultPackage();
-        const lines = [];
-        if(state.meta.name) lines.push(`Müşteri: ${state.meta.name}`);
-        if(state.meta.phone) lines.push(`Telefon: ${state.meta.phone}`);
-        if(state.meta.email) lines.push(`E-posta: ${state.meta.email}`);
-        lines.push(buildSummaryText(res));
-
-        if(!res.hybrid.isDominant){
-          const a = personas[res.hybrid.top1.p];
-          const b = personas[res.hybrid.top2.p];
-          lines.push(`Top1: ${a.title} | ${a.model} | ${a.material} | ${a.color}`);
-          lines.push(`Top2: ${b.title} | ${b.model} | ${b.material} | ${b.color}`);
-        }else{
-          const p = personas[res.winner];
-          lines.push(`${p.title}: ${p.headline}`);
-          lines.push(`Model: ${p.model}`);
-          lines.push(`Malzeme: ${p.material}`);
-          lines.push(`${p.color}`);
-          lines.push(`Öne Çıkanlar: ${p.features.slice(0,4).join(" | ")}`);
-          if(state.mode === "architect" && p.architectNote) lines.push(`Mimar Notu: ${p.architectNote}`);
-        }
-
-        if(childrenAndPetRisk()) lines.push("Uyarı: Çocuklar ve evcil hayvan birlikte. Aşınma riski yüksek.");
-        if(petTriggered()) lines.push("Not: Evcil hayvan seçimi var. Dayanıklı yüzey ve hijyen akışı öncelikli.");
-        if(state.meta.note) lines.push(`Mimar Notu (Kayıt): ${state.meta.note}`);
-
-        try{
-          await copyToClipboard(lines.join("\n"));
-          flashPill("Kopyalandı");
-        }catch(e){
-          flashPill("Kopyalama başarısız");
-        }
-      });
+      };
+      note.addEventListener("input", syncNote);
+      note.addEventListener("blur", syncNote);
 
       el("#btnPrint").addEventListener("click", ()=> window.print());
     }
