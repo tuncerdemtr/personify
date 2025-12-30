@@ -1197,6 +1197,32 @@
 
       return `
         <div class="split">
+          <div class="panel">
+            <h3>Görüşme Bilgisi</h3>
+            <div class="stack">
+              <div class="fieldRow">
+                <label>
+                  Müşteri Ad Soyad
+                  <input type="text" id="metaNameResult" placeholder="Örn: Ayşe Yılmaz" value="${escapeHtml(state.meta.name)}" />
+                </label>
+                <label>
+                  Telefon
+                  <input type="tel" id="metaPhoneResult" placeholder="Örn: 05xx xxx xx xx" value="${escapeHtml(state.meta.phone)}" />
+                </label>
+              </div>
+              <div class="fieldRow">
+                <label>
+                  E-posta
+                  <input type="email" id="metaEmailResult" placeholder="Örn: ayse@mail.com" value="${escapeHtml(state.meta.email)}" />
+                </label>
+              </div>
+              <label>
+                Proje Notu
+                <textarea id="metaNoteResult" placeholder="Kısa notlar, beklenti, kritik detaylar...">${escapeHtml(state.meta.note || "")}</textarea>
+              </label>
+            </div>
+          </div>
+
           ${risk ? `
             <div class="panel alert">
               <h3>Sistem Uyarısı: Yüksek Aşınma Riski</h3>
@@ -1524,10 +1550,33 @@
       el("#btnNewFromResult").addEventListener("click", ()=> resetAll({ keepMeta:true }));
 
       const note = el("#archNote");
+      const name = el("#metaNameResult");
+      const phone = el("#metaPhoneResult");
+      const email = el("#metaEmailResult");
+      const noteResult = el("#metaNoteResult");
       const syncNote = () => {
         state.meta.note = note.value.trim();
         save();
+        if(noteResult && noteResult.value !== note.value){
+          noteResult.value = note.value;
+        }
       };
+      const syncMeta = () => {
+        state.meta.name = name ? name.value.trim() : "";
+        state.meta.phone = phone ? phone.value.trim() : "";
+        state.meta.email = email ? email.value.trim() : "";
+        if(noteResult){
+          state.meta.note = noteResult.value.trim();
+          if(note && note.value !== noteResult.value){
+            note.value = noteResult.value;
+          }
+        }
+        save();
+      };
+      [name, phone, email, noteResult].filter(Boolean).forEach((input)=>{
+        input.addEventListener("input", syncMeta);
+        input.addEventListener("blur", syncMeta);
+      });
       note.addEventListener("input", syncNote);
       note.addEventListener("blur", syncNote);
 
