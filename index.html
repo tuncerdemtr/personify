@@ -22,7 +22,6 @@
       --r: 18px;
       --r2: 14px;
       --pad: 18px;
-      --pad2: 14px;
       --btn: rgba(255,255,255,.09);
       --btn2: rgba(255,255,255,.13);
       --focus: rgba(140,200,255,.18);
@@ -437,10 +436,6 @@
       background: var(--good);
       border-color: rgba(120,255,180,.28);
     }
-    .dangerBox{
-      background: var(--bad);
-      border-color: rgba(255,120,120,.30);
-    }
 
     .toggleRow{
       display:flex;
@@ -523,7 +518,7 @@
       <div class="brand">
         <div class="kicker">Sales Point Tablet App</div>
         <h1>İntema Mutfak Dijital Mimar Asistanı</h1>
-        <p>14 soruluk akış. 10 arketip skoru. Sonuç ekranında öneri reçetesi, hibrit profil ve mimar modu.</p>
+        <p>14 soruluk akış. 10 arketip skoru. Sonuç ekranında reçete, hibrit profil ve mimar modu.</p>
       </div>
       <div class="topActions">
         <div class="pill" id="sessionPill"><strong>Oturum:</strong> <span id="sessionState">Yeni</span></div>
@@ -533,29 +528,25 @@
     </header>
 
     <div class="grid">
-      <!-- LEFT: Main -->
-      <div class="card" id="mainCard">
-        <!-- Dynamic content -->
-      </div>
+      <div class="card" id="mainCard"></div>
 
-      <!-- RIGHT: Side panel -->
       <div class="stack">
         <div class="card">
           <div class="cardHeader">
             <div>
               <h2>Hızlı Kontrol</h2>
-              <div class="sub">Mimar için kısa ipuçları</div>
+              <div class="sub">Mimar için kısa notlar</div>
             </div>
           </div>
           <div class="cardBody">
             <div class="stack" style="gap:10px;">
               <div class="panel ok">
                 <h3>Skor Mantığı</h3>
-                <p>Her cevap seçimi ilgili persona(lar)a puan ekler. S4 çoklu seçim, kümülatiftir.</p>
+                <p>Her cevap ilgili persona(lar)a puan ekler. S4 çoklu seçim, kümülatiftir.</p>
               </div>
               <div class="panel">
                 <h3>Eşitlik Kuralı</h3>
-                <p>Skorlar eşitse önce S13 (bütçe), sonra S7 (stil) katkısı güçlü olan persona kazanır.</p>
+                <p>Skorlar eşitse önce S13 (bütçe), sonra S7 (stil) katkısı daha yüksek persona kazanır.</p>
               </div>
               <div class="panel">
                 <h3>Hibrit Profil</h3>
@@ -580,7 +571,7 @@
             <div class="panel">
               <p id="sideSummary" style="margin:0;">Başlamak için sol taraftan görüşme aç.</p>
             </div>
-            <div class="mini" id="saveHint">Otomatik kaydedilir. Tarayıcı kapanırsa kaldığın yerden devam eder.</div>
+            <div class="mini">Otomatik kaydedilir. Tarayıcı kapanırsa kaldığın yerden devam eder.</div>
           </div>
         </div>
       </div>
@@ -715,120 +706,190 @@
       }
     ];
 
-    const personas = {
-      p1: {
-        name: "Teknoloji Tutkunu Vizyoner",
-        vibe: "Modern çizgi, net karar, akıllı çözümler.",
-        rec: {
-          model: "Inova",
-          materials: ["Mat yüzeyler", "Koyu tonlar", "Minimal kulp çizgisi"],
-          features: ["Akıllı aksesuar sistemleri", "LED iç aydınlatma", "Düzenleyici setler"]
-        }
+    // Persona verisi: sonuç ekranındaki aksesuar, renk, malzeme önerileri buradan gelir
+    const personasList = [
+      {
+        id: "p1",
+        title: "Teknoloji Tutkunu Vizyoner",
+        headline: "Mutfak Değil, Bir Teknoloji Üssü.",
+        summary: "Sizin için net çizgiler, hız ve teknoloji her şeyden önce geliyor. Karmaşadan uzak, maskülen ve akıllı bir yaşam alanı arıyorsunuz.",
+        model: "INOVA (Kulpsuz Tasarım)",
+        material: "Mat Lake veya Soft Lak",
+        color: "Renk: Koyu Taupe / Antrasit / Siyah",
+        features: [
+          "Tezgah Arası Priz Sistemleri (USB'li)",
+          "Sensörlü LED Aydınlatmalı Çekmeceler",
+          "Elektrikli Kalkar Kapak Mekanizması (Aventos)",
+          "Legrabox Koyu Gri Çekmece Rayları"
+        ],
+        architectNote: "Koyu renklerde parmak izi kalmaması için Soft Lak yüzey numunesini ve antrasit gövde detayını gösterin."
       },
-      p2: {
-        name: "Klasik Lüks Sever",
-        vibe: "Prestij, detay, gösterişli ama kontrollü ifade.",
-        rec: {
-          model: "Toscana",
-          materials: ["Parlak veya ipeksi mat", "Zengin renkler", "Metal detaylar"],
-          features: ["Vitrin etkisi", "Camlı üst modüller", "Dekoratif kulp takımı"]
-        }
+      {
+        id: "p2",
+        title: "Klasik Lüks Sever",
+        headline: "Zamanın Ötesinde Bir Prestij.",
+        summary: "Geçici trendler değil, kalıcı değerler peşindesiniz. Detaylardaki işçilik ve malzemenin ağırlığı sizin için kalite göstergesi.",
+        model: "TOSCANA",
+        material: "Parlak Lake (High Gloss)",
+        color: "Renk: Porselen Mavi / Orman Yeşili / İnci Beyaz",
+        features: [
+          "Camlı Vitrin Dolaplar (İç Aydınlatmalı)",
+          "Pirinç veya Gold detaylı Antique Kulplar",
+          "Klasik Taç ve Işık Bandı Profilleri",
+          "Porselen Eviye Uyumu"
+        ],
+        architectNote: "Toscana'nın çerçeve detaylarını ve parlak lakenin ışığı yansıtma kalitesini numune üzerinde vurgulayın."
       },
-      p3: {
-        name: "Konfor Odaklı Aile",
-        vibe: "Dayanıklılık, temizlik kolaylığı, hayatı hızlandıran kurgu.",
-        rec: {
-          model: "Siena",
-          materials: ["Akrilik PET", "Mat soft tonlar", "Kolay temizlenen yüzeyler"],
-          features: ["Maksimum depolama", "Çekmece iç düzen", "Pratik günlük kullanım"]
-        }
+      {
+        id: "p3",
+        title: "Konfor Odaklı Aile",
+        headline: "Hayatın Hızına Yetişen Dayanıklı Mutfak.",
+        summary: "Çocuklar, evcil dostlar ve yoğun trafik. Sizin mutfağınızın her şeye dayanıklı olması ve her zaman temiz kalması gerekiyor.",
+        model: "SIENA veya NORDA",
+        material: "Tech-Matt (Mat PET) veya Akrilik",
+        color: "Renk: Kaşmir / Manolya / Toprak Gri",
+        features: [
+          "Parmak İzi Bırakmayan (Anti-Fingerprint) Yüzey",
+          "Boy Kiler Mekanizması (Dispensa)",
+          "Tezgah Altı Çöp Ayrıştırma Sistemleri",
+          "Evcil Hayvan Mama Kabı Modülü (Bazadan çıkan)"
+        ],
+        architectNote: "Mat PET yüzeye metal bir cisimle hafifçe dokunarak çizilme direncini ve leke tutmazlığını kanıtlayın."
       },
-      p4: {
-        name: "Akıllı Yatırımcı",
-        vibe: "Fiyat performans, net modülerlik, hızlı ve verimli kurulum.",
-        rec: {
-          model: "Prime",
-          materials: ["Laminant veya melamin", "Stok renkler", "Net modül dili"],
-          features: ["Metrekare optimizasyonu", "Standart modüller", "Hızlı teslim uygunluğu"]
-        }
+      {
+        id: "p4",
+        title: "Akıllı Yatırımcı (Micro-Living)",
+        headline: "Akıllı Metrekareler, Yüksek Değer.",
+        summary: "Pragmatiksiniz. Alan kısıtlı ama beklentiniz yüksek. Hedefiniz bütçeyi yormadan uzun ömürlü ve mekanı verimli kullanan bir çözüm.",
+        model: "PRIME",
+        material: "Melamin (Düz veya Dokulu)",
+        color: "Renk: Sıcak Beyaz / Kum Beji / Açık Meşe",
+        features: [
+          "Yerden Tasarruf Sağlayan Açılır Masa",
+          "Kör Köşe Mekanizması (Le Mans)",
+          "Darbe Dayanımı Yüksek Melamin Kapaklar",
+          "Laminant Tezgah (Hızlı Teslimat)"
+        ],
+        architectNote: "Fiyat/Performans oranını vurgulamak için Prime serisinin modüler hızını ve melaminin dayanıklılığını anlatın."
       },
-      p5: {
-        name: "Gurme Şef",
-        vibe: "Yemek odaklı, ergonomi ve akış performansı.",
-        rec: {
-          model: "Inova",
-          materials: ["Koyu tonlar veya metalik detay", "Kolay silinen yüzeyler"],
-          features: ["Geniş hazırlık alanı", "Depolama düzeni", "Fonksiyonel iç aksesuarlar"]
-        }
+      {
+        id: "p5",
+        title: "Gurme Şef",
+        headline: "Evinizin Profesyonel Lezzet İstasyonu.",
+        summary: "Yemek yapmak sizin için bir sanat. Tezgahınız atölyeniz. İhtiyacınız estetikten öte kusursuz bir operasyonel akış.",
+        model: "INOVA (+5cm Yüksek Gövde)",
+        material: "Metal Görünümlü Laminat veya Soft Lak",
+        color: "Renk: Grafit / Paslanmaz Çelik Efekti / Beton Gri",
+        features: [
+          "Orgalux Ahşap Çekmece İçi Düzenleyiciler",
+          "78 cm Yüksek Gövde (%20 Fazla Hacim)",
+          "Sanayi Tipi Eviye ve Batarya",
+          "Ergonomik (Yükseltilmiş) Bulaşık Makinesi Modülü"
+        ],
+        architectNote: "Müşteriyi standart modül ile +5cm yüksek modül yanına götürüp ergonomi farkını deneyimletin."
       },
-      p6: {
-        name: "Doğal Yaşam Savunucusu",
-        vibe: "Doğal dokular, sürdürülebilir seçimler, sakin atmosfer.",
-        rec: {
-          model: "Fresca",
-          materials: ["Ahşap dokusu", "Mat yüzey", "Doğal ton paleti"],
-          features: ["Uzun ömürlü malzeme seçimi", "Daha az bakım", "Doğal doku vurgusu"]
-        }
+      {
+        id: "p6",
+        title: "Doğal Yaşam Savunucusu",
+        headline: "Doğanın Huzuru Mutfağınızda.",
+        summary: "Sürdürülebilirlik bir yaşam biçimi. Mutfağınız nefes almalı, doğal malzemelerle ruhunuzu dinlendirmeli.",
+        model: "NORDA",
+        material: "Doğal Ahşap Kaplama & Geri Dönüştürülmüş PET",
+        color: "Renk: Ada Çayı Yeşili / Meşe / Yaprak Yeşili",
+        features: [
+          "Micro Garden (Ledli Bitki Yetiştirme Ünitesi)",
+          "Ahşap Açık Raf Sistemleri",
+          "Geri Dönüştürülmüş Malzemeden Kapaklar",
+          "Doğal Ahşap Tezgah Uyumu"
+        ],
+        architectNote: "Kataloğun sürdürülebilirlik sayfasındaki PET malzemenin geri dönüşüm hikayesini anlatın."
       },
-      p7: {
-        name: "Sosyal Ev Sahibi",
-        vibe: "Misafir, vitrin etkisi, sahne gibi mutfak.",
-        rec: {
-          model: "Norda",
-          materials: ["Kontrast kapak kombinleri", "Parlak vurgu", "Sergileme alanları"],
-          features: ["Vitrin modüller", "Açık raf ritmi", "Sunum odaklı depolama"]
-        }
+      {
+        id: "p7",
+        title: "Sosyal Ev Sahibi",
+        headline: "Sadece Yemek Değil, Sohbet Pişirilen Yer.",
+        summary: "Mutfak sizin sahneniz. Dostlarınızla kadeh kaldırdığınız, yemek yaparken sohbetin kesilmediği, salonla bütünleşen bir alan.",
+        model: "INOVA (Ada Planlaması)",
+        material: "Kombinasyon: Ahşap ve Mat Lake",
+        color: "Renk: Koyu Ceviz ve Kaşmir Kontrastı",
+        features: [
+          "Ada Çevresi Oturma Alanı (Bar)",
+          "Şaraplık ve Kadehlik Modülleri",
+          "Dekoratif Metal Açık Raflar (Tavan tipi)",
+          "Ambiyans Aydınlatması (Dimmerli)"
+        ],
+        architectNote: "Ada mutfağın salona bakan yüzünde vitrin veya açık raf kullanarak geçişi nasıl yumuşatacağınızı çizin."
       },
-      p8: {
-        name: "Dinginlik Arayan",
-        vibe: "Huzur, ferahlık, sakin renk ve ışık dili.",
-        rec: {
-          model: "Fresca",
-          materials: ["Mat soft tonlar", "Sakin mavi/yeşil palet", "Yumuşak dokular"],
-          features: ["Görsel sakinlik", "Düzenli yüzeyler", "Az eşya, net kurgu"]
-        }
+      {
+        id: "p8",
+        title: "Dinginlik Arayan (Yazlık Ruhu)",
+        headline: "Her Gün Tatil Sabahına Uyanmak Gibi.",
+        summary: "Şehrin griliğinden kaçış arıyorsunuz. Mutfağınız sahil evinin ferahlığını, denizin mavisini ve sakinliği vermeli.",
+        model: "FRESCA",
+        material: "Mat Yüzey (Özel Dokulu)",
+        color: "Renk: Okyanus Mavi / Beyaz / Pastel Yeşil",
+        features: [
+          "Dikey Çizgili Fresca Kapak Dokusu",
+          "Pencere Önü Eviye Yerleşimi",
+          "Hasır Sepetli Çekmeceler",
+          "Minimal Krom Kulplar"
+        ],
+        architectNote: "Fresca'nın çizgili dokusuna dokunmalarını sağlayın, ışık gölge oyununu gösterin."
       },
-      p9: {
-        name: "Hız ve Pratiklik Odaklı",
-        vibe: "Hızlı karar, hızlı teslim, pratik kullanım.",
-        rec: {
-          model: "Prime",
-          materials: ["Stok laminant", "Dayanıklı yüzey", "Basit renk seti"],
-          features: ["Hızlı kurulum", "Pratik modüller", "Kolay bakım"]
-        }
+      {
+        id: "p9",
+        title: "Hız ve Pratiklik Odaklı",
+        headline: "Beklemeden Yeni Mutfağınıza Kavuşun.",
+        summary: "Kararınızı verdiniz ve sonuç istiyorsunuz. Tadilat süreci gözünüzde büyümesin. Sizin için hız, pratiklik ve hemen kullanım önemli.",
+        model: "PRIME (Stoklu Program)",
+        material: "Hazır Stok Laminant",
+        color: "Renk: Standart Beyaz veya Gri",
+        features: [
+          "Hemen Teslim (Stoklu Modüller)",
+          "Tezgah Arası Raylı Aksesuar Seti (Pratik)",
+          "Kapağa Monteli Çöp Kovası",
+          "Kolay Temizlenen Yüzeyler"
+        ],
+        architectNote: "Teslimat takvimini açıp net tarih verin (örnek: 3 hafta)."
       },
-      p10: {
-        name: "Nostaljik Romantik",
-        vibe: "Sıcaklık, karakter, geçmişten gelen estetik kodlar.",
-        rec: {
-          model: "Vega",
-          materials: ["Country detaylar", "Pastel tonlar", "Çerçeveli kapak hissi"],
-          features: ["Sıcak atmosfer", "Dekoratif detay", "Klasik düzen hissi"]
-        }
+      {
+        id: "p10",
+        title: "Nostaljik Romantik",
+        headline: "Geçmişin Sıcaklığı, Bugünün Konforu.",
+        summary: "Modernizmin soğukluğu size göre değil. Siz yaşanmışlık hissi veren, anne mutfağı sıcaklığında duygusal bir yer istiyorsunuz.",
+        model: "VEGA",
+        material: "Lake Görünümlü Polimerik",
+        color: "Renk: Manolya / Fırtına Mavi / Süt Kahve",
+        features: [
+          "Kafes Telli Camlı Dolaplar",
+          "Rustik / Porselen / Eskitme Kulplar",
+          "Baharatlık Çekmeceleri",
+          "Ahşap Tabaklık Modülleri"
+        ],
+        architectNote: "Kafes telli cam kapağı ve porselen kulpları göstererek vintage atmosferi hissettirin."
       }
-    };
+    ];
 
+    const personas = Object.fromEntries(personasList.map(p => [p.id, p]));
     const personaOrder = ["p1","p2","p3","p4","p5","p6","p7","p8","p9","p10"];
 
-    const STORAGE_KEY = "intema_mimar_asistan_v3";
+    const STORAGE_KEY = "intema_mimar_asistan_v4";
 
     const state = {
-      step: "start",              // start | quiz | result
+      step: "start",
       qIndex: 0,
-      answers: {},                // { [qId]: number | number[] }
+      answers: {},
       meta: { name:"", phone:"", email:"", note:"" },
-      mode: "client"              // client | architect
+      mode: "client"
     };
 
-    // Helpers
     const el = (sel, root=document) => root.querySelector(sel);
     const els = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
     function deepClone(o){ return JSON.parse(JSON.stringify(o)); }
 
     function save(){
-      const payload = deepClone(state);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(deepClone(state)));
       updateSessionPill();
       updateSideSummary();
     }
@@ -846,9 +907,7 @@
       }
     }
 
-    function clearStorage(){
-      localStorage.removeItem(STORAGE_KEY);
-    }
+    function clearStorage(){ localStorage.removeItem(STORAGE_KEY); }
 
     function resetAll({ keepMeta=false } = {}){
       const preserved = keepMeta ? deepClone(state.meta) : { name:"", phone:"", email:"", note:"" };
@@ -868,16 +927,7 @@
       render();
     }
 
-    function gotoQuestion(idx){
-      state.step = "quiz";
-      state.qIndex = Math.max(0, Math.min(idx, questions.length - 1));
-      save();
-      render();
-    }
-
-    function currentQuestion(){
-      return questions[state.qIndex];
-    }
+    function currentQuestion(){ return questions[state.qIndex]; }
 
     function isAnswered(q){
       const a = state.answers[q.id];
@@ -891,8 +941,7 @@
         state.answers[q.id] = optIndex;
       }else{
         const cur = Array.isArray(state.answers[q.id]) ? state.answers[q.id] : [];
-        const exists = cur.includes(optIndex);
-        state.answers[q.id] = exists ? cur.filter(i=>i!==optIndex) : [...cur, optIndex];
+        state.answers[q.id] = cur.includes(optIndex) ? cur.filter(i=>i!==optIndex) : [...cur, optIndex];
       }
       save();
       render();
@@ -905,7 +954,7 @@
 
     function calcScores(){
       const scores = {};
-      const contrib = {}; // contrib[qId][pX] = points from selected answers
+      const contrib = {};
       personaOrder.forEach(p => scores[p] = 0);
 
       for(const q of questions){
@@ -954,7 +1003,6 @@
         return { winner: tied[0], tied, reason: "max" };
       }
 
-      // Tie-breaker: first Q13 (budget), then Q7 (style)
       const qBudget = 13;
       const qStyle = 7;
 
@@ -971,17 +1019,16 @@
         return { winner: b1.best[0], tied, reason: "tie_budget" };
       }
 
-      const b2 = pickByContribution(qStyle, b1.best.length ? b1.best : tied);
+      const b2 = pickByContribution(qStyle, (b1.best.length ? b1.best : tied));
       if(b2.best.length === 1 && b2.maxC > 0){
         return { winner: b2.best[0], tied, reason: "tie_style" };
       }
 
-      // Final stable fallback: personaOrder
       const fallback = personaOrder.find(p => tied.includes(p)) || tied[0];
       return { winner: fallback, tied, reason: "tie_fallback" };
     }
 
-    function calcHybrid({ scores, total }, winner){
+    function calcHybrid({ scores, total }){
       const entries = personaOrder.map(p => ({ p, score: scores[p] })).sort((a,b)=> b.score - a.score);
       const top1 = entries[0];
       const top2 = entries[1] || { p: top1.p, score: 0 };
@@ -999,31 +1046,34 @@
     }
 
     function petTriggered(){
-      const q = questions.find(x => x.id === 4);
       const ans = state.answers[4];
-      if(!q || !Array.isArray(ans)) return false;
-      // "Evcil Hayvan Var" option index = 2
-      return ans.includes(2);
+      return Array.isArray(ans) && ans.includes(2);
     }
 
     function childrenAndPetRisk(){
       const ans = state.answers[4];
-      if(!Array.isArray(ans)) return false;
-      // "Çocuklar Var" idx=1, "Evcil Hayvan Var" idx=2
-      return ans.includes(1) && ans.includes(2);
+      return Array.isArray(ans) && ans.includes(1) && ans.includes(2);
     }
 
-    function formatPct(x){
-      return (x*100).toFixed(0) + "%";
+    function formatPct(x){ return (x*100).toFixed(0) + "%"; }
+
+    function resultPackage(){
+      const { scores, contrib, total } = calcScores();
+      const { winner, tied, reason } = pickWinner({ scores, contrib });
+      const hybrid = calcHybrid({ scores, total });
+
+      const list = personaOrder
+        .map(p => ({ p, score: scores[p], share: total>0 ? scores[p]/total : 0 }))
+        .sort((a,b)=> b.score - a.score);
+
+      return { scores, total, winner, tied, reason, hybrid, list };
     }
 
-    function buildSummaryText(result){
-      const { winner, hybrid } = result;
-      const topName = personas[winner].name;
-      if(hybrid && !hybrid.isDominant){
-        return `Hibrit profil: ${personas[hybrid.top1.p].name} (${formatPct(hybrid.topShare)}) + ${personas[hybrid.top2.p].name} (${formatPct(hybrid.top2Share)})`;
+    function buildSummaryText(res){
+      if(!res.hybrid.isDominant){
+        return `Hibrit profil: ${personas[res.hybrid.top1.p].title} (${formatPct(res.hybrid.topShare)}) + ${personas[res.hybrid.top2.p].title} (${formatPct(res.hybrid.top2Share)})`;
       }
-      return `Kazanan profil: ${topName} (${formatPct(hybrid.topShare)})`;
+      return `Kazanan profil: ${personas[res.winner].title} (${formatPct(res.hybrid.topShare)})`;
     }
 
     function copyToClipboard(text){
@@ -1039,19 +1089,6 @@
       return Promise.resolve();
     }
 
-    function resultPackage(){
-      const { scores, contrib, total } = calcScores();
-      const { winner, tied, reason } = pickWinner({ scores, contrib });
-      const hybrid = calcHybrid({ scores, total }, winner);
-
-      const list = personaOrder
-        .map(p => ({ p, score: scores[p], share: total>0 ? scores[p]/total : 0 }))
-        .sort((a,b)=> b.score - a.score);
-
-      return { scores, total, winner, tied, reason, hybrid, list };
-    }
-
-    // Rendering
     function render(){
       updateSessionPill();
       updateSideSummary();
@@ -1124,17 +1161,11 @@
 
             <div class="navRow">
               <div class="left">
-                <button class="btn ghost" id="btnContinue" ${hasSaved ? "" : "disabled"} title="Kaydedilmiş oturum varsa aktif olur">
-                  Devam Et
-                </button>
-                <button class="btn" id="btnStartNew">
-                  Ankete Başla
-                </button>
+                <button class="btn ghost" id="btnContinue" ${hasSaved ? "" : "disabled"}>Devam Et</button>
+                <button class="btn" id="btnStartNew">Ankete Başla</button>
               </div>
               <div class="right">
-                <button class="btn danger" id="btnClearSaved">
-                  Kaydı Sil
-                </button>
+                <button class="btn danger" id="btnClearSaved">Kaydı Sil</button>
               </div>
             </div>
 
@@ -1185,9 +1216,7 @@
         </div>
 
         <div class="cardBody">
-          <div class="options" id="optList">
-            ${optionHtml}
-          </div>
+          <div class="options" id="optList">${optionHtml}</div>
 
           <div class="navRow">
             <div class="left">
@@ -1211,19 +1240,16 @@
 
     function renderResult(){
       const res = resultPackage();
-      const winner = res.winner;
-      const winnerData = personas[winner];
+      const winnerId = res.winner;
+      const winnerData = personas[winnerId];
 
       const hybrid = res.hybrid;
       const isHybrid = !hybrid.isDominant;
 
-      const topLabel = isHybrid
-        ? `Hibrit Profil`
-        : `Kazanan Profil`;
-
+      const topLabel = isHybrid ? `Hibrit Profil` : `Kazanan Profil`;
       const badgeText = isHybrid
-        ? `${personas[hybrid.top1.p].name} (${formatPct(hybrid.topShare)}) + ${personas[hybrid.top2.p].name} (${formatPct(hybrid.top2Share)})`
-        : `${winnerData.name} (${formatPct(hybrid.topShare)})`;
+        ? `${personas[hybrid.top1.p].title} (${formatPct(hybrid.topShare)}) + ${personas[hybrid.top2.p].title} (${formatPct(hybrid.top2Share)})`
+        : `${winnerData.title} (${formatPct(hybrid.topShare)})`;
 
       const pet = petTriggered();
       const risk = childrenAndPetRisk();
@@ -1237,7 +1263,7 @@
 
       const scoreTableRows = res.list.map(row => `
         <tr>
-          <td><strong>${escapeHtml(personas[row.p].name)}</strong></td>
+          <td><strong>${escapeHtml(personas[row.p].title)}</strong></td>
           <td>${row.score}</td>
           <td>${formatPct(row.share)}</td>
         </tr>
@@ -1251,13 +1277,9 @@
           <div class="resultTop">
             <div>
               <div class="badge"><strong>${escapeHtml(topLabel)}:</strong> ${escapeHtml(badgeText)}</div>
-              <h2 class="resultTitle">${escapeHtml(isHybrid ? "İki güçlü persona öne çıkıyor." : winnerData.name)}</h2>
-              <p class="resultDesc ${clientOnly}">
-                ${escapeHtml(buildClientSummary(res))}
-              </p>
-              <p class="resultDesc ${archOnly}">
-                ${escapeHtml(buildArchitectSummary(res))}
-              </p>
+              <h2 class="resultTitle">${escapeHtml(isHybrid ? "İki güçlü persona öne çıkıyor." : winnerData.headline)}</h2>
+              <p class="resultDesc ${clientOnly}">${escapeHtml(buildClientSummary(res))}</p>
+              <p class="resultDesc ${archOnly}">${escapeHtml(buildArchitectSummary(res))}</p>
             </div>
 
             <div class="toggleRow">
@@ -1274,9 +1296,9 @@
             <div class="panel alert">
               <h3>Sistem Uyarısı: Yüksek Aşınma Riski</h3>
               <ul>
-                <li>Kapak önerisi: Akrilik PET veya Mat PET, daha dayanıklı kullanım.</li>
-                <li>Modül önerisi: Evcil hayvan ve günlük temizlik pratikleri için uygun iç aksesuarlar.</li>
-                <li>Güvenlik: Çocuklar için kilit, keskin köşe ve hassas yüzeylerden kaçınma.</li>
+                <li>Kapak önerisi: Tech-Matt (Mat PET) veya Akrilik, daha dayanıklı kullanım.</li>
+                <li>Modül önerisi: Çöp ayrıştırma ve çekmece içi düzenleyici ile temizlik akışını hızlandırın.</li>
+                <li>Güvenlik: Çocuklar için kilit, hassas yüzeylerde koruma yaklaşımı.</li>
               </ul>
             </div>
           ` : ""}
@@ -1290,9 +1312,9 @@
             <div class="panel ok">
               <h3>Pet Modülü Kartı</h3>
               <ul>
-                <li>Kolay silinen yüzey, tüy ve iz kontrolü için mat dokular.</li>
-                <li>Kapalı depolama ağırlığı, açık raflarda düzen ve hijyen.</li>
-                <li>Günlük temizlik akışı: hızlı erişilen çekmece düzeni ve paspas alanı.</li>
+                <li>Evcil hayvan mama kabı modülü gibi günlük pratik sağlayan çözümleri gösterin.</li>
+                <li>Anti-fingerprint ve kolay silinen yüzey yönünü öne çıkarın.</li>
+                <li>Kapalı depolama ve çöp ayrıştırma ile hijyen akışını netleştirin.</li>
               </ul>
             </div>
           ` : ""}
@@ -1307,11 +1329,9 @@
                   <th>Pay</th>
                 </tr>
               </thead>
-              <tbody>
-                ${scoreTableRows}
-              </tbody>
+              <tbody>${scoreTableRows}</tbody>
             </table>
-            <div class="mini">Not: Dominant kuralı toplam skorun %30 eşiğine göre hesaplanır.</div>
+            <div class="mini">Dominant kuralı toplam skorun %30 eşiğine göre hesaplanır.</div>
           </div>
 
           <div class="panel">
@@ -1333,59 +1353,87 @@
       `;
     }
 
-    function buildRec(pData){
-      const r = pData.rec;
-      const feats = r.features.map(x=>`<li>${escapeHtml(x)}</li>`).join("");
-      const mats = r.materials.map(x=>`<li>${escapeHtml(x)}</li>`).join("");
+    function buildRec(p){
+      const feats = (p.features || []).map(x=>`<li>${escapeHtml(x)}</li>`).join("");
+      const archOnly = state.mode === "architect" ? "" : "hide";
+
       return `
         <div class="stack" style="gap:10px;">
           <div class="panel">
+            <h3>${escapeHtml(p.title)}</h3>
+            <p><strong>${escapeHtml(p.headline)}</strong></p>
+            <p>${escapeHtml(p.summary)}</p>
+          </div>
+
+          <div class="panel">
             <h3>Model</h3>
-            <p><strong>${escapeHtml(r.model)}</strong></p>
+            <p><strong>${escapeHtml(p.model)}</strong></p>
           </div>
+
           <div class="panel">
-            <h3>Malzeme ve Renk Dili</h3>
-            <ul>${mats}</ul>
+            <h3>Malzeme ve Renk</h3>
+            <ul>
+              <li><strong>Malzeme:</strong> ${escapeHtml(p.material)}</li>
+              <li><strong>${escapeHtml(p.color)}</strong></li>
+            </ul>
           </div>
+
           <div class="panel">
-            <h3>Kritik Özellikler</h3>
+            <h3>Önerilen Özellikler</h3>
             <ul>${feats}</ul>
           </div>
-          <div class="panel">
-            <h3>Satış Cümlesi</h3>
-            <p>${escapeHtml(pData.vibe)}</p>
+
+          <div class="panel ${archOnly}">
+            <h3>Mimar Notu (Öneri)</h3>
+            <p>${escapeHtml(p.architectNote || "")}</p>
           </div>
         </div>
       `;
     }
 
-    function buildHybridRec(pA, pB){
-      // Basit ve pratik hibrit: Model A + B, malzemeler birleşik, özellikler birleşik.
-      const model = `${pA.rec.model} + ${pB.rec.model}`;
-      const mats = unique([...pA.rec.materials, ...pB.rec.materials]).slice(0,6);
-      const feats = unique([...pA.rec.features, ...pB.rec.features]).slice(0,7);
-
-      const matsHtml = mats.map(x=>`<li>${escapeHtml(x)}</li>`).join("");
-      const featsHtml = feats.map(x=>`<li>${escapeHtml(x)}</li>`).join("");
+    function buildHybridRec(a, b){
+      const headline = `Hibrit: ${a.title} + ${b.title}`;
+      const mergedFeatures = unique([...(a.features||[]), ...(b.features||[])]).slice(0, 8);
+      const feats = mergedFeatures.map(x=>`<li>${escapeHtml(x)}</li>`).join("");
+      const archOnly = state.mode === "architect" ? "" : "hide";
 
       return `
         <div class="stack" style="gap:10px;">
           <div class="panel">
-            <h3>Hibrit Model Yönü</h3>
-            <p><strong>${escapeHtml(model)}</strong></p>
-            <p class="mini">Yaklaşım: ${escapeHtml(pA.name)} çizgisi + ${escapeHtml(pB.name)} motivasyonu.</p>
+            <h3>${escapeHtml(headline)}</h3>
+            <p><strong>${escapeHtml(a.headline)}</strong></p>
+            <p>${escapeHtml(a.summary)}</p>
+            <p style="margin-top:10px;"><strong>${escapeHtml(b.headline)}</strong></p>
+            <p>${escapeHtml(b.summary)}</p>
           </div>
+
           <div class="panel">
-            <h3>Malzeme ve Renk Dili</h3>
-            <ul>${matsHtml}</ul>
+            <h3>Model Yönü</h3>
+            <ul>
+              <li><strong>${escapeHtml(a.title)}:</strong> ${escapeHtml(a.model)}</li>
+              <li><strong>${escapeHtml(b.title)}:</strong> ${escapeHtml(b.model)}</li>
+            </ul>
           </div>
+
           <div class="panel">
-            <h3>Kritik Özellikler</h3>
-            <ul>${featsHtml}</ul>
+            <h3>Malzeme ve Renk</h3>
+            <ul>
+              <li><strong>${escapeHtml(a.title)}:</strong> ${escapeHtml(a.material)} | ${escapeHtml(a.color)}</li>
+              <li><strong>${escapeHtml(b.title)}:</strong> ${escapeHtml(b.material)} | ${escapeHtml(b.color)}</li>
+            </ul>
           </div>
+
           <div class="panel">
-            <h3>Satış Cümlesi</h3>
-            <p>${escapeHtml(pA.vibe)} ${escapeHtml(pB.vibe)}</p>
+            <h3>Birleşik Özellikler</h3>
+            <ul>${feats}</ul>
+          </div>
+
+          <div class="panel ${archOnly}">
+            <h3>Mimar Notları (Öneri)</h3>
+            <ul>
+              <li><strong>${escapeHtml(a.title)}:</strong> ${escapeHtml(a.architectNote || "")}</li>
+              <li><strong>${escapeHtml(b.title)}:</strong> ${escapeHtml(b.architectNote || "")}</li>
+            </ul>
           </div>
         </div>
       `;
@@ -1394,30 +1442,29 @@
     function buildClientSummary(res){
       const base = buildSummaryText(res);
       const name = state.meta.name ? `${state.meta.name} için ` : "";
-      const pet = petTriggered() ? " Evcil hayvan detayı var, dayanıklı ve kolay temizlenen yüzey yönü güçlenir." : "";
-      return `${name}${base}. Bu profile uygun bir model ve malzeme seçimiyle hızlıca net bir tasarım dili kurabiliriz.${pet}`;
+      const pet = petTriggered() ? " Evcil hayvan detayı var. Dayanıklı ve kolay temizlenen yüzey yönü güçlenir." : "";
+      return `${name}${base}. Şimdi bu profile göre model, malzeme ve renk setini netleştirip hızlıca görsel dil kurabiliriz.${pet}`;
     }
 
     function buildArchitectSummary(res){
       const base = buildSummaryText(res);
-      const risk = childrenAndPetRisk() ? " Çocuk + evcil hayvan kombinasyonu var, aşınma riski uyarısı aktif." : "";
+      const risk = childrenAndPetRisk() ? " Çocuk ve evcil hayvan birlikte. Aşınma riski uyarısı aktif." : "";
       return `${base}. Tie-break: ${res.reason}. Toplam skor: ${res.total}.${risk}`;
     }
 
     function updateSessionPill(){
       const prog = totalProgress();
-      const txt = (prog.answeredCount > 0) ? `Devam (${prog.answeredCount}/${prog.total})` : "Yeni";
-      el("#sessionState").textContent = txt;
+      el("#sessionState").textContent = (prog.answeredCount > 0) ? `Devam (${prog.answeredCount}/${prog.total})` : "Yeni";
     }
 
     function updateSideSummary(){
-      const prog = totalProgress();
       const side = el("#sideSummary");
       if(!side) return;
 
+      const prog = totalProgress();
+
       if(state.step === "result"){
-        const res = resultPackage();
-        side.textContent = buildSummaryText(res);
+        side.textContent = buildSummaryText(resultPackage());
         return;
       }
 
@@ -1427,11 +1474,9 @@
       }
 
       const q = questions[state.qIndex] || questions[0];
-      const answeredNow = isAnswered(q);
-      side.textContent = `İlerleme: ${prog.answeredCount}/${prog.total}. Şu an: Soru ${state.qIndex+1}. ${answeredNow ? "Seçildi." : "Seçim bekliyor."}`;
+      side.textContent = `İlerleme: ${prog.answeredCount}/${prog.total}. Şu an: Soru ${state.qIndex+1}. ${isAnswered(q) ? "Seçildi." : "Seçim bekliyor."}`;
     }
 
-    // Binding
     function bindStart(){
       const name = el("#metaName");
       const phone = el("#metaPhone");
@@ -1531,15 +1576,12 @@
     }
 
     function bindResult(){
-      const btnClient = el("#btnModeClient");
-      const btnArch = el("#btnModeArch");
-
-      btnClient.addEventListener("click", ()=>{
+      el("#btnModeClient").addEventListener("click", ()=>{
         state.mode = "client";
         save();
         render();
       });
-      btnArch.addEventListener("click", ()=>{
+      el("#btnModeArch").addEventListener("click", ()=>{
         state.mode = "architect";
         save();
         render();
@@ -1547,7 +1589,6 @@
 
       el("#btnBackToQuiz").addEventListener("click", ()=>{
         state.step = "quiz";
-        // sonuçtan geri dönünce son soruda kal
         state.qIndex = questions.length - 1;
         save();
         render();
@@ -1571,28 +1612,33 @@
         lines.push(buildSummaryText(res));
 
         if(!res.hybrid.isDominant){
-          lines.push(`Top1: ${personas[res.hybrid.top1.p].name} (${formatPct(res.hybrid.topShare)})`);
-          lines.push(`Top2: ${personas[res.hybrid.top2.p].name} (${formatPct(res.hybrid.top2Share)})`);
+          const a = personas[res.hybrid.top1.p];
+          const b = personas[res.hybrid.top2.p];
+          lines.push(`Top1: ${a.title} | ${a.model} | ${a.material} | ${a.color}`);
+          lines.push(`Top2: ${b.title} | ${b.model} | ${b.material} | ${b.color}`);
         }else{
-          lines.push(`Model yönü: ${personas[res.winner].rec.model}`);
+          const p = personas[res.winner];
+          lines.push(`${p.title}: ${p.headline}`);
+          lines.push(`Model: ${p.model}`);
+          lines.push(`Malzeme: ${p.material}`);
+          lines.push(`${p.color}`);
+          lines.push(`Öne Çıkanlar: ${p.features.slice(0,4).join(" | ")}`);
+          if(state.mode === "architect" && p.architectNote) lines.push(`Mimar Notu: ${p.architectNote}`);
         }
 
-        if(childrenAndPetRisk()) lines.push("Uyarı: Çocuk + Evcil Hayvan kombinasyonu, aşınma riski yüksek.");
-        if(petTriggered()) lines.push("Not: Evcil hayvan tetikleyici aktif, yüzey ve düzen önerileri uygulanmalı.");
-        if(state.meta.note) lines.push(`Mimar Notu: ${state.meta.note}`);
+        if(childrenAndPetRisk()) lines.push("Uyarı: Çocuklar ve evcil hayvan birlikte. Aşınma riski yüksek.");
+        if(petTriggered()) lines.push("Not: Evcil hayvan seçimi var. Dayanıklı yüzey ve hijyen akışı öncelikli.");
+        if(state.meta.note) lines.push(`Mimar Notu (Kayıt): ${state.meta.note}`);
 
-        const text = lines.join("\n");
         try{
-          await copyToClipboard(text);
+          await copyToClipboard(lines.join("\n"));
           flashPill("Kopyalandı");
         }catch(e){
           flashPill("Kopyalama başarısız");
         }
       });
 
-      el("#btnPrint").addEventListener("click", ()=>{
-        window.print();
-      });
+      el("#btnPrint").addEventListener("click", ()=> window.print());
     }
 
     function flashPill(msg){
@@ -1608,11 +1654,9 @@
       }, 900);
     }
 
-    // Global header buttons
     el("#btnNew").addEventListener("click", ()=> resetAll({ keepMeta:true }));
     el("#btnReset").addEventListener("click", ()=> resetAll({ keepMeta:false }));
 
-    // Keyboard shortcuts
     window.addEventListener("keydown", (e)=>{
       if(e.key === "Escape"){
         e.preventDefault();
@@ -1650,28 +1694,13 @@
         .replaceAll("'","&#039;");
     }
 
-    // Initial boot
     const hasLoaded = load();
-    // Eğer kayıtta quiz veya result varsa, direkt render.
-    if(!hasLoaded){
-      save();
-    }
-    // Eğer kayıt quiz aşamasındaysa ama qIndex boşsa, toparla
-    if(state.step === "quiz" && (state.qIndex == null || isNaN(state.qIndex))){
-      state.qIndex = 0;
-    }
-    // Eğer result aşamasında ama cevaplar yoksa, start
-    if(state.step === "result"){
-      const prog = totalProgress();
-      if(prog.answeredCount === 0){
-        state.step = "start";
-      }
-    }
+    if(!hasLoaded) save();
+
+    if(state.step === "quiz" && (state.qIndex == null || isNaN(state.qIndex))) state.qIndex = 0;
+    if(state.step === "result" && totalProgress().answeredCount === 0) state.step = "start";
 
     render();
-
-    // Auto-jump: Start ekranında kayıt varsa, kullanıcı isterse "Devam Et" görsün
-    // (Zorla yönlendirme yok)
   </script>
 </body>
 </html>
