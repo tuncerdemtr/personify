@@ -345,20 +345,6 @@
       line-height:1.35;
     }
 
-    .resultHero{
-      padding: 16px var(--pad);
-      border-bottom: 1px solid var(--stroke);
-      display:flex;
-      flex-direction:column;
-      gap: 10px;
-    }
-    .resultTop{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap: 12px;
-      flex-wrap:wrap;
-    }
     .badge{
       display:inline-flex;
       align-items:center;
@@ -372,21 +358,6 @@
       user-select:none;
     }
     .badge strong{ color: var(--text); font-weight: 750; }
-    .resultTitle{
-      margin:0;
-      font-size: 20px;
-      font-weight: 820;
-      letter-spacing:.1px;
-      line-height:1.15;
-    }
-    .resultDesc{
-      margin:0;
-      color: var(--muted);
-      font-size: 13px;
-      line-height:1.45;
-      max-width: 78ch;
-    }
-
     .split{
       display:grid;
       grid-template-columns: 1fr;
@@ -1208,11 +1179,6 @@
       const hybrid = res.hybrid;
       const isHybrid = !hybrid.isDominant;
 
-      const topLabel = isHybrid ? `Hibrit Profil` : `Kazanan Profil`;
-      const badgeText = isHybrid
-        ? `${personas[hybrid.top1.p].title} (${formatPct(hybrid.topShare)}) + ${personas[hybrid.top2.p].title} (${formatPct(hybrid.top2Share)})`
-        : `${winnerData.title} (${formatPct(hybrid.topShare)})`;
-
       const pet = petTriggered();
       const risk = childrenAndPetRisk();
 
@@ -1230,16 +1196,6 @@
       `).join("");
 
       return `
-        <div class="resultHero">
-          <div class="resultTop">
-            <div>
-              <div class="badge"><strong>${escapeHtml(topLabel)}:</strong> ${escapeHtml(badgeText)}</div>
-              <h2 class="resultTitle">${escapeHtml(isHybrid ? "İki güçlü persona öne çıkıyor." : winnerData.headline)}</h2>
-              <p class="resultDesc">${escapeHtml(buildClientSummary(res))}</p>
-            </div>
-          </div>
-        </div>
-
         <div class="split">
           ${risk ? `
             <div class="panel alert">
@@ -1432,19 +1388,6 @@
           </div>
         </div>
       `;
-    }
-
-    function buildClientSummary(res){
-      const base = buildSummaryText(res);
-      const name = state.meta.name ? `${state.meta.name} için ` : "";
-      const pet = petTriggered() ? " Evcil hayvan detayı var. Dayanıklı ve kolay temizlenen yüzey yönü güçlenir." : "";
-      return `${name}${base}. Şimdi bu profile göre model, malzeme ve renk setini netleştirip hızlıca görsel dil kurabiliriz.${pet}`;
-    }
-
-    function buildArchitectSummary(res){
-      const base = buildSummaryText(res);
-      const risk = childrenAndPetRisk() ? " Çocuk ve evcil hayvan birlikte. Aşınma riski uyarısı aktif." : "";
-      return `${base}. Tie-break: ${res.reason}. Toplam skor: ${res.total}.${risk}`;
     }
 
     function updateSessionPill(){
