@@ -1,91 +1,92 @@
 <!doctype html>
 <html lang="tr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>İntema | Müşteri Analiz Asistanı</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>İntema Mutfak Dijital Mimar Asistanı</title>
   <style>
     :root{
-      --bg:#0b0f14;
-      --bg2:#070a0f;
-      --card:rgba(255,255,255,.06);
-      --card2:rgba(255,255,255,.04);
-      --ring:rgba(255,255,255,.12);
-      --text:rgba(255,255,255,.92);
-      --muted:rgba(255,255,255,.62);
-      --muted2:rgba(255,255,255,.45);
-      --accentA: rgba(155, 246, 255, .35);
-      --accentB: rgba(199, 249, 204, .25);
-      --accentC: rgba(189, 178, 255, .28);
-      --danger: rgba(255, 193, 7, .18);
-      --ok: rgba(16, 185, 129, .18);
-      --shadow: 0 18px 50px rgba(0,0,0,.45);
-      --shadow2: 0 10px 28px rgba(0,0,0,.35);
-      --radius: 22px;
-      --radius2: 28px;
-      --tap: 54px;
-      --max: 1120px;
-      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --bg0:#0b0f14;
+      --bg1:#0f1620;
+      --card: rgba(255,255,255,.06);
+      --card2: rgba(255,255,255,.085);
+      --stroke: rgba(255,255,255,.12);
+      --stroke2: rgba(255,255,255,.18);
+      --text:#eaf0f7;
+      --muted: rgba(234,240,247,.72);
+      --muted2: rgba(234,240,247,.54);
+      --good: rgba(120,255,180,.18);
+      --warn: rgba(255,190,120,.16);
+      --bad: rgba(255,120,120,.14);
+      --shadow: 0 18px 55px rgba(0,0,0,.45);
+      --r: 18px;
+      --r2: 14px;
+      --pad: 18px;
+      --pad2: 14px;
+      --btn: rgba(255,255,255,.09);
+      --btn2: rgba(255,255,255,.13);
+      --focus: rgba(140,200,255,.18);
+      --maxw: 1020px;
+      --tap: 52px;
     }
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
     body{
       margin:0;
-      font-family: var(--font);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:
+        radial-gradient(1200px 600px at 20% 10%, rgba(255,255,255,.06), transparent 55%),
+        radial-gradient(900px 520px at 80% 0%, rgba(120,200,255,.08), transparent 60%),
+        radial-gradient(900px 520px at 70% 95%, rgba(255,220,140,.06), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
       color: var(--text);
-      background: radial-gradient(1200px 700px at 20% 15%, var(--accentA), transparent 55%),
-                  radial-gradient(900px 600px at 80% 10%, var(--accentC), transparent 60%),
-                  radial-gradient(900px 700px at 50% 90%, var(--accentB), transparent 55%),
-                  linear-gradient(180deg, var(--bg2) 0%, var(--bg) 55%, #06080c 100%);
-      overflow-x:hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     .wrap{
-      max-width: var(--max);
+      max-width: var(--maxw);
       margin: 0 auto;
-      padding: 22px 18px 90px;
+      padding: 18px 14px 28px;
     }
 
-    .topbar{
+    header{
       display:flex;
-      align-items:center;
+      gap:12px;
+      align-items:flex-start;
       justify-content:space-between;
-      gap:12px;
-      padding: 10px 2px 14px;
-    }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      min-width: 220px;
-    }
-    .logo{
-      width:40px;height:40px;
-      border-radius: 16px;
-      background: rgba(255,255,255,.05);
-      border:1px solid var(--ring);
-      box-shadow: var(--shadow2);
-    }
-    .brand small{
-      display:block;
-      text-transform:uppercase;
-      letter-spacing:.22em;
-      font-size:11px;
-      color: var(--muted2);
-    }
-    .brand strong{
-      display:block;
-      font-size:14px;
-      color: rgba(255,255,255,.86);
-      font-weight:700;
-      letter-spacing: .02em;
+      padding: 8px 4px 14px;
     }
 
-    .actions{
+    .brand{
+      display:flex; flex-direction:column; gap:4px;
+    }
+    .brand .kicker{
+      font-size:12px;
+      color: var(--muted2);
+      letter-spacing:.12em;
+      text-transform: uppercase;
+    }
+    .brand h1{
+      margin:0;
+      font-size: 18px;
+      letter-spacing: .2px;
+      line-height:1.25;
+      font-weight: 650;
+    }
+    .brand p{
+      margin:0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height:1.35;
+      max-width: 68ch;
+    }
+
+    .topActions{
       display:flex;
-      align-items:center;
       gap:10px;
+      align-items:center;
       flex-wrap:wrap;
       justify-content:flex-end;
     }
@@ -94,1738 +95,1583 @@
       display:inline-flex;
       align-items:center;
       gap:8px;
-      padding: 7px 12px;
+      padding: 8px 10px;
       border-radius: 999px;
-      background: rgba(255,255,255,.05);
-      border:1px solid var(--ring);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.10);
       color: var(--muted);
-      font-size:12px;
-      white-space:nowrap;
-    }
-
-    .btn{
-      height: 42px;
-      padding: 0 14px;
-      border-radius: 16px;
-      border: 1px solid var(--ring);
-      background: rgba(255,255,255,.03);
-      color: rgba(255,255,255,.86);
-      font-weight:700;
-      font-size: 13px;
-      cursor:pointer;
-      transition: transform .08s ease, background .12s ease, border-color .12s ease;
+      font-size: 12px;
       user-select:none;
     }
-    .btn:hover{ background: rgba(255,255,255,.05); border-color: rgba(255,255,255,.18); }
-    .btn:active{ transform: scale(.99); }
-    .btn:disabled{ opacity:.45; cursor:not-allowed; }
+    .pill strong{ color: var(--text); font-weight:650; }
+
+    .btn{
+      height: var(--tap);
+      padding: 0 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: var(--btn);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 650;
+      letter-spacing:.1px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .06s ease, background .15s ease, border-color .15s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      touch-action: manipulation;
+    }
+    .btn:active{ transform: translateY(1px) scale(.995); }
+    .btn:hover{ background: var(--btn2); border-color: rgba(255,255,255,.18); }
+    .btn:focus{ outline:none; box-shadow: 0 0 0 4px var(--focus); }
+    .btn.ghost{
+      background: transparent;
+      box-shadow:none;
+    }
     .btn.primary{
-      border-color: rgba(155,246,255,.22);
-      background: linear-gradient(135deg, rgba(155,246,255,.18), rgba(199,249,204,.10));
+      background: rgba(140,200,255,.18);
+      border-color: rgba(140,200,255,.30);
     }
     .btn.primary:hover{
-      background: linear-gradient(135deg, rgba(155,246,255,.24), rgba(199,249,204,.12));
+      background: rgba(140,200,255,.24);
+      border-color: rgba(140,200,255,.40);
+    }
+    .btn.danger{
+      background: rgba(255,120,120,.14);
+      border-color: rgba(255,120,120,.26);
     }
 
     .grid{
       display:grid;
-      grid-template-columns: 1.15fr .85fr;
-      gap:16px;
-      align-items:start;
-      margin-top: 10px;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 14px;
     }
 
-    @media (max-width: 980px){
+    @media (max-width: 920px){
       .grid{ grid-template-columns: 1fr; }
-      .wrap{ padding-bottom: 120px; }
+      header{ align-items:flex-start; }
+      .topActions{ justify-content:flex-start; }
     }
 
     .card{
-      border-radius: var(--radius2);
-      background: var(--card);
-      border: 1px solid var(--ring);
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.045));
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: var(--r);
       box-shadow: var(--shadow);
       overflow:hidden;
     }
     .cardHeader{
-      padding: 18px 18px 14px;
-      border-bottom: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-    }
-    .kicker{
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .22em;
-      color: var(--muted2);
-    }
-    .h1{
-      margin: 10px 0 0;
-      font-size: 20px;
-      letter-spacing: -0.02em;
-      font-weight: 800;
-      color: rgba(255,255,255,.92);
-    }
-    .sub{
-      margin: 8px 0 0;
-      font-size: 14px;
-      line-height: 1.55;
-      color: var(--muted);
-      max-width: 72ch;
-    }
-    .cardBody{ padding: 18px; }
-
-    .progressRow{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-    .progress{
-      min-width: 260px;
-      width: 320px;
-      max-width: 100%;
-    }
-    .progressTop{
+      padding: 14px var(--pad);
+      border-bottom: 1px solid rgba(255,255,255,.08);
       display:flex;
       align-items:center;
       justify-content:space-between;
-      font-size: 11px;
+      gap:12px;
+    }
+    .cardHeader h2{
+      margin:0;
+      font-size: 14px;
+      letter-spacing:.2px;
+      font-weight: 700;
+    }
+    .cardHeader .sub{
+      margin:0;
       color: var(--muted2);
-      margin-bottom: 8px;
+      font-size: 12px;
+      margin-top:2px;
+    }
+    .cardBody{ padding: var(--pad); }
+
+    .stack{
+      display:flex;
+      flex-direction:column;
+      gap: 12px;
+    }
+
+    .fieldRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 560px){
+      .fieldRow{ grid-template-columns: 1fr; }
+    }
+
+    label{
+      display:flex;
+      flex-direction:column;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    input[type="text"], input[type="tel"], input[type="email"], textarea{
+      width:100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      padding: 12px 12px;
+      font-size: 14px;
+      outline:none;
+      transition: box-shadow .15s ease, border-color .15s ease;
+    }
+    textarea{ min-height: 92px; resize: vertical; }
+    input:focus, textarea:focus{
+      box-shadow: 0 0 0 4px var(--focus);
+      border-color: rgba(140,200,255,.45);
+    }
+    .hint{
+      color: var(--muted2);
+      font-size: 12px;
+      line-height:1.35;
+      margin-top: 2px;
+    }
+
+    .progressWrap{
+      padding: 12px var(--pad);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .progressLeft{
+      display:flex;
+      flex-direction:column;
+      gap: 3px;
+    }
+    .qMeta{
+      color: var(--muted2);
+      font-size: 12px;
+      letter-spacing:.2px;
+    }
+    .qText{
+      font-size: 18px;
+      font-weight: 720;
+      margin:0;
+      line-height:1.2;
+      letter-spacing:.1px;
     }
     .bar{
+      width: 260px;
       height: 10px;
       border-radius: 999px;
-      background: rgba(255,255,255,.10);
+      background: rgba(255,255,255,.08);
       border: 1px solid rgba(255,255,255,.10);
       overflow:hidden;
+      flex: 0 0 auto;
     }
     .bar > div{
       height:100%;
       width:0%;
-      border-radius: 999px;
-      background: linear-gradient(90deg, rgba(155,246,255,.70), rgba(199,249,204,.70));
+      background: rgba(140,200,255,.28);
+      border-right: 1px solid rgba(140,200,255,.40);
       transition: width .18s ease;
     }
-
-    .chips{
-      margin-top: 12px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 7px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
-      color: rgba(255,255,255,.78);
-      font-size: 12px;
-      font-weight: 700;
-      backdrop-filter: blur(10px);
-    }
-    .chip.warn{ border-color: rgba(255,193,7,.22); background: var(--danger); color: rgba(255,243,205,.92); }
-    .chip.ok{ border-color: rgba(16,185,129,.22); background: var(--ok); color: rgba(209,250,229,.92); }
-
-    .qMeta{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom: 12px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .qMeta strong{ color: rgba(255,255,255,.86); }
-    .qid{
-      font-size: 11px;
-      letter-spacing: .18em;
-      color: var(--muted2);
-      text-transform: uppercase;
-    }
-
-    .qCard{
-      border-radius: var(--radius2);
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: var(--shadow2);
-      overflow:hidden;
-    }
-    .qHead{
-      padding: 16px 18px;
-      border-bottom: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-    }
-    .qType{
-      font-size: 11px;
-      letter-spacing: .22em;
-      text-transform: uppercase;
-      color: var(--muted2);
-    }
-    .qTitle{
-      margin: 10px 0 0;
-      font-size: 18px;
-      font-weight: 850;
-      letter-spacing: -0.02em;
-      color: rgba(255,255,255,.92);
-    }
-    .qSub{
-      margin: 8px 0 0;
-      font-size: 13px;
-      line-height: 1.55;
-      color: var(--muted);
-      max-width: 70ch;
+    @media (max-width: 560px){
+      .bar{ width: 160px; }
+      .qText{ font-size: 16px; }
     }
 
     .options{
-      padding: 16px 18px 18px;
       display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 10px;
+      margin-top: 14px;
     }
-    @media (max-width: 740px){
-      .options{ grid-template-columns: 1fr; }
-    }
-
     .opt{
-      min-height: var(--tap);
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.16);
+      padding: 14px 14px;
       display:flex;
       align-items:flex-start;
-      gap: 12px;
+      justify-content:space-between;
+      gap: 14px;
       cursor:pointer;
-      transition: transform .08s ease, background .12s ease, border-color .12s ease;
+      transition: transform .06s ease, background .15s ease, border-color .15s ease;
       user-select:none;
+      min-height: 56px;
     }
-    .opt:hover{ background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.18); }
-    .opt:active{ transform: scale(.99); }
-    .opt.selected{
-      background: linear-gradient(135deg, rgba(155,246,255,.14), rgba(199,249,204,.08));
-      border-color: rgba(155,246,255,.22);
+    .opt:hover{ background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.18); }
+    .opt:active{ transform: translateY(1px); }
+    .opt.sel{
+      background: rgba(140,200,255,.16);
+      border-color: rgba(140,200,255,.34);
     }
-    .ico{
-      width: 42px; height: 42px;
-      border-radius: 18px;
-      background: rgba(0,0,0,.20);
-      border: 1px solid rgba(255,255,255,.10);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex: 0 0 auto;
+    .opt .t{
+      font-size: 15px;
+      font-weight: 650;
+      line-height:1.25;
     }
-    .optMain{ min-width:0; }
-    .optLabel{
-      font-weight: 850;
-      color: rgba(255,255,255,.90);
-      font-size: 14px;
-      line-height: 1.25;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 10px;
-    }
-    .optHint{
-      margin-top: 8px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
-    }
-    .tag{
-      font-size: 11px;
-      color: rgba(255,255,255,.55);
-      white-space:nowrap;
-    }
-
-    .navRow{
-      margin-top: 14px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
-      flex-wrap:wrap;
-    }
-    .navRow .status{
+    .opt .tag{
+      margin-top: 2px;
       font-size: 12px;
       color: var(--muted2);
     }
-
-    .side{
-      border-radius: var(--radius2);
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: var(--shadow2);
-      overflow:hidden;
-    }
-    .sideHeader{
-      padding: 16px 18px 14px;
-      border-bottom: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-    }
-    .sideBody{ padding: 16px 18px 18px; }
-
-    .field{
-      margin-top: 12px;
-    }
-    .field label{
-      display:block;
-      font-size: 11px;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--muted2);
-      margin-bottom: 7px;
-    }
-    .input, .textarea{
-      width:100%;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.20);
-      color: rgba(255,255,255,.88);
-      padding: 12px 14px;
-      outline:none;
-      font-size: 14px;
-      transition: border-color .12s ease, box-shadow .12s ease;
-    }
-    .textarea{ min-height: 110px; resize: vertical; }
-    .input:focus, .textarea:focus{
-      border-color: rgba(155,246,255,.28);
-      box-shadow: 0 0 0 4px rgba(155,246,255,.08);
-    }
-    .input::placeholder, .textarea::placeholder{ color: rgba(255,255,255,.33); }
-
-    /* Welcome */
-    .welcome{
-      display:grid;
-      place-items:center;
-      min-height: calc(100vh - 140px);
-      padding: 18px 0 80px;
-    }
-    .welcomeCard{
-      width: min(720px, 100%);
-      border-radius: 32px;
+    .opt .mark{
+      width: 18px; height: 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.22);
       background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.12);
-      box-shadow: var(--shadow);
-      overflow:hidden;
+      margin-top: 2px;
+      flex: 0 0 auto;
+      position:relative;
     }
-    .welcomeHero{
-      height: 220px;
-      background:
-        radial-gradient(900px 320px at 15% 10%, rgba(155,246,255,.18), transparent 62%),
-        radial-gradient(900px 320px at 80% 10%, rgba(189,178,255,.18), transparent 62%),
-        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border-bottom: 1px solid rgba(255,255,255,.10);
+    .opt.sel .mark{
+      border-color: rgba(140,200,255,.55);
+      background: rgba(140,200,255,.22);
     }
-    .welcomeBody{ padding: 18px; }
-    .welcomeTitle{
-      margin: 0;
-      font-size: 28px;
-      letter-spacing: -0.02em;
-      font-weight: 900;
-      color: rgba(255,255,255,.94);
+    .opt.sel .mark::after{
+      content:"";
+      position:absolute; inset: 4px;
+      border-radius:999px;
+      background: rgba(140,200,255,.75);
     }
-    .welcomeText{
-      margin: 10px 0 0;
-      font-size: 15px;
-      line-height: 1.6;
-      color: var(--muted);
-      max-width: 70ch;
-    }
-    .welcomeActions{
-      margin-top: 16px;
+    .opt.multi .mark{ border-radius: 6px; }
+    .opt.multi.sel .mark::after{ border-radius: 4px; }
+
+    .navRow{
       display:flex;
+      justify-content:space-between;
       gap: 10px;
+      margin-top: 14px;
       flex-wrap:wrap;
     }
+    .navRow .left, .navRow .right{
+      display:flex; gap:10px; flex-wrap:wrap;
+    }
 
-    /* Result */
+    .mini{
+      font-size: 12px;
+      color: var(--muted2);
+      margin-top: 8px;
+      line-height:1.35;
+    }
+
     .resultHero{
-      position:relative;
-      height: 320px;
-      background:
-        radial-gradient(900px 320px at 20% 0%, rgba(155,246,255,.14), transparent 60%),
-        radial-gradient(900px 320px at 80% 10%, rgba(199,249,204,.12), transparent 62%),
-        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-    }
-    .resultHero.hasImg{
-      background-size: cover;
-      background-position:center;
-    }
-    .resultShade{
-      position:absolute; inset:0;
-      background: linear-gradient(180deg, transparent 0%, rgba(11,15,20,.35) 45%, rgba(11,15,20,.90) 100%);
-    }
-    .resultOverlay{
-      position:absolute;
-      inset: 0;
+      padding: 16px var(--pad);
+      border-bottom: 1px solid rgba(255,255,255,.08);
       display:flex;
       flex-direction:column;
-      justify-content:flex-end;
-      padding: 18px;
       gap: 10px;
     }
+    .resultTop{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap:wrap;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      font-size: 12px;
+      user-select:none;
+    }
+    .badge strong{ color: var(--text); font-weight: 750; }
     .resultTitle{
       margin:0;
-      font-size: 30px;
-      letter-spacing: -0.02em;
-      font-weight: 900;
-      color: rgba(255,255,255,.96);
+      font-size: 20px;
+      font-weight: 820;
+      letter-spacing:.1px;
+      line-height:1.15;
     }
-    .resultHeadline{
+    .resultDesc{
       margin:0;
-      font-size: 15px;
-      line-height: 1.55;
-      color: rgba(255,255,255,.72);
+      color: var(--muted);
+      font-size: 13px;
+      line-height:1.45;
       max-width: 78ch;
     }
 
-    .moodGrid{
+    .split{
       display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-columns: 1fr;
       gap: 12px;
-      padding: 16px 18px 0;
-    }
-    @media (max-width: 980px){
-      .moodGrid{ grid-template-columns: 1fr; }
+      padding: 14px var(--pad);
     }
 
-    .pcard{
-      border-radius: 26px;
-      background: rgba(255,255,255,.05);
+    .panel{
+      border-radius: var(--r2);
       border: 1px solid rgba(255,255,255,.10);
-      box-shadow: var(--shadow2);
-      overflow:hidden;
+      background: rgba(0,0,0,.14);
+      padding: 12px 12px;
     }
-    .pcHead{
-      padding: 14px 14px 12px;
-      border-bottom: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
+
+    .panel h3{
+      margin:0 0 8px 0;
+      font-size: 13px;
+      font-weight: 780;
+      letter-spacing:.2px;
+    }
+    .panel ul{
+      margin:0;
+      padding-left: 18px;
+      color: var(--muted);
+      line-height:1.45;
+      font-size: 13px;
+    }
+    .panel p{
+      margin:0;
+      color: var(--muted);
+      line-height:1.45;
+      font-size: 13px;
+    }
+
+    .alert{
+      background: var(--warn);
+      border-color: rgba(255,190,120,.32);
+    }
+    .ok{
+      background: var(--good);
+      border-color: rgba(120,255,180,.28);
+    }
+    .dangerBox{
+      background: var(--bad);
+      border-color: rgba(255,120,120,.30);
+    }
+
+    .toggleRow{
       display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
       align-items:center;
-      justify-content:space-between;
-      gap:10px;
     }
-    .pcChip{
-      padding: 6px 10px;
+    .seg{
+      display:inline-flex;
       border-radius: 999px;
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.10);
-      font-size: 12px;
-      font-weight: 850;
-      color: rgba(255,255,255,.76);
-    }
-    .pcBody{ padding: 14px; }
-    .pcBody .t{
-      font-weight: 900;
-      font-size: 16px;
-      color: rgba(255,255,255,.92);
-      letter-spacing: -0.01em;
-      margin:0;
-    }
-    .pcBody .s{
-      margin: 10px 0 0;
-      font-size: 13px;
-      line-height: 1.55;
-      color: var(--muted);
-    }
-    .pcBody .m{
-      margin: 10px 0 0;
-      font-size: 12px;
-      line-height: 1.55;
-      color: var(--muted2);
-    }
-
-    .resultLower{
-      padding: 16px 18px 18px;
-      display:grid;
-      grid-template-columns: 1.2fr .8fr;
-      gap: 12px;
-      margin-top: 12px;
-    }
-    @media (max-width: 980px){
-      .resultLower{ grid-template-columns: 1fr; }
-    }
-
-    .box{
-      border-radius: 26px;
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.10);
-      padding: 14px;
-    }
-    .box h3{
-      margin:0;
-      font-size: 12px;
-      letter-spacing: .22em;
-      text-transform: uppercase;
-      color: var(--muted2);
-    }
-    .box ul{
-      margin: 12px 0 0;
-      padding: 0 0 0 18px;
-      color: rgba(255,255,255,.74);
-      font-size: 13px;
-      line-height: 1.6;
-    }
-    .box p{
-      margin: 12px 0 0;
-      color: rgba(255,255,255,.72);
-      font-size: 13px;
-      line-height: 1.6;
-    }
-    .note{
-      margin-top: 12px;
-      border-radius: 18px;
-      padding: 12px;
       border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.18);
+      overflow:hidden;
+      background: rgba(255,255,255,.06);
     }
-
-    .summary{
-      margin-top: 12px;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    @media (max-width: 980px){
-      .summary{ grid-template-columns: 1fr; }
-    }
-    .summaryItem{
-      border-radius: 18px;
-      padding: 10px 12px;
-      background: rgba(0,0,0,.18);
-      border: 1px solid rgba(255,255,255,.10);
-      color: rgba(255,255,255,.72);
-      font-size: 13px;
-      line-height: 1.45;
-    }
-
-    /* Sticky footer */
-    .sticky{
-      position:fixed;
-      left:0; right:0; bottom:0;
-      border-top: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.28);
-      backdrop-filter: blur(12px);
-      padding-bottom: env(safe-area-inset-bottom);
-      z-index: 20;
-    }
-    .stickyInner{
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 10px 18px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-    .stickyLeft{
+    .seg button{
+      height: 40px;
+      padding: 0 12px;
+      border:0;
+      background: transparent;
       color: var(--muted);
-      font-size: 13px;
+      font-weight: 750;
+      cursor:pointer;
+      letter-spacing:.1px;
     }
-    .stickyLeft strong{ color: rgba(255,255,255,.86); }
-    .stickyBtns{
-      display:flex;
-      gap: 10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
+    .seg button.on{
+      background: rgba(140,200,255,.18);
+      color: var(--text);
     }
 
-    .toast{
-      position: fixed;
-      top: 16px;
-      right: 16px;
-      z-index: 50;
-      padding: 10px 12px;
-      border-radius: 16px;
-      background: rgba(0,0,0,.45);
+    table{
+      width:100%;
+      border-collapse: collapse;
+      overflow:hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.12);
+    }
+    th, td{
+      text-align:left;
+      padding: 10px 10px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    th{
+      color: var(--muted2);
+      font-weight: 800;
+      letter-spacing:.08em;
+      text-transform: uppercase;
+      font-size: 11px;
+      background: rgba(255,255,255,.04);
+    }
+    tr:last-child td{ border-bottom: 0; }
+    td strong{ color: var(--text); font-weight: 750; }
+
+    .hide{ display:none !important; }
+
+    .footerNote{
+      color: var(--muted2);
+      font-size: 12px;
+      line-height:1.45;
+      padding: 10px 4px 0;
+    }
+
+    .kbd{
+      padding: 3px 7px;
+      border-radius: 9px;
       border: 1px solid rgba(255,255,255,.14);
-      color: rgba(255,255,255,.85);
-      font-size: 13px;
-      box-shadow: var(--shadow2);
-      opacity: 0;
-      transform: translateY(-8px);
-      pointer-events:none;
-      transition: opacity .16s ease, transform .16s ease;
-      max-width: min(420px, calc(100vw - 32px));
-    }
-    .toast.show{
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .hidden{ display:none !important; }
-
-    /* Small helper */
-    .mutedLine{
-      margin-top: 12px;
-      border-radius: 22px;
-      padding: 14px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
+      background: rgba(0,0,0,.18);
       color: var(--muted);
-      font-size: 13px;
-      line-height: 1.6;
+      font-weight: 750;
+      font-size: 11px;
     }
   </style>
 </head>
 
 <body>
-  <div class="toast" id="toast"></div>
-
   <div class="wrap">
-    <div class="topbar">
+    <header>
       <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div>
-          <small>İntema</small>
-          <strong>Müşteri Analiz Asistanı</strong>
-        </div>
+        <div class="kicker">Sales Point Tablet App</div>
+        <h1>İntema Mutfak Dijital Mimar Asistanı</h1>
+        <p>14 soruluk akış. 10 arketip skoru. Sonuç ekranında öneri reçetesi, hibrit profil ve mimar modu.</p>
+      </div>
+      <div class="topActions">
+        <div class="pill" id="sessionPill"><strong>Oturum:</strong> <span id="sessionState">Yeni</span></div>
+        <button class="btn ghost" id="btnNew">Yeni Görüşme</button>
+        <button class="btn danger" id="btnReset">Sıfırla</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- LEFT: Main -->
+      <div class="card" id="mainCard">
+        <!-- Dynamic content -->
       </div>
 
-      <div class="actions">
-        <div class="pill" id="savedPill">Kayıtlı teklif: <b id="savedCount" style="color:rgba(255,255,255,.86);">0</b></div>
-        <button class="btn" id="resetBtn" type="button">Sıfırla</button>
+      <!-- RIGHT: Side panel -->
+      <div class="stack">
+        <div class="card">
+          <div class="cardHeader">
+            <div>
+              <h2>Hızlı Kontrol</h2>
+              <div class="sub">Mimar için kısa ipuçları</div>
+            </div>
+          </div>
+          <div class="cardBody">
+            <div class="stack" style="gap:10px;">
+              <div class="panel ok">
+                <h3>Skor Mantığı</h3>
+                <p>Her cevap seçimi ilgili persona(lar)a puan ekler. S4 çoklu seçim, kümülatiftir.</p>
+              </div>
+              <div class="panel">
+                <h3>Eşitlik Kuralı</h3>
+                <p>Skorlar eşitse önce S13 (bütçe), sonra S7 (stil) katkısı güçlü olan persona kazanır.</p>
+              </div>
+              <div class="panel">
+                <h3>Hibrit Profil</h3>
+                <p>Kazanan skor, toplam skorun %30 altındaysa Top1 + Top2 hibrit gösterilir.</p>
+              </div>
+              <div class="panel">
+                <h3>Kısayollar</h3>
+                <p><span class="kbd">←</span> geri, <span class="kbd">→</span> ileri, <span class="kbd">Esc</span> yeni görüşme</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="sideCard">
+          <div class="cardHeader">
+            <div>
+              <h2>Özet</h2>
+              <div class="sub">Seçim durumu</div>
+            </div>
+          </div>
+          <div class="cardBody">
+            <div class="panel">
+              <p id="sideSummary" style="margin:0;">Başlamak için sol taraftan görüşme aç.</p>
+            </div>
+            <div class="mini" id="saveHint">Otomatik kaydedilir. Tarayıcı kapanırsa kaldığın yerden devam eder.</div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- WELCOME -->
-    <section class="welcome" id="screenWelcome">
-      <div class="welcomeCard">
-        <div class="welcomeHero"></div>
-        <div class="welcomeBody">
-          <h1 class="welcomeTitle">Müşteri Analiz Asistanı</h1>
-          <p class="welcomeText">
-            Showroom’da müşteriyi hızlı profille. Cevaplara göre persona çıkar, model ve aksesuar önerisini moodboard gibi sun.
-            Tie-break kuralı: önce Bütçe (Q13), sonra Stil (Q7).
-          </p>
-
-          <div class="welcomeActions">
-            <button class="btn primary" id="startBtn" type="button" style="height:46px;padding:0 18px;border-radius:18px;">Analize Başla</button>
-            <button class="btn" id="demoBtn" type="button" style="height:46px;padding:0 18px;border-radius:18px;">Demo Doldur</button>
-          </div>
-
-          <div class="mutedLine">
-            İpucu: Hero görselleri eklemek istersen <code>public/hero</code> gibi bir klasörde lokal görsel kullanıp mapping’te yolu tanımlayabilirsin.
-            Görsel yoksa sistem otomatik gradient ile çalışır.
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- QUIZ -->
-    <section class="grid hidden" id="screenQuiz">
-      <div class="card">
-        <div class="cardHeader">
-          <div class="progressRow">
-            <div>
-              <div class="kicker">Question Flow</div>
-              <div class="h1">Kart seçimleri ile ilerle</div>
-              <p class="sub">Q4 çoklu seçim. Sonuç sayfası moodboard formatında.</p>
-            </div>
-
-            <div class="progress">
-              <div class="progressTop">
-                <span>İlerleme</span>
-                <span id="progressPct">0%</span>
-              </div>
-              <div class="bar"><div id="progressBar"></div></div>
-            </div>
-          </div>
-
-          <div class="chips" id="triggerChips"></div>
-        </div>
-
-        <div class="cardBody">
-          <div class="qMeta">
-            <div><strong id="qCount">Soru 1</strong> <span id="qTotal">/ 13</span></div>
-            <div class="qid" id="qId">Q1</div>
-          </div>
-
-          <div class="qCard">
-            <div class="qHead">
-              <div class="qType" id="qType">Tek seçim</div>
-              <div class="qTitle" id="qTitle">-</div>
-              <div class="qSub" id="qSub">-</div>
-            </div>
-            <div class="options" id="options"></div>
-          </div>
-
-          <div class="navRow">
-            <button class="btn" id="backBtn" type="button">Geri</button>
-            <div class="status" id="navStatus">Seçim yap</div>
-            <button class="btn primary" id="nextBtn" type="button">Devam</button>
-          </div>
-
-          <div class="mutedLine" id="winnerPreviewLine">
-            Winner preview: <b id="winnerPreview">-</b>
-            <span style="color:rgba(255,255,255,.35)"> | </span>
-            Tie-break: Bütçe <span id="tbBudget">yok</span>, Stil <span id="tbStyle">yok</span>
-          </div>
-        </div>
-      </div>
-
-      <aside class="side">
-        <div class="sideHeader">
-          <div class="kicker">Müşteri</div>
-          <div class="h1" style="margin-top:8px;font-size:18px;">Profil Bilgileri</div>
-          <p class="sub" style="margin-top:8px;">İstersen doldur. Teklif dosyasına gömülür.</p>
-        </div>
-        <div class="sideBody">
-          <div class="field">
-            <label for="cName">Ad Soyad</label>
-            <input class="input" id="cName" placeholder="Örn: Ayşe Yılmaz" />
-          </div>
-          <div class="field">
-            <label for="cPhone">Telefon</label>
-            <input class="input" id="cPhone" placeholder="Örn: +90 5xx xxx xx xx" />
-          </div>
-          <div class="field">
-            <label for="cCity">Şehir / Bölge</label>
-            <input class="input" id="cCity" placeholder="Örn: İstanbul, Ataşehir" />
-          </div>
-          <div class="field">
-            <label for="cNote">Not</label>
-            <textarea class="textarea" id="cNote" placeholder="Örn: Ada istiyor, evcil hayvan var, hızlı teslimat önemli"></textarea>
-          </div>
-
-          <div class="mutedLine" style="margin-top:14px;">
-            Anlık sonuç: <b id="livePersona">-</b><br/>
-            <span style="color:rgba(255,255,255,.62);" id="liveHeadline">-</span>
-          </div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- RESULT -->
-    <section class="grid hidden" id="screenResult">
-      <div class="card" id="resultCard">
-        <div class="resultHero" id="resultHero">
-          <div class="resultShade"></div>
-          <div class="resultOverlay">
-            <div class="chip" style="align-self:flex-start;">Persona</div>
-            <h2 class="resultTitle" id="rTitle">-</h2>
-            <p class="resultHeadline" id="rHeadline">-</p>
-            <div class="chips" id="rChips"></div>
-          </div>
-        </div>
-
-        <div class="moodGrid" id="productCards"></div>
-
-        <div class="resultLower">
-          <div class="box">
-            <h3>Kritik Özellikler</h3>
-            <ul id="rFeatures"></ul>
-
-            <div class="note">
-              <h3 style="margin:0;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.55);">Mimar Notu</h3>
-              <p id="rArchitectNote" style="margin-top:10px;">-</p>
-
-              <div id="rPetBox" class="note hidden" style="margin-top:12px;border-color:rgba(16,185,129,.22);background:rgba(16,185,129,.10);">
-                <div style="font-weight:900;color:rgba(209,250,229,.92);">PET önerisi</div>
-                <div style="margin-top:6px;color:rgba(255,255,255,.72);font-size:13px;line-height:1.6;">
-                  Temizlik ve leke hassasiyeti geldi. Anti-fingerprint ve çizik dayanımı mesajını öne çıkar.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="box">
-            <h3>Teklif Bilgisi</h3>
-            <p style="margin-top:12px;">
-              <b id="rSalesTip">-</b>
-            </p>
-
-            <div class="note">
-              <h3 style="margin:0;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.55);">Tie-break</h3>
-              <p id="rTieBreak" style="margin-top:10px;">-</p>
-            </div>
-
-            <div class="note">
-              <h3 style="margin:0;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.55);">Seçim Özeti</h3>
-              <div class="summary" id="rSummary"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <aside class="side">
-        <div class="sideHeader">
-          <div class="kicker">Teklif</div>
-          <div class="h1" style="margin-top:8px;font-size:18px;">Kaydet / CRM</div>
-          <p class="sub" style="margin-top:8px;">Teklif JSON olarak indirilebilir. CRM butonu JSON’u kopyalar.</p>
-        </div>
-        <div class="sideBody">
-          <div class="mutedLine" style="margin-top:0;">
-            Müşteri: <b id="rCustomerName">-</b><br/>
-            Telefon: <span id="rCustomerPhone">-</span><br/>
-            Bölge: <span id="rCustomerCity">-</span>
-          </div>
-
-          <div class="mutedLine">
-            Not:<br/>
-            <span id="rCustomerNote">-</span>
-          </div>
-
-          <button class="btn" id="editBtn" type="button" style="width:100%;height:46px;border-radius:18px;margin-top:12px;">Cevapları Düzenle</button>
-          <button class="btn" id="newBtn" type="button" style="width:100%;height:46px;border-radius:18px;margin-top:10px;">Yeni Analiz</button>
-        </div>
-      </aside>
-    </section>
-  </div>
-
-  <div class="sticky hidden" id="sticky">
-    <div class="stickyInner">
-      <div class="stickyLeft">
-        <strong>Showroom Tool</strong> <span style="color:rgba(255,255,255,.35)">|</span> iPad uyumlu moodboard teklif
-      </div>
-      <div class="stickyBtns">
-        <button class="btn" id="crmBtn" type="button">CRM’ye Gönder</button>
-        <button class="btn primary" id="saveBtn" type="button">Teklifi Kaydet</button>
-      </div>
+    <div class="footerNote">
+      Bu uygulama tek dosya çalışır. Veri sadece bu cihazın tarayıcısında saklanır (LocalStorage).
     </div>
   </div>
 
   <script>
-    // -----------------------------
-    // DATA: Personas + Mapping
-    // -----------------------------
-    const PERSONA_ORDER = ["tech","luxury","comfort","smart","gourmet","eco","social","coastal","quick","nostalgic"];
-
-    const PERSONA_DB = {
-      tech: {
-        titleTR: "Teknoloji Tutkunu Vizyoner",
-        headline: "Mutfak Değil, Bir Teknoloji Üssü.",
-        heroImage: "", // optional local path e.g. "hero/inova.jpg"
-        products: [
-          { kind:"Model", title:"INOVA (Handle-less)", subtitle:"Kulpsuz, net çizgiler, modern dil", meta:"" },
-          { kind:"Material", title:"Mat Lake", subtitle:"Koyu Taupe / Antrasit", meta:"Low-glare, güçlü kontrast" },
-          { kind:"Accessory", title:"Ring Prizli Aydınlatma Ünitesi", subtitle:"USB Charging", meta:"Teknoloji hissi + pratiklik" },
-        ],
-        features: [
-          "Kulpsuz çizgi ve net geometriler",
-          "Yüksek kontrast, düşük parlamalı yüzey",
-          "Akıllı aksesuarlarla kullanım ritmi",
-          "Tezgah ergonomisi ve istasyon düzeni",
-        ],
-        salesTip: "+5cm ekstra tezgah yüksekliğini özellikle vurgula."
-      },
-      luxury: {
-        titleTR: "Klasik Lüks Sever",
-        headline: "Zamanın Ötesinde Bir Prestij.",
-        heroImage: "",
-        products: [
-          { kind:"Model", title:"TOSCANA (Framed doors)", subtitle:"Çerçeveli kapak, prestij hissi", meta:"" },
-          { kind:"Material", title:"Parlak Lake", subtitle:"Porselen Mavi", meta:"Güçlü yüzey kalitesi" },
-          { kind:"Accessory", title:"Tezgah Üstü Büfe Dolaplar", subtitle:"Glass cabinets", meta:"Sergileme ve servis" },
-        ],
-        features: [
-          "Klasik oranlar, çerçeveli kapak dili",
-          "Parlak lake ile güçlü premium algı",
-          "Vitrin ve büfe ile sergileme etkisi",
-          "Detaylarda yüksek işçilik hissi",
-        ],
-        salesTip: "Prestij dilini üç kelimeyle kilitle: oran, yüzey, detay."
-      },
-      comfort: {
-        titleTR: "Konfor Odaklı Aile",
-        headline: "Hayatın Hızına Yetişen Dayanıklı Mutfak.",
-        heroImage: "",
-        products: [
-          { kind:"Model", title:"SIENA veya NORDA", subtitle:"Aile rutini için dayanım", meta:"" },
-          { kind:"Material", title:"Akrilik PET", subtitle:"Anti-fingerprint, Scratch-resistant", meta:"Hijyen + bakım kolaylığı" },
-          { kind:"Accessory", title:"Boy Kiler Mekanizması (Pantry) & Pet Module", subtitle:"Düzen + evcil senaryosu", meta:"Günlük akış kolaylaşır" },
-        ],
-        features: [
-          "Kolay temizlenen, iz tutmayan yüzey",
-          "Çizik ve leke toleransı yüksek yapı",
-          "Pantry ile düzen ve hızlı erişim",
-          "Evcil/çocuk senaryosuna uygun akış",
-        ],
-        salesTip: "Müşteriye günlük rutini anlat: temizlik, düzen, hijyen, hız."
-      },
-      smart: {
-        titleTR: "Akıllı Yatırımcı (Micro-Living)",
-        headline: "Akıllı Metrekareler, Yüksek Değer.",
-        heroImage: "",
-        products: [
-          { kind:"Model", title:"PRIME (Budget-friendly)", subtitle:"Net bütçe kontrolü", meta:"" },
-          { kind:"Material", title:"Melamin", subtitle:"Sıcak Beyaz / Bej", meta:"Dayanım + maliyet dengesi" },
-          { kind:"Accessory", title:"Açılır Masa Mekanizması", subtitle:"Space saving", meta:"Küçük alanda büyük etki" },
-        ],
-        features: [
-          "Metrekare verimliliği ve hızlı kurulum",
-          "Maliyet kontrolü ve dengeli malzeme",
-          "Katlanır/çok amaçlı kullanım",
-          "Yatırım senaryosunda risksiz seçim",
-        ],
-        salesTip: "Rakam odaklı konuş: teslim süresi, maliyet, dayanım, değer."
-      },
-      gourmet: {
-        titleTR: "Gurme Şef",
-        headline: "Evinizin Profesyonel Lezzet İstasyonu.",
-        heroImage: "",
-        products: [
-          { kind:"Model", title:"INOVA (High capacity)", subtitle:"Güçlü depolama, istasyon mantığı", meta:"" },
-          { kind:"Material", title:"Soft Lak veya Metal Look", subtitle:"Grafit", meta:"Profesyonel, kontrollü görünüm" },
-          { kind:"Accessory", title:"Ergonomik Bulaşık Makinesi Ünitesi & Drawer Organizers", subtitle:"Akış ve düzen", meta:"Daha az eğilme, daha hızlı servis" },
-        ],
-        features: [
-          "Pişirme hattı ve istasyon düzeni",
-          "Organizer ile dağınıklığı bitiren kurgu",
-          "Ergonomi: daha az eğilme, daha hızlı akış",
-          "Yüksek kapasite depolama ve erişim",
-        ],
-        salesTip: "Müşteriye mutfakta yaptığı hareketleri adım adım anlattır, ona göre planı bağla."
-      },
-      eco: {
-        titleTR: "Doğal Yaşam Savunucusu",
-        headline: "Doğanın Huzuru Mutfağınızda.",
-        heroImage: "",
-        products: [
-          { kind:"Model", title:"NORDA (Scandinavian)", subtitle:"Sakin, doğal çizgi", meta:"" },
-          { kind:"Material", title:"Natural Wood Veneer & Recycled Mat PET", subtitle:"Sürdürülebilir yüzey dili", meta:"Doğal doku + sorumlu seçim" },
-          { kind:"Accessory", title:"Micro Garden Ünitesi", subtitle:"Grow herbs", meta:"Yaşayan mutfak hissi" },
-        ],
-        features: [
-          "Doğal doku ve yumuşak ton dengesi",
-          "Sürdürülebilir malzeme vurgusu",
-          "Herb garden ile yaşayan mutfak hissi",
-          "Sade, dingin, zamansız görünüm",
-        ],
-        salesTip: "Sürdürülebilirlik mesajını ürün davranışıyla bağla: bakım, ömür, günlük kullanım."
-      },
-      social: {
-        titleTR: "Sosyal Ev Sahibi",
-        headline: "Sadece Yemek Değil, Sohbet Pişirilen Yer.",
-        heroImage: "",
-        products: [
-          { kind:"Model", title:"INOVA (Island Layout)", subtitle:"Ada etrafında sosyal akış", meta:"" },
-          { kind:"Material", title:"Contrast Colors", subtitle:"Walnut & Cashmere", meta:"Kontrastla sahne etkisi" },
-          { kind:"Accessory", title:"Wine/Glass Modules & Metal Open Shelves", subtitle:"Sergileme + servis", meta:"Misafir senaryosu" },
-        ],
-        features: [
-          "Ada ile sosyal akış ve servis hattı",
-          "Sergileme ve vitrin etkisi",
-          "Kontrast materyal ile sahne hissi",
-          "Misafir senaryosuna uygun depolama",
-        ],
-        salesTip: "Müşteriye bir akşam yemeği senaryosu çiz: servis, sohbet, hazırlık, toparlama."
-      },
-      coastal: {
-        titleTR: "Dinginlik Arayan (Yazlık)",
-        headline: "Her Gün Tatil Sabahına Uyanmak Gibi.",
-        heroImage: "",
-        products: [
-          { kind:"Model", title:"FRESCA (Vertical grooves)", subtitle:"Dikey oluklarla hafif ritim", meta:"" },
-          { kind:"Material", title:"Mat PET", subtitle:"Ocean Blue / Sage Green", meta:"Ferahlık ve yumuşak ton" },
-          { kind:"Accessory", title:"Under-window Sink Layout & Wicker Baskets", subtitle:"Ritüel ve düzen", meta:"Pencere önü hissi" },
-        ],
-        features: [
-          "Ferahlık veren ton paleti",
-          "Dikey doku ile sakin ritim",
-          "Pencere önü ritüeli ve doğal aksesuar",
-          "Yazlık kullanımında kolay bakım",
-        ],
-        salesTip: "Huzur hissini ışık ve renk üzerinden anlat, müşterinin zihninde sabah sahnesi kur."
-      },
-      quick: {
-        titleTR: "Hız ve Pratiklik Odaklı",
-        headline: "Beklemeden Yeni Mutfağınıza Kavuşun.",
-        heroImage: "",
-        products: [
-          { kind:"Model", title:"PRIME (Stock)", subtitle:"Hazır sistem, düşük risk", meta:"" },
-          { kind:"Material", title:"Laminate Countertop", subtitle:"3-week delivery", meta:"Hız odaklı paket" },
-          { kind:"Accessory", title:"Rail Accessory Sets", subtitle:"No drilling", meta:"Hızlı düzen, hızlı kullanım" },
-        ],
-        features: [
-          "Stok sistem ile hız",
-          "Kurulum ve teslimatta pratiklik",
-          "Delmeden aksesuarla hızlı düzen",
-          "Risk azaltan standart çözüm",
-        ],
-        salesTip: "Süreyi netleştir: ölçü, onay, üretim/teslim, kurulum. Müşteri bunu duymak ister."
-      },
-      nostalgic: {
-        titleTR: "Nostaljik Romantik",
-        headline: "Geçmişin Sıcaklığı, Bugünün Konforu.",
-        heroImage: "",
-        products: [
-          { kind:"Model", title:"VEGA (Country/Vintage)", subtitle:"Duygusal bağ kuran çizgi", meta:"" },
-          { kind:"Material", title:"Polymeric", subtitle:"Magnolia / Baltic Blue", meta:"Sıcak ve davetkar tonlar" },
-          { kind:"Accessory", title:"Rustic Brass Handles", subtitle:"Rustik pirinç kulplar", meta:"Karakteri kulp taşır" },
-        ],
-        features: [
-          "Country oranlar ve sıcak detay dili",
-          "Tonlarla duygu ve ev hissi",
-          "Pirinç kulplarla güçlü karakter",
-          "Vintage çizgide modern konfor",
-        ],
-        salesTip: "Müşterinin anılarına bağlan: aile masası, pazar kahvaltısı, koku ve doku."
-      }
-    };
-
-    // -----------------------------
-    // DATA: Questions (Q4 multi)
-    // Full set Q1-Q13 (Q8-Q12 included)
-    // Tie-break: Q13 then Q7
-    // -----------------------------
-    const QUESTIONS = [
+    // --- REVİZE EDİLMİŞ DENGELİ SORU HAVUZU (MAX PUAN ~100 EŞİTLENDİ) ---
+    const questions = [
       {
-        id:"q1", label:"Q1", type:"single",
-        title:"Proje niteliği nedir?",
-        subtitle:"Müşterinin ana bağlamı: yeni ev mi, yatırım mı, yazlık mı?",
-        options:[
-          { id:"newHouse", label:"Yeni Ev / Sıfır Proje", desc:"Yeni taşınma veya yeni inşaat.", icon:"home", points:{ tech:5, luxury:5 } },
-          { id:"investment", label:"Yatırım / Stüdyo", desc:"Kiralık veya satış odaklı.", icon:"home", points:{ smart:20 } },
-          { id:"summer", label:"Yazlık", desc:"Sahil, sezonluk kullanım.", icon:"home", points:{ coastal:20 } }
+        id: 1, text: "Bu mutfak projesinin niteliği nedir?", type: "single",
+        options: [
+          { text: "Kendi evim / Tadilat", scores: { p3: 5, p10: 5 } },
+          { text: "Yeni Ev / Sıfır Proje", scores: { p1: 10, p2: 10, p7: 5 } },
+          { text: "Yatırım / Stüdyo / Kiraya verilecek", scores: { p4: 30 } },
+          { text: "Yazlık / İkinci Ev", scores: { p8: 40 } }
         ]
       },
       {
-        id:"q2", label:"Q2", type:"single",
-        title:"Zaman kısıtı var mı?",
-        subtitle:"Teslimat ve karar hızını ölçer.",
-        options:[
-          { id:"urgent", label:"Acil", desc:"Hızlı karar, hızlı uygulama.", icon:"clock", points:{ quick:20, smart:10 } },
-          { id:"perfectionist", label:"Acele yok, mükemmeliyetçi", desc:"Detay odaklı, kusursuzluk arar.", icon:"clock", points:{ luxury:10, nostalgic:5 } }
+        id: 2, text: "Zaman kısıtınız nedir?", type: "single",
+        options: [
+          { text: "Çok acil, hemen bitmeli", scores: { p9: 40, p4: 10 } },
+          { text: "Standart süreç (1-2 ay)", scores: { p3: 5, p5: 5 } },
+          { text: "Zaman sorun değil, mükemmel olsun", scores: { p2: 15, p10: 15, p6: 10 } }
         ]
       },
       {
-        id:"q3", label:"Q3", type:"single",
-        title:"Alan durumu nasıl?",
-        subtitle:"Metrekare ve plan, öneri tipini değiştirir.",
-        options:[
-          { id:"small", label:"Küçük / Dar", desc:"Verimlilik ve kompakt çözümler.", icon:"area", points:{ smart:10 } },
-          { id:"large", label:"Geniş / Ada mümkün", desc:"Sosyal akış ve güçlü pişirme hattı.", icon:"area", points:{ social:15, gourmet:10 } }
+        id: 3, text: "Mutfak alanının durumu?", type: "single",
+        options: [
+          { text: "Dar / Küçük", scores: { p4: 15, p9: 10 } },
+          { text: "Geniş / Ada Müsait", scores: { p7: 25, p5: 15, p2: 10 } },
+          { text: "Standart", scores: { p3: 5 } }
         ]
       },
       {
-        id:"q4", label:"Q4", type:"multi",
-        title:"Hane halkı hangilerine uyuyor?",
-        subtitle:"Çoklu seçim. Çocuk + Evcil hayvan seçilirse High Durability Alert tetikler.",
-        options:[
-          { id:"singleCouple", label:"Tek kişi / Çift", desc:"Minimal düzen, teknolojiye açık.", icon:"users", points:{ tech:10 } },
-          { id:"children", label:"Çocuk", desc:"Dayanım, hijyen, güvenlik.", icon:"users", points:{ comfort:15 } },
-          { id:"pets", label:"Evcil hayvan", desc:"Sürdürülebilirlik ve kolay bakım.", icon:"users", points:{ eco:10 } }
+        id: 4, text: "Hane Halkı (Birden fazla seçebilirsiniz)", type: "multi",
+        options: [
+          { text: "Yalnız / Çift", scores: { p1: 15, p4: 10, p5: 5 } },
+          { text: "Çocuklar Var", scores: { p3: 20 } },
+          { text: "Evcil Hayvan Var", scores: { p6: 15, p3: 10 } },
+          { text: "Kalabalık Aile", scores: { p7: 15, p10: 10, p3: 10 } }
         ]
       },
       {
-        id:"q5", label:"Q5", type:"single",
-        title:"Ana motivasyon ne?",
-        subtitle:"Mutfak, müşterinin hayatında neyi temsil ediyor?",
-        options:[
-          { id:"showcase", label:"Showcase / Sosyal", desc:"Misafir, sunum, eğlence.", icon:"spark", points:{ social:20 } },
-          { id:"operation", label:"Operasyon / Pişirme", desc:"Fonksiyon, istasyon mantığı.", icon:"spark", points:{ gourmet:20 } },
-          { id:"sanctuary", label:"Sanctuary / Huzur", desc:"Sakinlik, doğal his.", icon:"spark", points:{ coastal:15, eco:10 } },
-          { id:"heart", label:"Heart / Aile", desc:"Rutinler, dayanım, sıcaklık.", icon:"spark", points:{ comfort:15, nostalgic:10 } }
+        id: 5, text: "Mutfak sizin için ne ifade ediyor?", type: "single",
+        options: [
+          { text: "Vitrin (Sosyal Alan)", scores: { p7: 30, p1: 10, p2: 10 } },
+          { text: "Operasyon (Yemek Yapma)", scores: { p5: 35 } },
+          { text: "Sığınak (Huzur)", scores: { p8: 25, p6: 20 } },
+          { text: "Kalp (Aile Odaklı)", scores: { p10: 25, p3: 10 } },
+          { text: "İstasyon (Pratik)", scores: { p9: 20, p4: 15 } }
         ]
       },
       {
-        id:"q6", label:"Q6", type:"single",
-        title:"En büyük acı noktası ne?",
-        subtitle:"Problemi seç, sistem çözümü bağlasın.",
-        options:[
-          { id:"cleaning", label:"Temizlik / Leke", desc:"Kolay silinebilir, dayanıklı yüzeyler.", icon:"broom", points:{ comfort:20 }, trigger:"petMaterial" },
-          { id:"clutter", label:"Dağınıklık", desc:"Organizer ve depolama ihtiyacı.", icon:"broom", points:{ gourmet:10 } },
-          { id:"outdated", label:"Eski görünüm", desc:"Modernleşme isteği.", icon:"broom", points:{ tech:10 } }
+        id: 6, text: "Şu anki mutfakta en büyük şikayetiniz?", type: "single",
+        options: [
+          { text: "Dağınıklık / Yer yok", scores: { p5: 15, p3: 5, p4: 5 } },
+          { text: "Temizlik Zorluğu / Lekeler", scores: { p3: 15, p9: 10 } },
+          { text: "Demode Görünüm", scores: { p1: 15, p2: 10, p7: 5 } },
+          { text: "Karanlık / Basık", scores: { p8: 20, p6: 10 } }
         ]
       },
       {
-        id:"q7", label:"Q7", type:"single",
-        title:"Tasarım dili hangisi?",
-        subtitle:"Tie-break için kritik (2. öncelik).",
-        options:[
-          { id:"modern", label:"Modern / Minimal", desc:"Kulpsuz, net çizgiler.", icon:"style", points:{ tech:20 } },
-          { id:"classic", label:"Klasik / Grand", desc:"Çerçeveli kapak, prestij.", icon:"style", points:{ luxury:20 } },
-          { id:"country", label:"Country / Natural", desc:"Ahşap dokular, sıcaklık.", icon:"style", points:{ eco:15, nostalgic:15 } },
-          { id:"industrial", label:"Industrial", desc:"Kontrast, metal hissi.", icon:"style", points:{ tech:10 } }
-        ]
-      },
-
-      // Added from original 13-question set
-      {
-        id:"q8", label:"Q8", type:"single",
-        title:"Malzeme hissi hangisi?",
-        subtitle:"Yüzey ve dokunun karakterini seç.",
-        options:[
-          { id:"wood", label:"Ahşap", desc:"Doğal doku ve sıcaklık.", icon:"material", points:{ eco:20 } },
-          { id:"matsoft", label:"Mat / Soft", desc:"Yumuşak, sakin yüzey.", icon:"material", points:{ comfort:10 } },
-          { id:"gloss", label:"Yüksek parlak", desc:"Gösterişli ve premium algı.", icon:"material", points:{ luxury:15 } },
-          { id:"dark", label:"Koyu ton", desc:"Kontrast ve modern güç.", icon:"material", points:{ tech:15 } }
+        id: 7, text: "Hangi tasarım dili size yakın?", type: "single",
+        options: [
+          { text: "Modern & Minimal", scores: { p1: 20, p5: 10, p4: 5 } },
+          { text: "Klasik & Gösterişli", scores: { p2: 30, p10: 10 } },
+          { text: "Country & Doğal", scores: { p10: 30, p6: 20, p8: 15 } },
+          { text: "Endüstriyel", scores: { p1: 15, p5: 15, p7: 10 } }
         ]
       },
       {
-        id:"q9", label:"Q9", type:"single",
-        title:"Pişirme yaklaşımı nasıl?",
-        subtitle:"Kullanım yoğunluğu öneriyi değiştirir.",
-        options:[
-          { id:"gourmet", label:"Gurme", desc:"Sık pişirir, ekipman kullanır.", icon:"cook", points:{ gourmet:25 } },
-          { id:"practical", label:"Pratik", desc:"Hız, basit rutinler.", icon:"cook", points:{ smart:10 } }
+        id: 8, text: "Malzeme ve Doku tercihiniz?", type: "single",
+        options: [
+          { text: "Doğal Ahşap Dokusu", scores: { p6: 25, p10: 15, p8: 10 } },
+          { text: "Mat ve Soft Renkler", scores: { p3: 15, p8: 15, p1: 5 } },
+          { text: "Parlak ve Canlı", scores: { p2: 25, p7: 15 } },
+          { text: "Koyu ve Maskülen", scores: { p1: 20, p5: 10 } }
         ]
       },
       {
-        id:"q10", label:"Q10", type:"single",
-        title:"Depolamada öncelik ne?",
-        subtitle:"Düzen ve sergileme tercihleri.",
-        options:[
-          { id:"pantry", label:"Kiler / Pantry", desc:"Gizli düzen, hızlı erişim.", icon:"storage", points:{ comfort:10 } },
-          { id:"vitrine", label:"Vitrin / Sergileme", desc:"Görsel etki ve sunum.", icon:"storage", points:{ social:15 } }
+        id: 9, text: "Yemek pişirme alışkanlığınız?", type: "single",
+        options: [
+          { text: "Standart Pişirme", scores: { p3: 10, p10: 5 } },
+          { text: "Gurme / Profesyonel", scores: { p5: 40 } },
+          { text: "Minimum / Pratik", scores: { p9: 20, p4: 15, p1: 5 } }
         ]
       },
       {
-        id:"q11", label:"Q11", type:"single",
-        title:"Sürdürülebilirlik önemi ne kadar?",
-        subtitle:"Malzeme ve seçim önceliği.",
-        options:[
-          { id:"high", label:"Yüksek", desc:"Sürdürülebilir seçim çok önemli.", icon:"leaf", points:{ eco:25 } },
-          { id:"normal", label:"Normal", desc:"Denge önemli.", icon:"leaf", points:{} }
+        id: 10, text: "Depolama ihtiyacınız?", type: "single",
+        options: [
+          { text: "Maksimum Kiler / Stok", scores: { p3: 15, p5: 15 } },
+          { text: "Vitrin / Sergileme", scores: { p7: 20, p2: 15, p10: 10 } },
+          { text: "Standart / Kapalı Dolap", scores: { p4: 10, p1: 5 } }
         ]
       },
       {
-        id:"q12", label:"Q12", type:"single",
-        title:"Teknoloji yaklaşımı nasıl?",
-        subtitle:"Akıllı çözümler mi, geleneksel mi?",
-        options:[
-          { id:"hightech", label:"High-Tech", desc:"Entegre, akıllı aksesuarlar.", icon:"chip", points:{ tech:20 } },
-          { id:"traditional", label:"Geleneksel", desc:"Klasik kullanım, sıcak his.", icon:"chip", points:{ nostalgic:15 } }
+        id: 11, text: "Sürdürülebilirlik önceliğiniz?", type: "single",
+        options: [
+          { text: "Çok Önemli / Vazgeçilmez", scores: { p6: 40 } },
+          { text: "Önemli ama estetik de önemli", scores: { p6: 15, p8: 10, p3: 5 } },
+          { text: "Öncelik Değil", scores: { p4: 5, p9: 5 } }
         ]
       },
       {
-        id:"q13", label:"Q13", type:"single",
-        title:"Bütçe yaklaşımı nasıl?",
-        subtitle:"Tie-break için kritik (1. öncelik).",
-        options:[
-          { id:"flexible", label:"Esnek / Prestij", desc:"Premium kararlar.", icon:"wallet", points:{ luxury:20 } },
-          { id:"pp", label:"Fiyat / Performans", desc:"Dengeli seçim.", icon:"wallet", points:{ comfort:10 } },
-          { id:"economic", label:"Ekonomik", desc:"Net bütçe, verim.", icon:"wallet", points:{ smart:15 } }
+        id: 12, text: "Teknoloji entegrasyonu?", type: "single",
+        options: [
+          { text: "High-Tech (Akıllı sistemler)", scores: { p1: 30, p5: 5 } },
+          { text: "Geleneksel / Manuel", scores: { p10: 25, p6: 10, p8: 5 } }
+        ]
+      },
+      {
+        id: 13, text: "Bütçe yaklaşımınız?", type: "single",
+        options: [
+          { text: "Esnek / Prestij Odaklı", scores: { p2: 30, p1: 10, p7: 10 } },
+          { text: "Fiyat / Performans", scores: { p3: 20, p5: 10, p10: 5 } },
+          { text: "Ekonomik / Bütçe Dostu", scores: { p4: 25, p9: 15 } }
+        ]
+      },
+      {
+        id: 14, text: "Karar verme faktörünüz?", type: "single",
+        options: [
+          { text: "Tasarım Heyecanı", scores: { p1: 10, p2: 5, p7: 5 } },
+          { text: "Güven / Garanti", scores: { p3: 15, p10: 5 } },
+          { text: "Hız / Teslimat", scores: { p9: 30 } },
+          { text: "Maliyet", scores: { p4: 15 } }
         ]
       }
     ];
 
-    // -----------------------------
-    // UI: icons (inline SVG)
-    // -----------------------------
-    function iconSVG(name){
-      const cls = 'width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
-      switch(name){
-        case "home":
-          return `<svg ${cls}><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z"/></svg>`;
-        case "clock":
-          return `<svg ${cls}><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>`;
-        case "area":
-          return `<svg ${cls}><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 8h8v8H8z"/></svg>`;
-        case "users":
-          return `<svg ${cls}><circle cx="12" cy="10" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>`;
-        case "spark":
-          return `<svg ${cls}><path d="M12 2l1.4 5.2L18 9l-4.6 1.8L12 16l-1.4-5.2L6 9l4.6-1.8L12 2Z"/><path d="M19 13l.8 2.8L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-1.2L19 13Z"/></svg>`;
-        case "broom":
-          return `<svg ${cls}><path d="M14 3l7 7"/><path d="M3 21l8-8"/><path d="M11 13l3 3"/><path d="M12 12c2.5-2.5 6-3 9-1"/></svg>`;
-        case "style":
-          return `<svg ${cls}><path d="M4 6h16"/><path d="M4 12h10"/><path d="M4 18h16"/></svg>`;
-        case "wallet":
-          return `<svg ${cls}><path d="M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v1H6a2 2 0 0 0-2 2v9a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3v-9H6"/><path d="M17 14h3"/></svg>`;
-        case "leaf":
-          return `<svg ${cls}><path d="M20 3c-7 1-12 6-13 13 7-1 12-6 13-13Z"/><path d="M7 16c-2 1-3 3-3 5 2 0 4-1 5-3"/></svg>`;
-        case "chip":
-          return `<svg ${cls}><rect x="7" y="7" width="10" height="10" rx="2"/><path d="M9 1v4M15 1v4M9 19v4M15 19v4M1 9h4M1 15h4M19 9h4M19 15h4"/></svg>`;
-        case "cook":
-          return `<svg ${cls}><path d="M8 6c0-2 1.5-3 3-3s3 1 3 3"/><path d="M6 10h12"/><path d="M7 10v10a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V10"/><path d="M9 14h6"/></svg>`;
-        case "storage":
-          return `<svg ${cls}><rect x="4" y="6" width="16" height="14" rx="2"/><path d="M8 6V4h8v2"/><path d="M9 12h6"/></svg>`;
-        case "material":
-          return `<svg ${cls}><path d="M12 2l8 6v8l-8 6-8-6V8l8-6Z"/><path d="M12 2v20"/><path d="M4 8l8 6 8-6"/></svg>`;
-        default:
-          return `<svg ${cls}><circle cx="12" cy="12" r="9"/></svg>`;
+    const personas = {
+      p1: {
+        name: "Teknoloji Tutkunu Vizyoner",
+        vibe: "Modern çizgi, net karar, akıllı çözümler.",
+        rec: {
+          model: "Inova",
+          materials: ["Mat yüzeyler", "Koyu tonlar", "Minimal kulp çizgisi"],
+          features: ["Akıllı aksesuar sistemleri", "LED iç aydınlatma", "Düzenleyici setler"]
+        }
+      },
+      p2: {
+        name: "Klasik Lüks Sever",
+        vibe: "Prestij, detay, gösterişli ama kontrollü ifade.",
+        rec: {
+          model: "Toscana",
+          materials: ["Parlak veya ipeksi mat", "Zengin renkler", "Metal detaylar"],
+          features: ["Vitrin etkisi", "Camlı üst modüller", "Dekoratif kulp takımı"]
+        }
+      },
+      p3: {
+        name: "Konfor Odaklı Aile",
+        vibe: "Dayanıklılık, temizlik kolaylığı, hayatı hızlandıran kurgu.",
+        rec: {
+          model: "Siena",
+          materials: ["Akrilik PET", "Mat soft tonlar", "Kolay temizlenen yüzeyler"],
+          features: ["Maksimum depolama", "Çekmece iç düzen", "Pratik günlük kullanım"]
+        }
+      },
+      p4: {
+        name: "Akıllı Yatırımcı",
+        vibe: "Fiyat performans, net modülerlik, hızlı ve verimli kurulum.",
+        rec: {
+          model: "Prime",
+          materials: ["Laminant veya melamin", "Stok renkler", "Net modül dili"],
+          features: ["Metrekare optimizasyonu", "Standart modüller", "Hızlı teslim uygunluğu"]
+        }
+      },
+      p5: {
+        name: "Gurme Şef",
+        vibe: "Yemek odaklı, ergonomi ve akış performansı.",
+        rec: {
+          model: "Inova",
+          materials: ["Koyu tonlar veya metalik detay", "Kolay silinen yüzeyler"],
+          features: ["Geniş hazırlık alanı", "Depolama düzeni", "Fonksiyonel iç aksesuarlar"]
+        }
+      },
+      p6: {
+        name: "Doğal Yaşam Savunucusu",
+        vibe: "Doğal dokular, sürdürülebilir seçimler, sakin atmosfer.",
+        rec: {
+          model: "Fresca",
+          materials: ["Ahşap dokusu", "Mat yüzey", "Doğal ton paleti"],
+          features: ["Uzun ömürlü malzeme seçimi", "Daha az bakım", "Doğal doku vurgusu"]
+        }
+      },
+      p7: {
+        name: "Sosyal Ev Sahibi",
+        vibe: "Misafir, vitrin etkisi, sahne gibi mutfak.",
+        rec: {
+          model: "Norda",
+          materials: ["Kontrast kapak kombinleri", "Parlak vurgu", "Sergileme alanları"],
+          features: ["Vitrin modüller", "Açık raf ritmi", "Sunum odaklı depolama"]
+        }
+      },
+      p8: {
+        name: "Dinginlik Arayan",
+        vibe: "Huzur, ferahlık, sakin renk ve ışık dili.",
+        rec: {
+          model: "Fresca",
+          materials: ["Mat soft tonlar", "Sakin mavi/yeşil palet", "Yumuşak dokular"],
+          features: ["Görsel sakinlik", "Düzenli yüzeyler", "Az eşya, net kurgu"]
+        }
+      },
+      p9: {
+        name: "Hız ve Pratiklik Odaklı",
+        vibe: "Hızlı karar, hızlı teslim, pratik kullanım.",
+        rec: {
+          model: "Prime",
+          materials: ["Stok laminant", "Dayanıklı yüzey", "Basit renk seti"],
+          features: ["Hızlı kurulum", "Pratik modüller", "Kolay bakım"]
+        }
+      },
+      p10: {
+        name: "Nostaljik Romantik",
+        vibe: "Sıcaklık, karakter, geçmişten gelen estetik kodlar.",
+        rec: {
+          model: "Vega",
+          materials: ["Country detaylar", "Pastel tonlar", "Çerçeveli kapak hissi"],
+          features: ["Sıcak atmosfer", "Dekoratif detay", "Klasik düzen hissi"]
+        }
       }
-    }
-
-    // -----------------------------
-    // State
-    // -----------------------------
-    const STATE = {
-      screen: "welcome", // welcome | quiz | result
-      index: 0,
-      answers: {}, // qid -> string or string[]
-      customer: { name:"", phone:"", city:"", note:"" }
     };
 
-    const STORAGE_KEY = "intema_proposals_v1";
+    const personaOrder = ["p1","p2","p3","p4","p5","p6","p7","p8","p9","p10"];
 
-    // -----------------------------
+    const STORAGE_KEY = "intema_mimar_asistan_v3";
+
+    const state = {
+      step: "start",              // start | quiz | result
+      qIndex: 0,
+      answers: {},                // { [qId]: number | number[] }
+      meta: { name:"", phone:"", email:"", note:"" },
+      mode: "client"              // client | architect
+    };
+
     // Helpers
-    // -----------------------------
-    const $ = (id)=>document.getElementById(id);
+    const el = (sel, root=document) => root.querySelector(sel);
+    const els = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-    function toast(msg){
-      const t = $("toast");
-      t.textContent = msg;
-      t.classList.add("show");
-      clearTimeout(toast._tm);
-      toast._tm = setTimeout(()=>t.classList.remove("show"), 1600);
+    function deepClone(o){ return JSON.parse(JSON.stringify(o)); }
+
+    function save(){
+      const payload = deepClone(state);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      updateSessionPill();
+      updateSideSummary();
     }
 
-    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
-
-    function getSavedCount(){
+    function load(){
       try{
-        const arr = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-        return Array.isArray(arr) ? arr.length : 0;
-      }catch(e){ return 0; }
-    }
-
-    function updateSavedPill(){
-      $("savedCount").textContent = String(getSavedCount());
-    }
-
-    function safeJSON(obj){
-      return JSON.stringify(obj, null, 2);
-    }
-
-    function downloadJSON(payload){
-      const blob = new Blob([safeJSON(payload)], { type:"application/json;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      const base = (payload.customer?.name || "musteri")
-        .toLowerCase()
-        .replaceAll("ı","i").replaceAll("ğ","g").replaceAll("ü","u")
-        .replaceAll("ş","s").replaceAll("ö","o").replaceAll("ç","c")
-        .replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"")
-        .slice(0,42) || "musteri";
-      a.href = url;
-      a.download = `intema-proposal-${base}-${new Date().toISOString().slice(0,10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    }
-
-    function saveLocal(payload){
-      try{
-        const arr = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-        const list = Array.isArray(arr) ? arr : [];
-        list.unshift(payload);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-        updateSavedPill();
-        return list.length;
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return false;
+        const payload = JSON.parse(raw);
+        if(!payload || typeof payload !== "object") return false;
+        Object.assign(state, payload);
+        return true;
       }catch(e){
-        return 0;
+        return false;
       }
     }
 
-    function selectionsReadable(answers){
-      const out = [];
-      for(const q of QUESTIONS){
-        const a = answers[q.id];
-        if(!a) continue;
-        if(Array.isArray(a)){
-          const labels = a.map(id => (q.options.find(o=>o.id===id)||{}).label).filter(Boolean);
-          if(labels.length) out.push(`${q.title} -> ${labels.join(", ")}`);
-        }else{
-          const label = (q.options.find(o=>o.id===a)||{}).label;
-          if(label) out.push(`${q.title} -> ${label}`);
+    function clearStorage(){
+      localStorage.removeItem(STORAGE_KEY);
+    }
+
+    function resetAll({ keepMeta=false } = {}){
+      const preserved = keepMeta ? deepClone(state.meta) : { name:"", phone:"", email:"", note:"" };
+      state.step = "start";
+      state.qIndex = 0;
+      state.answers = {};
+      state.mode = "client";
+      state.meta = preserved;
+      save();
+      render();
+    }
+
+    function startQuiz(){
+      state.step = "quiz";
+      state.qIndex = Math.max(0, Math.min(state.qIndex || 0, questions.length - 1));
+      save();
+      render();
+    }
+
+    function gotoQuestion(idx){
+      state.step = "quiz";
+      state.qIndex = Math.max(0, Math.min(idx, questions.length - 1));
+      save();
+      render();
+    }
+
+    function currentQuestion(){
+      return questions[state.qIndex];
+    }
+
+    function isAnswered(q){
+      const a = state.answers[q.id];
+      if(q.type === "single") return typeof a === "number";
+      if(q.type === "multi") return Array.isArray(a) && a.length > 0;
+      return false;
+    }
+
+    function selectOption(q, optIndex){
+      if(q.type === "single"){
+        state.answers[q.id] = optIndex;
+      }else{
+        const cur = Array.isArray(state.answers[q.id]) ? state.answers[q.id] : [];
+        const exists = cur.includes(optIndex);
+        state.answers[q.id] = exists ? cur.filter(i=>i!==optIndex) : [...cur, optIndex];
+      }
+      save();
+      render();
+    }
+
+    function totalProgress(){
+      const answeredCount = questions.reduce((acc,q)=>acc + (isAnswered(q)?1:0), 0);
+      return { answeredCount, total: questions.length };
+    }
+
+    function calcScores(){
+      const scores = {};
+      const contrib = {}; // contrib[qId][pX] = points from selected answers
+      personaOrder.forEach(p => scores[p] = 0);
+
+      for(const q of questions){
+        const ans = state.answers[q.id];
+        if(ans === undefined) continue;
+
+        contrib[q.id] = {};
+        personaOrder.forEach(p => contrib[q.id][p] = 0);
+
+        if(q.type === "single"){
+          const opt = q.options[ans];
+          if(opt && opt.scores){
+            for(const [p,val] of Object.entries(opt.scores)){
+              if(scores[p] === undefined) continue;
+              scores[p] += val;
+              contrib[q.id][p] += val;
+            }
+          }
+        }else if(q.type === "multi"){
+          const arr = Array.isArray(ans) ? ans : [];
+          for(const idx of arr){
+            const opt = q.options[idx];
+            if(opt && opt.scores){
+              for(const [p,val] of Object.entries(opt.scores)){
+                if(scores[p] === undefined) continue;
+                scores[p] += val;
+                contrib[q.id][p] += val;
+              }
+            }
+          }
         }
+      }
+
+      const total = Object.values(scores).reduce((a,b)=>a+b,0);
+      return { scores, contrib, total };
+    }
+
+    function pickWinner({ scores, contrib }){
+      const entries = personaOrder.map(p => ({ p, score: scores[p] }));
+      entries.sort((a,b)=> b.score - a.score);
+
+      const topScore = entries[0].score;
+      const tied = entries.filter(e => e.score === topScore).map(e=>e.p);
+
+      if(tied.length === 1){
+        return { winner: tied[0], tied, reason: "max" };
+      }
+
+      // Tie-breaker: first Q13 (budget), then Q7 (style)
+      const qBudget = 13;
+      const qStyle = 7;
+
+      const pickByContribution = (qId, candidates) => {
+        const c = candidates.map(p => ({ p, c: (contrib[qId] && contrib[qId][p]) ? contrib[qId][p] : 0 }));
+        c.sort((a,b)=> b.c - a.c);
+        const maxC = c[0].c;
+        const best = c.filter(x => x.c === maxC).map(x=>x.p);
+        return { best, maxC };
+      };
+
+      const b1 = pickByContribution(qBudget, tied);
+      if(b1.best.length === 1 && b1.maxC > 0){
+        return { winner: b1.best[0], tied, reason: "tie_budget" };
+      }
+
+      const b2 = pickByContribution(qStyle, b1.best.length ? b1.best : tied);
+      if(b2.best.length === 1 && b2.maxC > 0){
+        return { winner: b2.best[0], tied, reason: "tie_style" };
+      }
+
+      // Final stable fallback: personaOrder
+      const fallback = personaOrder.find(p => tied.includes(p)) || tied[0];
+      return { winner: fallback, tied, reason: "tie_fallback" };
+    }
+
+    function calcHybrid({ scores, total }, winner){
+      const entries = personaOrder.map(p => ({ p, score: scores[p] })).sort((a,b)=> b.score - a.score);
+      const top1 = entries[0];
+      const top2 = entries[1] || { p: top1.p, score: 0 };
+
+      const topShare = total > 0 ? (top1.score / total) : 0;
+      const isDominant = topShare >= 0.30;
+
+      return {
+        isDominant,
+        top1,
+        top2,
+        topShare,
+        top2Share: total > 0 ? (top2.score / total) : 0
+      };
+    }
+
+    function petTriggered(){
+      const q = questions.find(x => x.id === 4);
+      const ans = state.answers[4];
+      if(!q || !Array.isArray(ans)) return false;
+      // "Evcil Hayvan Var" option index = 2
+      return ans.includes(2);
+    }
+
+    function childrenAndPetRisk(){
+      const ans = state.answers[4];
+      if(!Array.isArray(ans)) return false;
+      // "Çocuklar Var" idx=1, "Evcil Hayvan Var" idx=2
+      return ans.includes(1) && ans.includes(2);
+    }
+
+    function formatPct(x){
+      return (x*100).toFixed(0) + "%";
+    }
+
+    function buildSummaryText(result){
+      const { winner, hybrid } = result;
+      const topName = personas[winner].name;
+      if(hybrid && !hybrid.isDominant){
+        return `Hibrit profil: ${personas[hybrid.top1.p].name} (${formatPct(hybrid.topShare)}) + ${personas[hybrid.top2.p].name} (${formatPct(hybrid.top2Share)})`;
+      }
+      return `Kazanan profil: ${topName} (${formatPct(hybrid.topShare)})`;
+    }
+
+    function copyToClipboard(text){
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        return navigator.clipboard.writeText(text);
+      }
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      return Promise.resolve();
+    }
+
+    function resultPackage(){
+      const { scores, contrib, total } = calcScores();
+      const { winner, tied, reason } = pickWinner({ scores, contrib });
+      const hybrid = calcHybrid({ scores, total }, winner);
+
+      const list = personaOrder
+        .map(p => ({ p, score: scores[p], share: total>0 ? scores[p]/total : 0 }))
+        .sort((a,b)=> b.score - a.score);
+
+      return { scores, total, winner, tied, reason, hybrid, list };
+    }
+
+    // Rendering
+    function render(){
+      updateSessionPill();
+      updateSideSummary();
+
+      const main = el("#mainCard");
+      if(state.step === "start"){
+        main.innerHTML = renderStart();
+        bindStart();
+        return;
+      }
+      if(state.step === "quiz"){
+        main.innerHTML = renderQuiz();
+        bindQuiz();
+        return;
+      }
+      if(state.step === "result"){
+        main.innerHTML = renderResult();
+        bindResult();
+        return;
+      }
+      state.step = "start";
+      save();
+      main.innerHTML = renderStart();
+      bindStart();
+    }
+
+    function renderStart(){
+      const prog = totalProgress();
+      const hasSaved = prog.answeredCount > 0;
+      return `
+        <div class="cardHeader">
+          <div>
+            <h2>Görüşme Bilgisi</h2>
+            <div class="sub">Opsiyonel alanlar. İstersen boş geç.</div>
+          </div>
+          <div class="toggleRow">
+            ${hasSaved ? `<span class="badge"><strong>Kayıt:</strong> Devam edilebilir</span>` : `<span class="badge"><strong>Kayıt:</strong> Yeni</span>`}
+          </div>
+        </div>
+
+        <div class="cardBody">
+          <div class="stack">
+            <div class="fieldRow">
+              <label>
+                Müşteri Ad Soyad
+                <input type="text" id="metaName" placeholder="Örn: Ayşe Yılmaz" value="${escapeHtml(state.meta.name)}" />
+              </label>
+              <label>
+                Telefon
+                <input type="tel" id="metaPhone" placeholder="Örn: 05xx xxx xx xx" value="${escapeHtml(state.meta.phone)}" />
+              </label>
+            </div>
+
+            <div class="fieldRow">
+              <label>
+                E-posta
+                <input type="email" id="metaEmail" placeholder="Örn: ayse@mail.com" value="${escapeHtml(state.meta.email)}" />
+              </label>
+              <label>
+                İç Not (Kısa)
+                <input type="text" id="metaQuick" placeholder="Örn: Ada istiyor, teslim acil" value="" />
+              </label>
+            </div>
+
+            <label>
+              Proje Notu
+              <textarea id="metaNote" placeholder="Kısa notlar, beklenti, kritik detaylar...">${escapeHtml(state.meta.note)}</textarea>
+              <div class="hint">Notlar sadece bu cihazda saklanır.</div>
+            </label>
+
+            <div class="navRow">
+              <div class="left">
+                <button class="btn ghost" id="btnContinue" ${hasSaved ? "" : "disabled"} title="Kaydedilmiş oturum varsa aktif olur">
+                  Devam Et
+                </button>
+                <button class="btn" id="btnStartNew">
+                  Ankete Başla
+                </button>
+              </div>
+              <div class="right">
+                <button class="btn danger" id="btnClearSaved">
+                  Kaydı Sil
+                </button>
+              </div>
+            </div>
+
+            <div class="mini">
+              İpucu: Kayıt varsa <span class="kbd">Devam Et</span> kaldığın soruya gider. Yoksa 1. sorudan başlar.
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderQuiz(){
+      const q = currentQuestion();
+      const prog = totalProgress();
+      const pct = Math.round(((state.qIndex) / (questions.length - 1)) * 100);
+      const answered = isAnswered(q);
+
+      const selected = state.answers[q.id];
+      const optionHtml = q.options.map((o, idx) => {
+        const isSel = q.type === "single"
+          ? selected === idx
+          : (Array.isArray(selected) && selected.includes(idx));
+
+        const cls = ["opt", q.type === "multi" ? "multi" : "", isSel ? "sel" : ""].join(" ").trim();
+        return `
+          <div class="${cls}" data-opt="${idx}" role="button" tabindex="0" aria-pressed="${isSel}">
+            <div>
+              <div class="t">${escapeHtml(o.text)}</div>
+              <div class="tag">${q.type === "multi" ? "Çoklu seçim" : "Tek seçim"}</div>
+            </div>
+            <div class="mark" aria-hidden="true"></div>
+          </div>
+        `;
+      }).join("");
+
+      const canNext = answered;
+      const isLast = state.qIndex === questions.length - 1;
+
+      return `
+        <div class="progressWrap">
+          <div class="progressLeft">
+            <div class="qMeta">Soru ${state.qIndex + 1} / ${questions.length} • Cevaplanan: ${prog.answeredCount}/${prog.total}</div>
+            <p class="qText">${escapeHtml(q.text)}</p>
+          </div>
+          <div class="bar" aria-label="İlerleme">
+            <div style="width:${pct}%"></div>
+          </div>
+        </div>
+
+        <div class="cardBody">
+          <div class="options" id="optList">
+            ${optionHtml}
+          </div>
+
+          <div class="navRow">
+            <div class="left">
+              <button class="btn ghost" id="btnBack" ${state.qIndex === 0 ? "disabled" : ""}>Geri</button>
+              <button class="btn ${isLast ? "primary" : ""}" id="btnNext" ${canNext ? "" : "disabled"}>
+                ${isLast ? "Sonucu Gör" : "İleri"}
+              </button>
+            </div>
+            <div class="right">
+              <button class="btn ghost" id="btnJumpStart">Başlangıç</button>
+              <button class="btn danger" id="btnClearAnswers">Cevapları Temizle</button>
+            </div>
+          </div>
+
+          <div class="mini">
+            ${q.type === "multi" ? "Birden fazla seçenek işaretleyebilirsin. İleri için en az bir seçim şart." : "İleri için seçim şart."}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderResult(){
+      const res = resultPackage();
+      const winner = res.winner;
+      const winnerData = personas[winner];
+
+      const hybrid = res.hybrid;
+      const isHybrid = !hybrid.isDominant;
+
+      const topLabel = isHybrid
+        ? `Hibrit Profil`
+        : `Kazanan Profil`;
+
+      const badgeText = isHybrid
+        ? `${personas[hybrid.top1.p].name} (${formatPct(hybrid.topShare)}) + ${personas[hybrid.top2.p].name} (${formatPct(hybrid.top2Share)})`
+        : `${winnerData.name} (${formatPct(hybrid.topShare)})`;
+
+      const pet = petTriggered();
+      const risk = childrenAndPetRisk();
+
+      const recBlock = isHybrid
+        ? buildHybridRec(personas[hybrid.top1.p], personas[hybrid.top2.p])
+        : buildRec(winnerData);
+
+      const modeClientOn = state.mode === "client" ? "on" : "";
+      const modeArchOn = state.mode === "architect" ? "on" : "";
+
+      const scoreTableRows = res.list.map(row => `
+        <tr>
+          <td><strong>${escapeHtml(personas[row.p].name)}</strong></td>
+          <td>${row.score}</td>
+          <td>${formatPct(row.share)}</td>
+        </tr>
+      `).join("");
+
+      const archOnly = state.mode === "architect" ? "" : "hide";
+      const clientOnly = state.mode === "client" ? "" : "hide";
+
+      return `
+        <div class="resultHero">
+          <div class="resultTop">
+            <div>
+              <div class="badge"><strong>${escapeHtml(topLabel)}:</strong> ${escapeHtml(badgeText)}</div>
+              <h2 class="resultTitle">${escapeHtml(isHybrid ? "İki güçlü persona öne çıkıyor." : winnerData.name)}</h2>
+              <p class="resultDesc ${clientOnly}">
+                ${escapeHtml(buildClientSummary(res))}
+              </p>
+              <p class="resultDesc ${archOnly}">
+                ${escapeHtml(buildArchitectSummary(res))}
+              </p>
+            </div>
+
+            <div class="toggleRow">
+              <div class="seg" role="tablist" aria-label="Mod">
+                <button id="btnModeClient" class="${modeClientOn}" role="tab" aria-selected="${state.mode==="client"}">Müşteri Modu</button>
+                <button id="btnModeArch" class="${modeArchOn}" role="tab" aria-selected="${state.mode==="architect"}">Mimar Modu</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="split">
+          ${risk ? `
+            <div class="panel alert">
+              <h3>Sistem Uyarısı: Yüksek Aşınma Riski</h3>
+              <ul>
+                <li>Kapak önerisi: Akrilik PET veya Mat PET, daha dayanıklı kullanım.</li>
+                <li>Modül önerisi: Evcil hayvan ve günlük temizlik pratikleri için uygun iç aksesuarlar.</li>
+                <li>Güvenlik: Çocuklar için kilit, keskin köşe ve hassas yüzeylerden kaçınma.</li>
+              </ul>
+            </div>
+          ` : ""}
+
+          <div class="panel">
+            <h3>Öneri Reçetesi</h3>
+            ${recBlock}
+          </div>
+
+          ${pet ? `
+            <div class="panel ok">
+              <h3>Pet Modülü Kartı</h3>
+              <ul>
+                <li>Kolay silinen yüzey, tüy ve iz kontrolü için mat dokular.</li>
+                <li>Kapalı depolama ağırlığı, açık raflarda düzen ve hijyen.</li>
+                <li>Günlük temizlik akışı: hızlı erişilen çekmece düzeni ve paspas alanı.</li>
+              </ul>
+            </div>
+          ` : ""}
+
+          <div class="panel ${archOnly}">
+            <h3>Skor Dağılımı</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Persona</th>
+                  <th>Skor</th>
+                  <th>Pay</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${scoreTableRows}
+              </tbody>
+            </table>
+            <div class="mini">Not: Dominant kuralı toplam skorun %30 eşiğine göre hesaplanır.</div>
+          </div>
+
+          <div class="panel">
+            <h3>Mimar Notu</h3>
+            <textarea id="archNote" placeholder="Kısa satış yönlendirmesi, kritik istekler, takip notu...">${escapeHtml(state.meta.note || "")}</textarea>
+            <div class="navRow" style="margin-top:10px;">
+              <div class="left">
+                <button class="btn" id="btnSaveNote">Notu Kaydet</button>
+                <button class="btn ghost" id="btnBackToQuiz">Ankete Dön</button>
+              </div>
+              <div class="right">
+                <button class="btn" id="btnCopy">Özeti Kopyala</button>
+                <button class="btn ghost" id="btnPrint">Yazdır</button>
+                <button class="btn primary" id="btnNewFromResult">Yeni Görüşme</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function buildRec(pData){
+      const r = pData.rec;
+      const feats = r.features.map(x=>`<li>${escapeHtml(x)}</li>`).join("");
+      const mats = r.materials.map(x=>`<li>${escapeHtml(x)}</li>`).join("");
+      return `
+        <div class="stack" style="gap:10px;">
+          <div class="panel">
+            <h3>Model</h3>
+            <p><strong>${escapeHtml(r.model)}</strong></p>
+          </div>
+          <div class="panel">
+            <h3>Malzeme ve Renk Dili</h3>
+            <ul>${mats}</ul>
+          </div>
+          <div class="panel">
+            <h3>Kritik Özellikler</h3>
+            <ul>${feats}</ul>
+          </div>
+          <div class="panel">
+            <h3>Satış Cümlesi</h3>
+            <p>${escapeHtml(pData.vibe)}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function buildHybridRec(pA, pB){
+      // Basit ve pratik hibrit: Model A + B, malzemeler birleşik, özellikler birleşik.
+      const model = `${pA.rec.model} + ${pB.rec.model}`;
+      const mats = unique([...pA.rec.materials, ...pB.rec.materials]).slice(0,6);
+      const feats = unique([...pA.rec.features, ...pB.rec.features]).slice(0,7);
+
+      const matsHtml = mats.map(x=>`<li>${escapeHtml(x)}</li>`).join("");
+      const featsHtml = feats.map(x=>`<li>${escapeHtml(x)}</li>`).join("");
+
+      return `
+        <div class="stack" style="gap:10px;">
+          <div class="panel">
+            <h3>Hibrit Model Yönü</h3>
+            <p><strong>${escapeHtml(model)}</strong></p>
+            <p class="mini">Yaklaşım: ${escapeHtml(pA.name)} çizgisi + ${escapeHtml(pB.name)} motivasyonu.</p>
+          </div>
+          <div class="panel">
+            <h3>Malzeme ve Renk Dili</h3>
+            <ul>${matsHtml}</ul>
+          </div>
+          <div class="panel">
+            <h3>Kritik Özellikler</h3>
+            <ul>${featsHtml}</ul>
+          </div>
+          <div class="panel">
+            <h3>Satış Cümlesi</h3>
+            <p>${escapeHtml(pA.vibe)} ${escapeHtml(pB.vibe)}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function buildClientSummary(res){
+      const base = buildSummaryText(res);
+      const name = state.meta.name ? `${state.meta.name} için ` : "";
+      const pet = petTriggered() ? " Evcil hayvan detayı var, dayanıklı ve kolay temizlenen yüzey yönü güçlenir." : "";
+      return `${name}${base}. Bu profile uygun bir model ve malzeme seçimiyle hızlıca net bir tasarım dili kurabiliriz.${pet}`;
+    }
+
+    function buildArchitectSummary(res){
+      const base = buildSummaryText(res);
+      const risk = childrenAndPetRisk() ? " Çocuk + evcil hayvan kombinasyonu var, aşınma riski uyarısı aktif." : "";
+      return `${base}. Tie-break: ${res.reason}. Toplam skor: ${res.total}.${risk}`;
+    }
+
+    function updateSessionPill(){
+      const prog = totalProgress();
+      const txt = (prog.answeredCount > 0) ? `Devam (${prog.answeredCount}/${prog.total})` : "Yeni";
+      el("#sessionState").textContent = txt;
+    }
+
+    function updateSideSummary(){
+      const prog = totalProgress();
+      const side = el("#sideSummary");
+      if(!side) return;
+
+      if(state.step === "result"){
+        const res = resultPackage();
+        side.textContent = buildSummaryText(res);
+        return;
+      }
+
+      if(prog.answeredCount === 0){
+        side.textContent = "Başlamak için görüşme bilgisi gir veya direkt ankete başla.";
+        return;
+      }
+
+      const q = questions[state.qIndex] || questions[0];
+      const answeredNow = isAnswered(q);
+      side.textContent = `İlerleme: ${prog.answeredCount}/${prog.total}. Şu an: Soru ${state.qIndex+1}. ${answeredNow ? "Seçildi." : "Seçim bekliyor."}`;
+    }
+
+    // Binding
+    function bindStart(){
+      const name = el("#metaName");
+      const phone = el("#metaPhone");
+      const email = el("#metaEmail");
+      const note = el("#metaNote");
+      const quick = el("#metaQuick");
+
+      const sync = () => {
+        state.meta.name = name.value.trim();
+        state.meta.phone = phone.value.trim();
+        state.meta.email = email.value.trim();
+        state.meta.note = note.value.trim();
+        save();
+      };
+
+      [name,phone,email,note].forEach(x => x.addEventListener("input", sync));
+
+      if(quick){
+        quick.addEventListener("keydown", (e)=>{
+          if(e.key === "Enter"){
+            e.preventDefault();
+            const v = quick.value.trim();
+            if(v){
+              state.meta.note = (state.meta.note ? (state.meta.note + "\n") : "") + v;
+              quick.value = "";
+              save();
+              render();
+            }
+          }
+        });
+      }
+
+      const prog = totalProgress();
+      el("#btnContinue").addEventListener("click", ()=>{
+        if(prog.answeredCount === 0) return;
+        startQuiz();
+      });
+
+      el("#btnStartNew").addEventListener("click", ()=>{
+        state.qIndex = 0;
+        state.step = "quiz";
+        save();
+        render();
+      });
+
+      el("#btnClearSaved").addEventListener("click", ()=>{
+        clearStorage();
+        resetAll({ keepMeta:false });
+      });
+    }
+
+    function bindQuiz(){
+      const q = currentQuestion();
+      const optList = el("#optList");
+      els(".opt", optList).forEach(node => {
+        node.addEventListener("click", () => selectOption(q, Number(node.dataset.opt)));
+        node.addEventListener("keydown", (e)=>{
+          if(e.key === "Enter" || e.key === " "){
+            e.preventDefault();
+            selectOption(q, Number(node.dataset.opt));
+          }
+        });
+      });
+
+      el("#btnBack").addEventListener("click", ()=>{
+        if(state.qIndex <= 0) return;
+        state.qIndex -= 1;
+        save();
+        render();
+      });
+
+      el("#btnNext").addEventListener("click", ()=>{
+        if(!isAnswered(q)) return;
+        if(state.qIndex >= questions.length - 1){
+          state.step = "result";
+          save();
+          render();
+          return;
+        }
+        state.qIndex += 1;
+        save();
+        render();
+      });
+
+      el("#btnJumpStart").addEventListener("click", ()=>{
+        state.step = "start";
+        save();
+        render();
+      });
+
+      el("#btnClearAnswers").addEventListener("click", ()=>{
+        state.answers = {};
+        state.qIndex = 0;
+        save();
+        render();
+      });
+    }
+
+    function bindResult(){
+      const btnClient = el("#btnModeClient");
+      const btnArch = el("#btnModeArch");
+
+      btnClient.addEventListener("click", ()=>{
+        state.mode = "client";
+        save();
+        render();
+      });
+      btnArch.addEventListener("click", ()=>{
+        state.mode = "architect";
+        save();
+        render();
+      });
+
+      el("#btnBackToQuiz").addEventListener("click", ()=>{
+        state.step = "quiz";
+        // sonuçtan geri dönünce son soruda kal
+        state.qIndex = questions.length - 1;
+        save();
+        render();
+      });
+
+      el("#btnNewFromResult").addEventListener("click", ()=> resetAll({ keepMeta:true }));
+
+      const note = el("#archNote");
+      el("#btnSaveNote").addEventListener("click", ()=>{
+        state.meta.note = note.value.trim();
+        save();
+        render();
+      });
+
+      el("#btnCopy").addEventListener("click", async ()=>{
+        const res = resultPackage();
+        const lines = [];
+        if(state.meta.name) lines.push(`Müşteri: ${state.meta.name}`);
+        if(state.meta.phone) lines.push(`Telefon: ${state.meta.phone}`);
+        if(state.meta.email) lines.push(`E-posta: ${state.meta.email}`);
+        lines.push(buildSummaryText(res));
+
+        if(!res.hybrid.isDominant){
+          lines.push(`Top1: ${personas[res.hybrid.top1.p].name} (${formatPct(res.hybrid.topShare)})`);
+          lines.push(`Top2: ${personas[res.hybrid.top2.p].name} (${formatPct(res.hybrid.top2Share)})`);
+        }else{
+          lines.push(`Model yönü: ${personas[res.winner].rec.model}`);
+        }
+
+        if(childrenAndPetRisk()) lines.push("Uyarı: Çocuk + Evcil Hayvan kombinasyonu, aşınma riski yüksek.");
+        if(petTriggered()) lines.push("Not: Evcil hayvan tetikleyici aktif, yüzey ve düzen önerileri uygulanmalı.");
+        if(state.meta.note) lines.push(`Mimar Notu: ${state.meta.note}`);
+
+        const text = lines.join("\n");
+        try{
+          await copyToClipboard(text);
+          flashPill("Kopyalandı");
+        }catch(e){
+          flashPill("Kopyalama başarısız");
+        }
+      });
+
+      el("#btnPrint").addEventListener("click", ()=>{
+        window.print();
+      });
+    }
+
+    function flashPill(msg){
+      const pill = el("#sessionPill");
+      const old = el("#sessionState").textContent;
+      el("#sessionState").textContent = msg;
+      pill.style.borderColor = "rgba(140,200,255,.42)";
+      pill.style.background = "rgba(140,200,255,.16)";
+      setTimeout(()=>{
+        pill.style.borderColor = "";
+        pill.style.background = "";
+        el("#sessionState").textContent = old;
+      }, 900);
+    }
+
+    // Global header buttons
+    el("#btnNew").addEventListener("click", ()=> resetAll({ keepMeta:true }));
+    el("#btnReset").addEventListener("click", ()=> resetAll({ keepMeta:false }));
+
+    // Keyboard shortcuts
+    window.addEventListener("keydown", (e)=>{
+      if(e.key === "Escape"){
+        e.preventDefault();
+        resetAll({ keepMeta:true });
+        return;
+      }
+      if(state.step !== "quiz") return;
+      if(e.key === "ArrowLeft"){
+        e.preventDefault();
+        const b = el("#btnBack");
+        if(b && !b.disabled) b.click();
+      }
+      if(e.key === "ArrowRight"){
+        e.preventDefault();
+        const n = el("#btnNext");
+        if(n && !n.disabled) n.click();
+      }
+    });
+
+    function unique(arr){
+      const s = new Set();
+      const out = [];
+      for(const x of arr){
+        if(!s.has(x)){ s.add(x); out.push(x); }
       }
       return out;
     }
 
-    // -----------------------------
-    // Scoring + Tie-break
-    // -----------------------------
-    function initScores(){
-      const s = {};
-      PERSONA_ORDER.forEach(k=>s[k]=0);
-      return s;
+    function escapeHtml(str){
+      return String(str ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
     }
 
-    function addPoints(scores, points){
-      if(!points) return;
-      for(const k in points){
-        if(scores[k] == null) continue;
-        scores[k] += points[k] || 0;
-      }
+    // Initial boot
+    const hasLoaded = load();
+    // Eğer kayıtta quiz veya result varsa, direkt render.
+    if(!hasLoaded){
+      save();
     }
-
-    function calculate(answers){
-      const scores = initScores();
-      const tieBudget = initScores();
-      const tieStyle = initScores();
-
-      const triggers = {
-        highDurabilityAlert: false,
-        petMaterialRecommendation: false
-      };
-
-      for(const q of QUESTIONS){
-        const a = answers[q.id];
-        if(!a) continue;
-
-        if(q.type === "multi"){
-          const arr = Array.isArray(a) ? a : [];
-          arr.forEach(optId=>{
-            const opt = q.options.find(o=>o.id===optId);
-            if(!opt) return;
-            addPoints(scores, opt.points);
-          });
-        }else{
-          const opt = q.options.find(o=>o.id===a);
-          if(!opt) continue;
-          addPoints(scores, opt.points);
-
-          if(q.id === "q13") addPoints(tieBudget, opt.points);
-          if(q.id === "q7") addPoints(tieStyle, opt.points);
-
-          if(q.id === "q6" && opt.trigger === "petMaterial"){
-            triggers.petMaterialRecommendation = true;
-          }
-        }
-      }
-
-      // Special Q4 logic: Children + Pets => +20 comfort + High Durability Alert
-      const q4 = answers.q4;
-      const q4arr = Array.isArray(q4) ? q4 : [];
-      const hasChildren = q4arr.includes("children");
-      const hasPets = q4arr.includes("pets");
-      if(hasChildren && hasPets){
-        scores.comfort += 20;
-        triggers.highDurabilityAlert = true;
-      }
-
-      const max = Math.max(...PERSONA_ORDER.map(k=>scores[k]));
-      const candidates = PERSONA_ORDER.filter(k=>scores[k]===max);
-
-      let usedBudget = false;
-      let usedStyle = false;
-      let winner = candidates[0];
-
-      if(candidates.length > 1){
-        const bMax = Math.max(...candidates.map(k=>tieBudget[k]));
-        const bW = candidates.filter(k=>tieBudget[k]===bMax);
-        usedBudget = true;
-
-        if(bW.length === 1){
-          winner = bW[0];
-        }else{
-          const sMax = Math.max(...bW.map(k=>tieStyle[k]));
-          const sW = bW.filter(k=>tieStyle[k]===sMax);
-          usedStyle = true;
-
-          if(sW.length === 1) winner = sW[0];
-          else winner = sW[0]; // stable order
-        }
-      }
-
-      return { winner, scores, triggers, tieBreak:{ usedBudget, usedStyle } };
+    // Eğer kayıt quiz aşamasındaysa ama qIndex boşsa, toparla
+    if(state.step === "quiz" && (state.qIndex == null || isNaN(state.qIndex))){
+      state.qIndex = 0;
     }
-
-    // -----------------------------
-    // UI Rendering
-    // -----------------------------
-    function setScreen(name){
-      STATE.screen = name;
-      $("screenWelcome").classList.toggle("hidden", name !== "welcome");
-      $("screenQuiz").classList.toggle("hidden", name !== "quiz");
-      $("screenResult").classList.toggle("hidden", name !== "result");
-      $("sticky").classList.toggle("hidden", name !== "result");
-
-      // Reset button is always useful
-      $("resetBtn").style.opacity = "1";
-    }
-
-    function isAnswered(q, answers){
-      const v = answers[q.id];
-      if(!v) return false;
-      if(Array.isArray(v)) return v.length > 0;
-      return String(v).length > 0;
-    }
-
-    function renderChips(triggers, targetEl){
-      targetEl.innerHTML = "";
-      if(triggers.highDurabilityAlert){
-        const c = document.createElement("div");
-        c.className = "chip warn";
-        c.textContent = "High Durability Alert";
-        targetEl.appendChild(c);
-      }
-      if(triggers.petMaterialRecommendation){
-        const c = document.createElement("div");
-        c.className = "chip ok";
-        c.textContent = "PET yüzey önerisi tetiklendi";
-        targetEl.appendChild(c);
+    // Eğer result aşamasında ama cevaplar yoksa, start
+    if(state.step === "result"){
+      const prog = totalProgress();
+      if(prog.answeredCount === 0){
+        state.step = "start";
       }
     }
 
-    function renderQuestion(){
-      const q = QUESTIONS[STATE.index];
-      const total = QUESTIONS.length;
+    render();
 
-      $("qCount").textContent = `Soru ${STATE.index + 1}`;
-      $("qTotal").textContent = `/ ${total}`;
-      $("qId").textContent = q.label;
-
-      $("qType").textContent = q.type === "multi" ? "Çoklu seçim" : "Tek seçim";
-      $("qTitle").textContent = q.title;
-      $("qSub").textContent = q.subtitle || "";
-
-      const pct = Math.round(((STATE.index + 1) / total) * 100);
-      $("progressPct").textContent = `${pct}%`;
-      $("progressBar").style.width = `${pct}%`;
-
-      const calc = calculate(STATE.answers);
-      $("winnerPreview").textContent = PERSONA_DB[calc.winner].titleTR;
-      $("tbBudget").textContent = calc.tieBreak.usedBudget ? "var" : "yok";
-      $("tbStyle").textContent = calc.tieBreak.usedStyle ? "var" : "yok";
-      $("livePersona").textContent = PERSONA_DB[calc.winner].titleTR;
-      $("liveHeadline").textContent = PERSONA_DB[calc.winner].headline;
-
-      renderChips(calc.triggers, $("triggerChips"));
-
-      const selected = STATE.answers[q.id];
-      const selectedArr = Array.isArray(selected) ? selected : [];
-      const selectedOne = (typeof selected === "string") ? selected : "";
-
-      const optionsEl = $("options");
-      optionsEl.innerHTML = "";
-
-      q.options.forEach(opt=>{
-        const el = document.createElement("div");
-        const isSel = q.type === "multi" ? selectedArr.includes(opt.id) : selectedOne === opt.id;
-        el.className = `opt ${isSel ? "selected" : ""}`;
-        el.setAttribute("role","button");
-        el.setAttribute("tabindex","0");
-
-        el.innerHTML = `
-          <div class="ico" aria-hidden="true" style="color:rgba(255,255,255,.75);">
-            ${iconSVG(opt.icon)}
-          </div>
-          <div class="optMain">
-            <div class="optLabel">
-              <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${opt.label}</span>
-              <span class="tag">${isSel ? (q.type==="multi" ? "Seçildi" : "Aktif") : ""}</span>
-            </div>
-            ${opt.desc ? `<div class="optHint">${opt.desc}</div>` : ""}
-          </div>
-        `;
-
-        const toggle = ()=>{
-          if(q.type === "multi"){
-            const arr = Array.isArray(STATE.answers[q.id]) ? [...STATE.answers[q.id]] : [];
-            const ix = arr.indexOf(opt.id);
-            if(ix >= 0) arr.splice(ix, 1);
-            else arr.push(opt.id);
-            STATE.answers[q.id] = arr;
-          }else{
-            STATE.answers[q.id] = opt.id;
-          }
-          renderQuestion();
-          updateNav();
-        };
-
-        el.addEventListener("click", toggle);
-        el.addEventListener("keydown", (e)=>{
-          if(e.key === "Enter" || e.key === " "){ e.preventDefault(); toggle(); }
-        });
-
-        optionsEl.appendChild(el);
-      });
-
-      updateNav();
-    }
-
-    function updateNav(){
-      const q = QUESTIONS[STATE.index];
-      const canNext = isAnswered(q, STATE.answers);
-
-      $("backBtn").disabled = STATE.index === 0;
-      $("nextBtn").disabled = !canNext;
-
-      const isLast = STATE.index === QUESTIONS.length - 1;
-      $("nextBtn").textContent = isLast ? "Sonucu Gör" : "Devam";
-      $("navStatus").textContent = canNext ? "Hazır" : "Seçim yap";
-    }
-
-    function buildProposal(){
-      const calc = calculate(STATE.answers);
-      const selections = selectionsReadable(STATE.answers);
-      const db = PERSONA_DB[calc.winner];
-
-      return {
-        createdAtISO: new Date().toISOString(),
-        customer: { ...STATE.customer },
-        answers: JSON.parse(JSON.stringify(STATE.answers)),
-        selectionsReadable: selections,
-        persona: {
-          key: calc.winner,
-          titleTR: db.titleTR,
-          headline: db.headline,
-          scores: calc.scores,
-          triggers: calc.triggers,
-          tieBreak: calc.tieBreak,
-          products: db.products,
-          features: db.features,
-          salesTip: db.salesTip || "Öneriyi 3 cümleyle kilitle: model dili, malzeme hissi, aksesuar farkı."
-        }
-      };
-    }
-
-    function renderResult(){
-      const payload = buildProposal();
-      const db = PERSONA_DB[payload.persona.key];
-
-      // Hero
-      const heroEl = $("resultHero");
-      heroEl.classList.remove("hasImg");
-      heroEl.style.backgroundImage = "";
-
-      if(db.heroImage){
-        heroEl.classList.add("hasImg");
-        heroEl.style.backgroundImage = `url('${db.heroImage}')`;
-      }
-
-      $("rTitle").textContent = db.titleTR;
-      $("rHeadline").textContent = db.headline;
-
-      const chipsEl = $("rChips");
-      chipsEl.innerHTML = "";
-      renderChips(payload.persona.triggers, chipsEl);
-
-      // Product cards
-      const pc = $("productCards");
-      pc.innerHTML = "";
-      db.products.forEach(p=>{
-        const el = document.createElement("div");
-        el.className = "pcard";
-        el.innerHTML = `
-          <div class="pcHead">
-            <div class="pcChip">${p.kind === "Model" ? "Önerilen Model" : (p.kind === "Material" ? "Malzeme / Özellik" : "Must-have Aksesuar")}</div>
-            <div class="kicker" style="letter-spacing:.18em;">${p.kind}</div>
-          </div>
-          <div class="pcBody">
-            <p class="t">${p.title}</p>
-            ${p.subtitle ? `<p class="s">${p.subtitle}</p>` : ""}
-            ${p.meta ? `<p class="m">${p.meta}</p>` : ""}
-          </div>
-        `;
-        pc.appendChild(el);
-      });
-
-      // Features
-      const f = $("rFeatures");
-      f.innerHTML = "";
-      (db.features || []).forEach(x=>{
-        const li = document.createElement("li");
-        li.textContent = x;
-        f.appendChild(li);
-      });
-
-      // Architect note
-      const note = buildArchitectNote(payload);
-      $("rArchitectNote").textContent = note;
-
-      // Pet box
-      $("rPetBox").classList.toggle("hidden", !payload.persona.triggers.petMaterialRecommendation);
-
-      // Sales tip
-      $("rSalesTip").textContent = payload.persona.salesTip;
-
-      // Tie break
-      $("rTieBreak").textContent =
-        `Bütçe: ${payload.persona.tieBreak.usedBudget ? "Kullanıldı" : "Kullanılmadı"} | Stil: ${payload.persona.tieBreak.usedStyle ? "Kullanıldı" : "Kullanılmadı"}`;
-
-      // Summary
-      const sum = $("rSummary");
-      sum.innerHTML = "";
-      payload.selectionsReadable.forEach(s=>{
-        const d = document.createElement("div");
-        d.className = "summaryItem";
-        d.textContent = s;
-        sum.appendChild(d);
-      });
-
-      // Customer
-      $("rCustomerName").textContent = payload.customer.name || "-";
-      $("rCustomerPhone").textContent = payload.customer.phone || "-";
-      $("rCustomerCity").textContent = payload.customer.city || "-";
-      $("rCustomerNote").textContent = payload.customer.note || "-";
-
-      // Attach payload to buttons
-      $("saveBtn").onclick = ()=>{
-        const p = buildProposal();
-        saveLocal(p);
-        downloadJSON(p);
-        toast("Teklif kaydedildi ve indirildi.");
-      };
-
-      $("crmBtn").onclick = async ()=>{
-        const p = buildProposal();
-        const txt = safeJSON(p);
-        try{
-          await navigator.clipboard.writeText(txt);
-          toast("CRM için JSON kopyalandı.");
-        }catch(e){
-          window.prompt("Kopyala (Ctrl/Cmd + C):", txt);
-        }
-      };
-    }
-
-    function buildArchitectNote(payload){
-      const t = payload.persona.triggers;
-      const key = payload.persona.key;
-
-      if(t.highDurabilityAlert){
-        return "Çocuk + evcil hayvan senaryosu var. Darbe, çizik ve leke toleransı yüksek yüzeylere git. Akrilik PET ve bakım kolaylığını satışta öne çıkar. Pantry ile düzeni kilitle.";
-      }
-
-      if(t.petMaterialRecommendation){
-        return "Temizlik ve leke hassasiyeti çıktı. Anti-fingerprint ve hızlı bakım mesajını net kur. Kullanım ritmini basitleştiren organizer ve yüzey seçimiyle kararı hızlandır.";
-      }
-
-      if(key === "quick"){
-        return "Müşteri hız istiyor. Süreci 4 adıma indir: ölçü, onay, teslim, kurulum. Stok model ve aksesuar setleriyle riski düşür.";
-      }
-
-      if(key === "social"){
-        return "Sosyal senaryoyu sahnele: ada etrafında servis ve sohbet. Sergileme modülleri ve depolamayı misafir akışına bağla.";
-      }
-
-      if(key === "gourmet"){
-        return "İstasyon mantığını kur: hazırlık, pişirme, servis, toparlama. Organizer ve ergonomi üzerinden değer yarat.";
-      }
-
-      if(key === "luxury"){
-        return "Prestij dili: oran, yüzey, detay. Vitrin ve cam büfe ile katmanlı bir kalite hissi oluştur.";
-      }
-
-      if(key === "eco"){
-        return "Doğallık ve sürdürülebilirliği aynı cümlede bağla: doku, ömür, bakım. Micro garden ile yaşayan mutfak hissini güçlendir.";
-      }
-
-      if(key === "coastal"){
-        return "Huzur hissini renk, ışık ve ritim üzerinden anlat. Pencere önü senaryosu ve doğal aksesuarlarla anlatıyı tamamla.";
-      }
-
-      if(key === "nostalgic"){
-        return "Duygusal bağ üzerinden ilerle. Tonlar ve kulp detaylarıyla karakteri belirginleştir. Modern konforu vintage dilin içine göm.";
-      }
-
-      // tech or fallback
-      return "Öneriyi senaryo ile kilitle: müşterinin günlük ritmi, kullanım kolaylığı ve net fark yaratan aksesuar. Karar noktalarını sadeleştir.";
-    }
-
-    // -----------------------------
-    // Events
-    // -----------------------------
-    function syncCustomerFromInputs(){
-      STATE.customer.name = $("cName").value.trim();
-      STATE.customer.phone = $("cPhone").value.trim();
-      STATE.customer.city = $("cCity").value.trim();
-      STATE.customer.note = $("cNote").value.trim();
-    }
-
-    ["cName","cPhone","cCity","cNote"].forEach(id=>{
-      $(id).addEventListener("input", ()=>{
-        syncCustomerFromInputs();
-        if(STATE.screen === "quiz"){
-          const calc = calculate(STATE.answers);
-          $("livePersona").textContent = PERSONA_DB[calc.winner].titleTR;
-          $("liveHeadline").textContent = PERSONA_DB[calc.winner].headline;
-        }
-      });
-    });
-
-    $("startBtn").addEventListener("click", ()=>{
-      setScreen("quiz");
-      STATE.index = 0;
-      renderQuestion();
-      toast("Analiz başladı.");
-    });
-
-    $("demoBtn").addEventListener("click", ()=>{
-      // Quick demo answers to show result
-      STATE.answers = {
-        q1:"newHouse",
-        q2:"urgent",
-        q3:"large",
-        q4:["children","pets"],
-        q5:"operation",
-        q6:"cleaning",
-        q7:"modern",
-        q8:"matsoft",
-        q9:"gourmet",
-        q10:"pantry",
-        q11:"high",
-        q12:"hightech",
-        q13:"pp"
-      };
-      setScreen("quiz");
-      STATE.index = 0;
-      renderQuestion();
-      toast("Demo dolduruldu.");
-    });
-
-    $("resetBtn").addEventListener("click", ()=>{
-      STATE.index = 0;
-      STATE.answers = {};
-      STATE.customer = { name:"", phone:"", city:"", note:"" };
-      $("cName").value = "";
-      $("cPhone").value = "";
-      $("cCity").value = "";
-      $("cNote").value = "";
-      setScreen("welcome");
-      updateSavedPill();
-      toast("Sıfırlandı.");
-    });
-
-    $("backBtn").addEventListener("click", ()=>{
-      STATE.index = clamp(STATE.index - 1, 0, QUESTIONS.length - 1);
-      renderQuestion();
-    });
-
-    $("nextBtn").addEventListener("click", ()=>{
-      const q = QUESTIONS[STATE.index];
-      if(!isAnswered(q, STATE.answers)){
-        toast("Devam etmek için seçim yap.");
-        return;
-      }
-
-      const isLast = STATE.index === QUESTIONS.length - 1;
-      if(isLast){
-        syncCustomerFromInputs();
-        setScreen("result");
-        renderResult();
-        toast("Sonuç hazır.");
-        return;
-      }
-
-      STATE.index = clamp(STATE.index + 1, 0, QUESTIONS.length - 1);
-      renderQuestion();
-    });
-
-    $("editBtn").addEventListener("click", ()=>{
-      setScreen("quiz");
-      renderQuestion();
-      toast("Düzenleme modu.");
-    });
-
-    $("newBtn").addEventListener("click", ()=>{
-      // keep customer but reset answers by default
-      STATE.index = 0;
-      STATE.answers = {};
-      setScreen("quiz");
-      renderQuestion();
-      toast("Yeni analiz.");
-    });
-
-    // -----------------------------
-    // Init
-    // -----------------------------
-    updateSavedPill();
-    setScreen("welcome");
+    // Auto-jump: Start ekranında kayıt varsa, kullanıcı isterse "Devam Et" görsün
+    // (Zorla yönlendirme yok)
   </script>
 </body>
 </html>
