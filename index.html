@@ -333,6 +333,43 @@
     .opt.multi .mark{ border-radius: 4px; }
     .opt.multi.sel .mark{ border-radius: 4px; }
 
+    /* Visual Question (Image Grid) Styles */
+    .options.grid-view {
+      grid-template-columns: 1fr 1fr;
+    }
+    .opt.has-img {
+      flex-direction: column;
+      padding: 0;
+      gap: 0;
+      overflow: hidden;
+      align-items: stretch;
+    }
+    .opt.has-img .img-wrap{
+      height: 150px;
+      width: 100%;
+      background: #f3f4f6;
+      border-bottom: 1px solid var(--border);
+    }
+    .opt.has-img .img-wrap img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .opt.has-img .content-wrap{
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    @media (max-width: 600px){
+       .options.grid-view { grid-template-columns: 1fr 1fr; gap: 12px; }
+       .opt.has-img .img-wrap { height: 110px; }
+       .opt.has-img .content-wrap { padding: 12px; }
+       .opt.has-img .t { font-size: 13px; }
+    }
+
     .navRow{
       display:flex;
       justify-content:space-between;
@@ -600,6 +637,31 @@
   <script>
     // --- REVİZE EDİLMİŞ DENGELİ SORU HAVUZU (MAX PUAN ~100 EŞİTLENDİ) ---
     const questions = [
+      {
+        id: 15, text: "Hangi görseldeki mutfak sana 'İşte bu benim evim!' dedirtiyor?", type: "single", layout: "grid",
+        options: [
+          {
+            text: "Yazlık & Enerjik",
+            image: "https://res.cloudinary.com/drp4askpq/image/upload/v1767170807/e844028e-267e-4f0c-b52c-0399e17efd38_gsesrx.jpg",
+            scores: { sahilruhu: 20, klasikluk: 5 }
+          },
+          {
+            text: "Sıcak & Samimi",
+            image: "https://res.cloudinary.com/drp4askpq/image/upload/v1767170801/93bc9ec0-8557-4ea6-9889-3a06f8e0a57a_trwp3e.jpg",
+            scores: { konforodakli: 20, nostaljik: 10 }
+          },
+          {
+            text: "Doğal & Ferah",
+            image: "https://res.cloudinary.com/drp4askpq/image/upload/v1767170768/7c57193b-b1bd-4967-9acd-8c1fb6df025e_erwnez.jpg",
+            scores: { dogalruh: 20, konforodakli: 5 }
+          },
+          {
+            text: "Modern & Karizmatik",
+            image: "https://res.cloudinary.com/drp4askpq/image/upload/v1767170765/891b1da9-75cb-41e8-a9a4-c19a588df427_sxdpfd.jpg",
+            scores: { sehirlivizyoner: 20, hizpratik: 5 }
+          }
+        ]
+      },
       {
         id: 1, text: "Bu mutfak projesinin niteliği nedir?", type: "single",
         options: [
@@ -1259,7 +1321,21 @@
           ? selected === idx
           : (Array.isArray(selected) && selected.includes(idx));
 
-        const cls = ["opt", q.type === "multi" ? "multi" : "", isSel ? "sel" : ""].join(" ").trim();
+        const hasImg = !!o.image;
+        const cls = ["opt", q.type === "multi" ? "multi" : "", isSel ? "sel" : "", hasImg ? "has-img" : ""].join(" ").trim();
+
+        if(hasImg){
+          return `
+            <div class="${cls}" data-opt="${idx}" role="button" tabindex="0" aria-pressed="${isSel}">
+              <div class="img-wrap"><img src="${o.image}" loading="lazy" alt="" /></div>
+              <div class="content-wrap">
+                <div class="t">${escapeHtml(o.text)}</div>
+                <div class="mark" aria-hidden="true"></div>
+              </div>
+            </div>
+          `;
+        }
+
         return `
           <div class="${cls}" data-opt="${idx}" role="button" tabindex="0" aria-pressed="${isSel}">
             <div>
@@ -1287,7 +1363,7 @@
           </div>
 
           <div class="cardBody">
-            <div class="options" id="optList">${optionHtml}</div>
+            <div class="options ${q.layout === 'grid' ? 'grid-view' : ''}" id="optList">${optionHtml}</div>
 
             <div class="navRow">
               <div class="left">
