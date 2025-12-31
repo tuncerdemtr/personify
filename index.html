@@ -183,6 +183,14 @@
     }
     .cardBody{ padding: var(--pad); }
 
+    .screen{
+      animation: fadeSlide .35s ease;
+    }
+    @keyframes fadeSlide{
+      from{ opacity: 0; transform: translateY(8px); }
+      to{ opacity: 1; transform: translateY(0); }
+    }
+
     .stack{
       display:flex;
       flex-direction:column;
@@ -470,6 +478,117 @@
       color: var(--muted);
     }
 
+    .loadingWrap{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height: 320px;
+      text-align:center;
+    }
+    .loadingCard{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      align-items:center;
+    }
+    .spinner{
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      border: 3px solid rgba(120,170,255,.25);
+      border-top-color: rgba(120,170,255,.8);
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin{
+      to{ transform: rotate(360deg); }
+    }
+
+    .resultHero{
+      border-radius: 18px;
+      overflow:hidden;
+      border: 1px solid var(--stroke);
+      box-shadow: var(--shadow-lite);
+    }
+    .resultHero img{
+      display:block;
+      width:100%;
+      height: 280px;
+      object-fit: cover;
+    }
+    .resultHeader{
+      display:flex;
+      flex-direction:column;
+      gap: 6px;
+    }
+    .resultHeader h2{
+      margin:0;
+      font-size: 22px;
+      font-weight: 760;
+    }
+    .resultHeader p{
+      margin:0;
+      color: var(--muted);
+      line-height:1.5;
+      font-size: 14px;
+    }
+
+    .swatchGrid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+    }
+    .swatch{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.8);
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .swatchDot{
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,.08);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,.6);
+      flex: 0 0 auto;
+    }
+
+    .checklist{
+      list-style:none;
+      padding:0;
+      margin:0;
+      display:grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .checklist li{
+      display:flex;
+      align-items:flex-start;
+      gap: 8px;
+    }
+    .checklist li::before{
+      content:"✓";
+      color: rgba(80,160,120,.95);
+      font-weight: 800;
+      font-size: 14px;
+      line-height:1.2;
+      margin-top: 2px;
+    }
+
+    .ctaRow{
+      display:flex;
+      justify-content:flex-start;
+    }
+    .ctaRow .btn{
+      text-decoration:none;
+    }
+
     .alert{
       background:
         var(--glow),
@@ -536,7 +655,7 @@
       <div class="brand">
         <div class="kicker">Sales Point Tablet App</div>
         <h1>İntema Mutfak Dijital Mimar Asistanı</h1>
-        <p>14 soruluk akış. 10 arketip skoru. Sonuç ekranında reçete ve hibrit profil öne çıkar.</p>
+        <p>14 soruluk akış. 7 persona skoru. Sonuç ekranında kişisel model ve aksesuar önerisi öne çıkar.</p>
       </div>
       <div class="topActions">
         <div class="pill" id="sessionPill"><strong>Oturum:</strong> <span id="sessionState">Yeni</span></div>
@@ -558,120 +677,120 @@
       {
         id: 1, text: "Bu mutfak projesinin niteliği nedir?", type: "single",
         options: [
-          { text: "Kendi evim / Tadilat", scores: { p3: 5, p10: 5 } },
-          { text: "Yeni Ev / Sıfır Proje", scores: { p1: 10, p2: 10, p7: 5 } },
-          { text: "Yatırım / Stüdyo / Kiraya verilecek", scores: { p4: 30 } },
-          { text: "Yazlık / İkinci Ev", scores: { p8: 40 } }
+          { text: "Kendi evim / Tadilat", scores: { konforodakli: 12, dogalruh: 6 } },
+          { text: "Yeni Ev / Sıfır Proje", scores: { sehirlivizyoner: 14, klasikluk: 10 } },
+          { text: "Yatırım / Stüdyo / Kiraya verilecek", scores: { hizpratik: 26 } },
+          { text: "Yazlık / İkinci Ev", scores: { sahilruhu: 28 } }
         ]
       },
       {
         id: 2, text: "Zaman kısıtınız nedir?", type: "single",
         options: [
-          { text: "Çok acil, hemen bitmeli", scores: { p9: 40, p4: 10 } },
-          { text: "Standart süreç (1-2 ay)", scores: { p3: 5, p5: 5 } },
-          { text: "Zaman sorun değil, mükemmel olsun", scores: { p2: 15, p10: 15, p6: 10 } }
+          { text: "Çok acil, hemen bitmeli", scores: { hizpratik: 30 } },
+          { text: "Standart süreç (1-2 ay)", scores: { konforodakli: 12 } },
+          { text: "Zaman sorun değil, mükemmel olsun", scores: { klasikluk: 14, dogalruh: 10, sehirlivizyoner: 8 } }
         ]
       },
       {
         id: 3, text: "Mutfak alanının durumu?", type: "single",
         options: [
-          { text: "Dar / Küçük", scores: { p4: 15, p9: 10 } },
-          { text: "Geniş / Ada Müsait", scores: { p7: 25, p5: 15, p2: 10 } },
-          { text: "Standart", scores: { p3: 5 } }
+          { text: "Dar / Küçük", scores: { hizpratik: 20 } },
+          { text: "Geniş / Ada Müsait", scores: { sehirlivizyoner: 14, klasikluk: 12, sahilruhu: 8 } },
+          { text: "Standart", scores: { konforodakli: 10 } }
         ]
       },
       {
         id: 4, text: "Hane Halkı (Birden fazla seçebilirsiniz)", type: "multi",
         options: [
-          { text: "Yalnız / Çift", scores: { p1: 15, p4: 10, p5: 5 } },
-          { text: "Çocuklar Var", scores: { p3: 20 } },
-          { text: "Evcil Hayvan Var", scores: { p6: 15, p3: 10 } },
-          { text: "Kalabalık Aile", scores: { p7: 15, p10: 10, p3: 10 } }
+          { text: "Yalnız / Çift", scores: { sehirlivizyoner: 10, hizpratik: 8 } },
+          { text: "Çocuklar Var", scores: { konforodakli: 18 } },
+          { text: "Evcil Hayvan Var", scores: { dogalruh: 12, konforodakli: 6 } },
+          { text: "Kalabalık Aile", scores: { konforodakli: 12, nostaljik: 8 } }
         ]
       },
       {
         id: 5, text: "Mutfak sizin için ne ifade ediyor?", type: "single",
         options: [
-          { text: "Vitrin (Sosyal Alan)", scores: { p7: 30, p1: 10, p2: 10 } },
-          { text: "Operasyon (Yemek Yapma)", scores: { p5: 35 } },
-          { text: "Sığınak (Huzur)", scores: { p8: 25, p6: 20 } },
-          { text: "Kalp (Aile Odaklı)", scores: { p10: 25, p3: 10 } },
-          { text: "İstasyon (Pratik)", scores: { p9: 20, p4: 15 } }
+          { text: "Vitrin (Sosyal Alan)", scores: { sehirlivizyoner: 20, klasikluk: 12 } },
+          { text: "Operasyon (Yemek Yapma)", scores: { hizpratik: 14 } },
+          { text: "Sığınak (Huzur)", scores: { dogalruh: 18 } },
+          { text: "Kalp (Aile Odaklı)", scores: { konforodakli: 16, nostaljik: 12 } },
+          { text: "İstasyon (Pratik)", scores: { hizpratik: 18 } }
         ]
       },
       {
         id: 6, text: "Şu anki mutfakta en büyük şikayetiniz?", type: "single",
         options: [
-          { text: "Dağınıklık / Yer yok", scores: { p5: 15, p3: 5, p4: 5 } },
-          { text: "Temizlik Zorluğu / Lekeler", scores: { p3: 15, p9: 10 } },
-          { text: "Demode Görünüm", scores: { p1: 15, p2: 10, p7: 5 } },
-          { text: "Karanlık / Basık", scores: { p8: 20, p6: 10 } }
+          { text: "Dağınıklık / Yer yok", scores: { konforodakli: 16 } },
+          { text: "Temizlik Zorluğu / Lekeler", scores: { konforodakli: 12, hizpratik: 8 } },
+          { text: "Demode Görünüm", scores: { sehirlivizyoner: 12, klasikluk: 10, nostaljik: 6 } },
+          { text: "Karanlık / Basık", scores: { dogalruh: 12, sahilruhu: 12 } }
         ]
       },
       {
         id: 7, text: "Hangi tasarım dili size yakın?", type: "single",
         options: [
-          { text: "Modern & Minimal", scores: { p1: 20, p5: 10, p4: 5 } },
-          { text: "Klasik & Gösterişli", scores: { p2: 30, p10: 10 } },
-          { text: "Country & Doğal", scores: { p10: 30, p6: 20, p8: 15 } },
-          { text: "Endüstriyel", scores: { p1: 15, p5: 15, p7: 10 } }
+          { text: "Modern & Minimal", scores: { sehirlivizyoner: 18, hizpratik: 8 } },
+          { text: "Klasik & Gösterişli", scores: { klasikluk: 22 } },
+          { text: "Country & Doğal", scores: { dogalruh: 18, nostaljik: 14, sahilruhu: 10 } },
+          { text: "Endüstriyel", scores: { sehirlivizyoner: 12, hizpratik: 10 } }
         ]
       },
       {
         id: 8, text: "Malzeme ve Doku tercihiniz?", type: "single",
         options: [
-          { text: "Doğal Ahşap Dokusu", scores: { p6: 25, p10: 15, p8: 10 } },
-          { text: "Mat ve Soft Renkler", scores: { p3: 15, p8: 15, p1: 5 } },
-          { text: "Parlak ve Canlı", scores: { p2: 25, p7: 15 } },
-          { text: "Koyu ve Maskülen", scores: { p1: 20, p5: 10 } }
+          { text: "Doğal Ahşap Dokusu", scores: { dogalruh: 20, nostaljik: 10 } },
+          { text: "Mat ve Soft Renkler", scores: { konforodakli: 12, sahilruhu: 10 } },
+          { text: "Parlak ve Canlı", scores: { klasikluk: 18 } },
+          { text: "Koyu ve Maskülen", scores: { sehirlivizyoner: 16 } }
         ]
       },
       {
         id: 9, text: "Yemek pişirme alışkanlığınız?", type: "single",
         options: [
-          { text: "Standart Pişirme", scores: { p3: 10, p10: 5 } },
-          { text: "Gurme / Profesyonel", scores: { p5: 40 } },
-          { text: "Minimum / Pratik", scores: { p9: 20, p4: 15, p1: 5 } }
+          { text: "Standart Pişirme", scores: { konforodakli: 10 } },
+          { text: "Gurme / Profesyonel", scores: { sehirlivizyoner: 10, klasikluk: 8 } },
+          { text: "Minimum / Pratik", scores: { hizpratik: 18 } }
         ]
       },
       {
         id: 10, text: "Depolama ihtiyacınız?", type: "single",
         options: [
-          { text: "Maksimum Kiler / Stok", scores: { p3: 15, p5: 15 } },
-          { text: "Vitrin / Sergileme", scores: { p7: 20, p2: 15, p10: 10 } },
-          { text: "Standart / Kapalı Dolap", scores: { p4: 10, p1: 5 } }
+          { text: "Maksimum Kiler / Stok", scores: { konforodakli: 18 } },
+          { text: "Vitrin / Sergileme", scores: { klasikluk: 16, sehirlivizyoner: 10 } },
+          { text: "Standart / Kapalı Dolap", scores: { hizpratik: 10 } }
         ]
       },
       {
         id: 11, text: "Sürdürülebilirlik önceliğiniz?", type: "single",
         options: [
-          { text: "Çok Önemli / Vazgeçilmez", scores: { p6: 40 } },
-          { text: "Önemli ama estetik de önemli", scores: { p6: 15, p8: 10, p3: 5 } },
-          { text: "Öncelik Değil", scores: { p4: 5, p9: 5 } }
+          { text: "Çok Önemli / Vazgeçilmez", scores: { dogalruh: 28 } },
+          { text: "Önemli ama estetik de önemli", scores: { dogalruh: 12, sahilruhu: 8, konforodakli: 6 } },
+          { text: "Öncelik Değil", scores: { hizpratik: 8 } }
         ]
       },
       {
         id: 12, text: "Teknoloji entegrasyonu?", type: "single",
         options: [
-          { text: "High-Tech (Akıllı sistemler)", scores: { p1: 30, p5: 5 } },
-          { text: "Geleneksel / Manuel", scores: { p10: 25, p6: 10, p8: 5 } }
+          { text: "High-Tech (Akıllı sistemler)", scores: { sehirlivizyoner: 22 } },
+          { text: "Geleneksel / Manuel", scores: { nostaljik: 16, klasikluk: 12 } }
         ]
       },
       {
         id: 13, text: "Bütçe yaklaşımınız?", type: "single",
         options: [
-          { text: "Esnek / Prestij Odaklı", scores: { p2: 30, p1: 10, p7: 10 } },
-          { text: "Fiyat / Performans", scores: { p3: 20, p5: 10, p10: 5 } },
-          { text: "Ekonomik / Bütçe Dostu", scores: { p4: 25, p9: 15 } }
+          { text: "Esnek / Prestij Odaklı", scores: { klasikluk: 20, sehirlivizyoner: 12 } },
+          { text: "Fiyat / Performans", scores: { konforodakli: 14, hizpratik: 12 } },
+          { text: "Ekonomik / Bütçe Dostu", scores: { hizpratik: 18 } }
         ]
       },
       {
         id: 14, text: "Karar verme faktörünüz?", type: "single",
         options: [
-          { text: "Tasarım Heyecanı", scores: { p1: 10, p2: 5, p7: 5 } },
-          { text: "Güven / Garanti", scores: { p3: 15, p10: 5 } },
-          { text: "Hız / Teslimat", scores: { p9: 30 } },
-          { text: "Maliyet", scores: { p4: 15 } }
+          { text: "Tasarım Heyecanı", scores: { sehirlivizyoner: 12, klasikluk: 8 } },
+          { text: "Güven / Garanti", scores: { konforodakli: 12 } },
+          { text: "Hız / Teslimat", scores: { hizpratik: 16 } },
+          { text: "Maliyet", scores: { hizpratik: 10 } }
         ]
       }
     ];
@@ -679,192 +798,129 @@
     // Persona verisi: sonuç ekranındaki aksesuar, renk, malzeme önerileri buradan gelir
     const personasList = [
       {
-        id: "p1",
-        title: "Şehirli Vizyoner",
-        headline: "Mutfak Senin İçin Bir Vitrin.",
-        summary: "Trendleri takip ediyor, teknolojiyi ve modernizmi seviyorsun. Net çizgiler ve çağdaş detaylarla yaşayan, şık bir alan istiyorsun.",
-        model: "INOVA",
-        material: "Mat Lake / Metal Görünümlü",
-        color: "Renk: M104_Grafit / T112_Koyu Taupe / M007_Siyah",
-        modelImage: "https://images.unsplash.com/photo-1502005097973-6a7082348e28?auto=format&fit=crop&w=900&q=80",
-        colorImage: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=900&q=80",
-        accessoryImage: "https://images.unsplash.com/photo-1506368249639-73a05d6f6488?auto=format&fit=crop&w=900&q=80",
-        features: [
-          "Kulpsuz Tasarım (Gola Profil)",
-          "Ring Aydınlatma Ünitesi",
-          "USB Şarjlı Modüller"
+        id: "sehirlivizyoner",
+        title: "Şehirli Vizyoner (The Urban Visionary)",
+        description: "Mutfak senin için bir vitrin. Trendleri takip ediyor, teknolojiyi ve modernizmi seviyorsun.",
+        recommendedModel: "Inova",
+        style: "Modern & Minimal",
+        materials: ["Mat Lake", "Metal Görünümlü Yüzeyler"],
+        colors: ["M104_Grafit", "T112_Koyu Taupe", "M007_Siyah"],
+        accessories: [
+          "Kulpsuz Gola Profil Sistemi (Mat Siyah)",
+          "Hareket Sensörlü LED Aydınlatma (Gövde İçi)",
+          "Blum Antaro Çekmece İçi Düzenleyici (Orion Gri)"
         ],
-        architectNote: "Grafit ve koyu taupe renklerini metal görünümle eşleştirip modern ve minimal çizgiyi vurgulayın."
+        features: ["Teknolojik Entegrasyon", "Minimalist Hatlar", "Koyu Renk Paleti"],
+        imageQuery: "modern dark graphite luxury kitchen with led lights"
       },
       {
-        id: "p2",
-        title: "Klasik Lüks Sever",
-        headline: "Zamansız Kalite ve Prestij.",
-        summary: "Kalite asla modası geçmeyen bir yatırımdır. Geleneksel çizgilerin ağırbaşlılığını ve işçilik detaylarını arıyorsun.",
-        model: "TOSCANA",
-        material: "Parlak Lake / Mat Lake",
-        color: "Renk: P019_Orman Yeşili / P020_Uzay Mavi / P017_İnci Beyaz",
-        modelImage: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=900&q=80",
-        colorImage: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
-        accessoryImage: "https://images.unsplash.com/photo-1523413651479-597eb2da0ad6?auto=format&fit=crop&w=900&q=80",
-        features: [
-          "Çerçeveli Kapaklar",
-          "Büfe Tipi Camlı Üst Dolaplar",
-          "Gold/Pirinç Kulplar (MKGDK33FP0032)"
+        id: "klasikluk",
+        title: "Klasik Lüks Sever (The Heritage Luxury)",
+        description: "Kalite asla modası geçmeyen bir yatırımdır. Geleneksel çizgilerin ağırbaşlılığını arıyorsun.",
+        recommendedModel: "Toscana",
+        style: "Neo-Klasik",
+        materials: ["Parlak Lake", "Masif Çerçeve"],
+        colors: ["P019_Orman Yeşili", "P020_Uzay Mavi", "P017_İnci Beyaz"],
+        accessories: [
+          "Gold (Altın) Kulp - Kod: MKGDK33FP0032",
+          "Klasik Taç ve Işık Bandı Profilleri",
+          "Büfe Tipi Camlı Üst Dolaplar (Sable Cam)"
         ],
-        architectNote: "Toscana'nın çerçeve işçiliğini ve orman yeşili renginin derinliğini numune üzerinde gösterin."
+        features: ["Gösterişli Detaylar", "Simetrik Yerleşim", "Zengin Aksesuarlar"],
+        imageQuery: "classic green luxury kitchen cabinets gold handles"
       },
       {
-        id: "p3",
-        title: "Konfor Odaklı Aile",
-        headline: "Dayanıklılık ve Kolaylık Önceliğin.",
-        summary: "Mutfak evin kalbidir. Dayanıklılık, temizlik kolaylığı ve bolca saklama alanı senin için her şeyden önemli.",
-        model: "SIENA",
-        material: "Akrilik PET / Mat PET",
-        color: "Renk: T125_Manolya / T123_Kaşmir / T122_Açık Gri",
-        modelImage: "https://images.unsplash.com/photo-1481278403982-f2d9f387cdcc?auto=format&fit=crop&w=900&q=80",
-        colorImage: "https://images.unsplash.com/photo-1501045661006-fcebe0257c3f?auto=format&fit=crop&w=900&q=80",
-        accessoryImage: "https://images.unsplash.com/photo-1481931715705-36f5f79f1f3d?auto=format&fit=crop&w=900&q=80",
-        features: [
-          "Parmak İzi Bırakmayan Yüzey",
-          "Boy Kiler Mekanizması (Dispensa)",
-          "Evcil Hayvan Modülü"
+        id: "konforodakli",
+        title: "Konfor Odaklı Aile (The Comfort Family)",
+        description: "Mutfak evin kalbidir. Senin için dayanıklılık, temizlik kolaylığı ve bolca saklama alanı her şeyden önemli.",
+        recommendedModel: "Siena",
+        style: "Fonksiyonel & Sıcak",
+        materials: ["Akrilik PET (Çizilmez)", "Mat PET"],
+        colors: ["T125_Manolya", "T123_Kaşmir", "T122_Açık Gri"],
+        accessories: [
+          "Boy Kiler Mekanizması (Tam Açılım)",
+          "Fasulye Köşe Mekanizması (Kör Köşe Çözümü)",
+          "Tezgah Altı Çöp Kovası Sistemleri"
         ],
-        architectNote: "Mat PET ve akrilik PET yüzeylerin dayanıklılık ve temizlik kolaylığını vurgulayın."
+        features: ["Maksimum Depolama", "Parmak İzi Bırakmayan Yüzey", "Ergonomi"],
+        imageQuery: "cozy family kitchen beige cabinets bright"
       },
       {
-        id: "p4",
-        title: "Akıllı Yatırımcı (Micro-Living)",
-        headline: "Akıllı Metrekareler, Yüksek Değer.",
-        summary: "Pragmatiksiniz. Alan kısıtlı ama beklentiniz yüksek. Hedefiniz; bütçeyi yormadan, uzun ömürlü ve mekanı verimli kullanan bir çözüm.",
-        model: "PRIME",
-        material: "Melamin",
-        color: "Renk: Beyaz / Kum Beji / Meşe",
-        modelImage: "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=900&q=80",
-        colorImage: "https://images.unsplash.com/photo-1481277542470-605612bd2d61?auto=format&fit=crop&w=900&q=80",
-        accessoryImage: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=900&q=80",
-        features: [
-          "Yerden Tasarruf Sağlayan Açılır Masa",
-          "Kör Köşe Mekanizması (Le Mans)",
-          "Darbe Dayanımı Yüksek Melamin Kapaklar",
-          "Laminant Tezgah (Hızlı Teslimat)"
+        id: "dogalruh",
+        title: "Doğal Ruh (The Natural Soul)",
+        description: "Evin senin sığınağın. Doğal dokular, ahşap sıcaklığı ve sürdürülebilirlik önceliğin.",
+        recommendedModel: "Norda",
+        style: "İskandinav & Natural",
+        materials: ["Doğal Ahşap Kaplama", "Geri Dönüştürülmüş PET"],
+        colors: ["W009_Düşey Hareli Naturel Meşe", "T1_121_Adaçayı Yeşili", "M023_Beton Yeşili"],
+        accessories: [
+          "Ahşap Çekmece İçi Kaşıklık (Dişbudak)",
+          "Metal Çerçeveli Ahşap Açık Raf Üniteleri",
+          "Bitki Yetiştirme Modülü (Micro Garden)"
         ],
-        architectNote: "Prime serisinin modüler yapısını ve Melamin malzemenin fiyat/performans avantajını anlatın."
+        features: ["Sürdürülebilir Malzeme", "Bitkisel Dokunuşlar", "Ferah Tasarım"],
+        imageQuery: "scandinavian kitchen light wood green plants"
       },
       {
-        id: "p5",
-        title: "Gurme Şef",
-        headline: "Evinizin Profesyonel Lezzet İstasyonu.",
-        summary: "Yemek yapmak sizin için bir sanat. Tezgahınız atölyeniz. İhtiyacınız olan şey estetikten öte, kusursuz bir operasyonel akış.",
-        model: "INOVA (+5cm Yüksek Gövde)",
-        material: "Mat Lake",
-        color: "Renk: Koyu Gri / Beyaz",
-        modelImage: "https://images.unsplash.com/photo-1501876725168-00c445821c9e?auto=format&fit=crop&w=900&q=80",
-        colorImage: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=80",
-        accessoryImage: "https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=900&q=80",
-        features: [
-          "Orgalux Ahşap Çekmece İçi Düzenleyiciler",
-          "78 cm Yüksek Gövde (%20 Fazla Hacim)",
-          "Sanayi Tipi Eviye ve Batarya",
-          "Ergonomik (Yükseltilmiş) Bulaşık Makinesi Modülü"
+        id: "hizpratik",
+        title: "Hız ve Pratiklik Odaklı (The Smart Investor)",
+        description: "Kararını verdin, sonuç istiyorsun. Hızlı, ekonomik ama şık çözümler tam sana göre.",
+        recommendedModel: "Prime",
+        style: "Modern & Ekonomik",
+        materials: ["Laminant", "Düz Melamin"],
+        colors: ["M104_Grafit", "M103_Latte", "M101_Mat Beyaz"],
+        accessories: [
+          "Açılır Masa Mekanizması (Space Saver)",
+          "Tezgah Arası Ray Sistemi (Askı Elemanları)",
+          "Entegre Kulp (Kapak Kendinden Kulplu)"
         ],
-        architectNote: "Müşteriyi +5cm yüksek modül yanına götürüp tezgah ergonomisi ve iç hacim farkını deneyimletin."
+        features: ["Hızlı Kurulum", "Modüler Yapı", "Fiyat/Performans"],
+        imageQuery: "compact modern kitchen studio apartment"
       },
       {
-        id: "p6",
-        title: "Doğal Ruh",
-        headline: "Doğal Dokularla Sığınak Hissi.",
-        summary: "Evin senin sığınağın. Doğal dokular, ahşap sıcaklığı ve sürdürülebilirlik önceliğin.",
-        model: "NORDA",
-        material: "Doğal Ahşap Kaplama / Geri Dönüştürülmüş PET",
-        color: "Renk: W009_Düşey Hareli Naturel Meşe / T1_121_Adaçayı Yeşili / M023_Beton Yeşili",
-        modelImage: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=900&q=80",
-        colorImage: "https://images.unsplash.com/photo-1493770348161-369560ae357d?auto=format&fit=crop&w=900&q=80",
-        accessoryImage: "https://images.unsplash.com/photo-1472220625704-91e1462799b2?auto=format&fit=crop&w=900&q=80",
-        features: [
-          "Micro Garden Ünitesi (Bitki Yetiştirme)",
-          "Ahşap Açık Raflar",
-          "İskandinav Tasarım"
+        id: "nostaljik",
+        title: "Nostaljik Romantik (The Vintage Lover)",
+        description: "Geçmişin sıcaklığı, bugünün konforu. 'Anne mutfağı' sıcaklığında, duygusal bağ kurabileceğin bir yer.",
+        recommendedModel: "Vega",
+        style: "Country / Vintage",
+        materials: ["Mat Lake", "Polimerik"],
+        colors: ["V1_M021_Baltık Mavi", "T125_Manolya", "V1_M024_Buz Gri"],
+        accessories: [
+          "Antik Kulp (Eskitme) - Kod: MKGAK24MS0128",
+          "Ahşap Tabaklık Rafı (Terek)",
+          "Kafesli Tel Dolap Kapakları"
         ],
-        architectNote: "Düşey hareli meşe dokusunu ve adaçayı yeşili tonlarını doğal ışıkta gösterin."
+        features: ["Rustik Dokunuşlar", "Sıcak Atmosfer", "Detaylı İşçilik"],
+        imageQuery: "vintage blue country kitchen rustic style"
       },
       {
-        id: "p7",
-        title: "Sosyal Ev Sahibi",
-        headline: "Sadece Yemek Değil, Sohbet Pişirilen Yer.",
-        summary: "Mutfak sizin sahneniz. Dostlarınızla kadeh kaldırdığınız, yemek yaparken sohbetin kesilmediği, salonla bütünleşen bir alan.",
-        model: "INOVA (Ada Planlaması)",
-        material: "Kombinasyon: Mat Lake ve Doğal Kaplama",
-        color: "Renk: Siyah (Ada) ve Ceviz (Dolaplar)",
-        modelImage: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=900&q=80",
-        colorImage: "https://images.unsplash.com/photo-1495567720989-cebdbdd97913?auto=format&fit=crop&w=900&q=80",
-        accessoryImage: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80",
-        features: [
-          "Ada Çevresi Oturma Alanı (Bar)",
-          "Şaraplık ve Kadehlik Modülleri",
-          "Dekoratif Metal Tavan Rafları",
-          "Ambiyans Aydınlatması"
+        id: "sahilruhu",
+        title: "Yazlık Ruhu (The Coastal Dreamer)",
+        description: "Şehirde bile olsan mutfağında bir sahil evi ferahlığı arıyorsun. Çizgili dokular ve mavi tonlar vazgeçilmezin.",
+        recommendedModel: "Fresca",
+        style: "Akdeniz & Marin",
+        materials: ["Mat Lake", "Mat PET"],
+        colors: ["F1_M021_Baltık Mavi", "F1_M001_Buz Beyaz", "T1_120_Baltık Mavi"],
+        accessories: [
+          "Krom Kulp - Kod: MKGDK02EB0026",
+          "Camlı Üst Dolaplar (Buzlu Cam)",
+          "Açık Mavi/Beyaz Raf Sistemleri"
         ],
-        architectNote: "Ada mutfağın salona bakan yüzünde vitrin veya açık raf kullanarak geçişi nasıl yumuşatacağınızı anlatın."
-      },
-      {
-        id: "p8",
-        title: "Yazlık Ruhu",
-        headline: "Sahil Evi Ferahlığı.",
-        summary: "Şehirde bile olsan mutfağında bir sahil evi ferahlığı arıyorsun. Çizgili dokular ve mavi tonlar vazgeçilmezin.",
-        model: "FRESCA",
-        material: "Mat Lake / Mat PET",
-        color: "Renk: F1_M021_Baltık Mavi / F1_M001_Buz Beyaz / T1_120_Baltık Mavi",
-        modelImage: "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?auto=format&fit=crop&w=900&q=80",
-        colorImage: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80",
-        accessoryImage: "https://images.unsplash.com/photo-1502055887010-bba4e8f7b21b?auto=format&fit=crop&w=900&q=80",
-        features: [
-          "Düşey Fugalı Kapaklar",
-          "Cam Önü Eviye Yerleşimi",
-          "Marin Esintiler"
-        ],
-        architectNote: "Baltık mavi tonlarını çizgili kapak dokusuyla eşleştirip marin hissi güçlendirin."
-      },
-      {
-        id: "p9",
-        title: "Hız ve Pratiklik Odaklı",
-        headline: "Hızlı ve Ekonomik Çözümler.",
-        summary: "Kararını verdin, sonuç istiyorsun. Hızlı, ekonomik ama şık çözümler tam sana göre.",
-        model: "PRIME",
-        material: "Laminant / Düz Melamin",
-        color: "Renk: M104_Grafit / M103_Latte / M101_Mat Beyaz",
-        modelImage: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=900&q=80",
-        colorImage: "https://images.unsplash.com/photo-1487014679447-9f8336841d58?auto=format&fit=crop&w=900&q=80",
-        accessoryImage: "https://images.unsplash.com/photo-1506368249639-73a05d6f6488?auto=format&fit=crop&w=900&q=80",
-        features: [
-          "Hızlı Teslimat",
-          "Açılır Masa Mekanizmaları",
-          "Kapağa Entegre Kulp"
-        ],
-        architectNote: "Prime serisinde hızlı teslimat avantajını net tarih vererek vurgulayın."
-      },
-      {
-        id: "p10",
-        title: "Nostaljik Romantik",
-        headline: "Geçmişin Sıcaklığı, Bugünün Konforu.",
-        summary: "Geçmişin sıcaklığı, bugünün konforu. 'Anne mutfağı' sıcaklığında duygusal bir yer istiyorsun.",
-        model: "VEGA",
-        material: "Mat Lake / Polimerik",
-        color: "Renk: V1_M021_Baltık Mavi / T125_Manolya / V1_M024_Buz Gri",
-        modelImage: "https://images.unsplash.com/photo-1449844908441-8829872d2607?auto=format&fit=crop&w=900&q=80",
-        colorImage: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&w=900&q=80",
-        accessoryImage: "https://images.unsplash.com/photo-1481931715705-36f5f79f1f3d?auto=format&fit=crop&w=900&q=80",
-        features: [
-          "Kafesli Tel Dolaplar",
-          "Rustik Kulplar",
-          "Açık Terek Rafları"
-        ],
-        architectNote: "Vega'nın country hissini rustik kulplar ve kafesli tel dolaplarla güçlendirin."
+        features: ["Düşey Fuga Detayları", "Marin Esintiler", "Aydınlık Alanlar"],
+        imageQuery: "coastal kitchen blue striped cabinets bright"
       }
     ];
 
     const personas = Object.fromEntries(personasList.map(p => [p.id, p]));
-    const personaOrder = ["p1","p2","p3","p4","p5","p6","p7","p8","p9","p10"];
+    const personaOrder = [
+      "sehirlivizyoner",
+      "klasikluk",
+      "konforodakli",
+      "dogalruh",
+      "hizpratik",
+      "nostaljik",
+      "sahilruhu"
+    ];
 
     const STORAGE_KEY = "intema_mimar_asistan_v4";
 
@@ -874,6 +930,8 @@
       answers: {},
       meta: { name:"", phone:"", email:"", note:"" }
     };
+
+    let loadingTimer = null;
 
     const el = (sel, root=document) => root.querySelector(sel);
     const els = (sel, root=document) => Array.from(root.querySelectorAll(sel));
@@ -907,6 +965,10 @@
       state.qIndex = 0;
       state.answers = {};
       state.meta = preserved;
+      if(loadingTimer){
+        clearTimeout(loadingTimer);
+        loadingTimer = null;
+      }
       save();
       render();
     }
@@ -916,6 +978,20 @@
       state.qIndex = Math.max(0, Math.min(state.qIndex || 0, questions.length - 1));
       save();
       render();
+    }
+
+    function startLoadingResult(){
+      state.step = "loading";
+      save();
+      render();
+      if(loadingTimer){
+        clearTimeout(loadingTimer);
+      }
+      loadingTimer = setTimeout(()=>{
+        state.step = "result";
+        save();
+        render();
+      }, 2000);
     }
 
     function currentQuestion(){ return questions[state.qIndex]; }
@@ -1095,6 +1171,10 @@
         bindQuiz();
         return;
       }
+      if(state.step === "loading"){
+        main.innerHTML = renderLoading();
+        return;
+      }
       if(state.step === "result"){
         main.innerHTML = renderResult();
         bindResult();
@@ -1110,58 +1190,60 @@
       const prog = totalProgress();
       const hasSaved = prog.answeredCount > 0;
       return `
-        <div class="cardHeader">
-          <div>
-            <h2>Görüşme Bilgisi</h2>
-            <div class="sub">Opsiyonel alanlar. İstersen boş geç.</div>
+        <div class="screen">
+          <div class="cardHeader">
+            <div>
+              <h2>Görüşme Bilgisi</h2>
+              <div class="sub">Opsiyonel alanlar. İstersen boş geç.</div>
+            </div>
+            <div class="toggleRow">
+              ${hasSaved ? `<span class="badge"><strong>Kayıt:</strong> Devam edilebilir</span>` : `<span class="badge"><strong>Kayıt:</strong> Yeni</span>`}
+            </div>
           </div>
-          <div class="toggleRow">
-            ${hasSaved ? `<span class="badge"><strong>Kayıt:</strong> Devam edilebilir</span>` : `<span class="badge"><strong>Kayıt:</strong> Yeni</span>`}
-          </div>
-        </div>
 
-        <div class="cardBody">
-          <div class="stack">
-            <div class="fieldRow">
-              <label>
-                Müşteri Ad Soyad
-                <input type="text" id="metaName" placeholder="Örn: Ayşe Yılmaz" value="${escapeHtml(state.meta.name)}" />
-              </label>
-              <label>
-                Telefon
-                <input type="tel" id="metaPhone" placeholder="Örn: 05xx xxx xx xx" value="${escapeHtml(state.meta.phone)}" />
-              </label>
-            </div>
-
-            <div class="fieldRow">
-              <label>
-                E-posta
-                <input type="email" id="metaEmail" placeholder="Örn: ayse@mail.com" value="${escapeHtml(state.meta.email)}" />
-              </label>
-              <label>
-                İç Not (Kısa)
-                <input type="text" id="metaQuick" placeholder="Örn: Ada istiyor, teslim acil" value="" />
-              </label>
-            </div>
-
-            <label>
-              Proje Notu
-              <textarea id="metaNote" placeholder="Kısa notlar, beklenti, kritik detaylar...">${escapeHtml(state.meta.note)}</textarea>
-              <div class="hint">Notlar sadece bu cihazda saklanır.</div>
-            </label>
-
-            <div class="navRow">
-              <div class="left">
-                <button class="btn ghost" id="btnContinue" ${hasSaved ? "" : "disabled"}>Devam Et</button>
-                <button class="btn" id="btnStartNew">Ankete Başla</button>
+          <div class="cardBody">
+            <div class="stack">
+              <div class="fieldRow">
+                <label>
+                  Müşteri Ad Soyad
+                  <input type="text" id="metaName" placeholder="Örn: Ayşe Yılmaz" value="${escapeHtml(state.meta.name)}" />
+                </label>
+                <label>
+                  Telefon
+                  <input type="tel" id="metaPhone" placeholder="Örn: 05xx xxx xx xx" value="${escapeHtml(state.meta.phone)}" />
+                </label>
               </div>
-              <div class="right">
-                <button class="btn danger" id="btnClearSaved">Kaydı Sil</button>
-              </div>
-            </div>
 
-            <div class="mini">
-              İpucu: Kayıt varsa <span class="kbd">Devam Et</span> kaldığın soruya gider. Yoksa 1. sorudan başlar.
+              <div class="fieldRow">
+                <label>
+                  E-posta
+                  <input type="email" id="metaEmail" placeholder="Örn: ayse@mail.com" value="${escapeHtml(state.meta.email)}" />
+                </label>
+                <label>
+                  İç Not (Kısa)
+                  <input type="text" id="metaQuick" placeholder="Örn: Ada istiyor, teslim acil" value="" />
+                </label>
+              </div>
+
+              <label>
+                Proje Notu
+                <textarea id="metaNote" placeholder="Kısa notlar, beklenti, kritik detaylar...">${escapeHtml(state.meta.note)}</textarea>
+                <div class="hint">Notlar sadece bu cihazda saklanır.</div>
+              </label>
+
+              <div class="navRow">
+                <div class="left">
+                  <button class="btn ghost" id="btnContinue" ${hasSaved ? "" : "disabled"}>Devam Et</button>
+                  <button class="btn" id="btnStartNew">Ankete Başla</button>
+                </div>
+                <div class="right">
+                  <button class="btn danger" id="btnClearSaved">Kaydı Sil</button>
+                </div>
+              </div>
+
+              <div class="mini">
+                İpucu: Kayıt varsa <span class="kbd">Devam Et</span> kaldığın soruya gider. Yoksa 1. sorudan başlar.
+              </div>
             </div>
           </div>
         </div>
@@ -1196,34 +1278,58 @@
       const isLast = state.qIndex === questions.length - 1;
 
       return `
-        <div class="progressWrap">
-          <div class="progressLeft">
-            <div class="qMeta">Soru ${state.qIndex + 1} / ${questions.length} • Cevaplanan: ${prog.answeredCount}/${prog.total}</div>
-            <p class="qText">${escapeHtml(q.text)}</p>
+        <div class="screen">
+          <div class="progressWrap">
+            <div class="progressLeft">
+              <div class="qMeta">Soru ${state.qIndex + 1} / ${questions.length} • Cevaplanan: ${prog.answeredCount}/${prog.total}</div>
+              <p class="qText">${escapeHtml(q.text)}</p>
+            </div>
+            <div class="bar" aria-label="İlerleme">
+              <div style="width:${pct}%"></div>
+            </div>
           </div>
-          <div class="bar" aria-label="İlerleme">
-            <div style="width:${pct}%"></div>
+
+          <div class="cardBody">
+            <div class="options" id="optList">${optionHtml}</div>
+
+            <div class="navRow">
+              <div class="left">
+                <button class="btn ghost" id="btnBack" ${state.qIndex === 0 ? "disabled" : ""}>Geri</button>
+                <button class="btn ${isLast ? "primary" : ""}" id="btnNext" ${canNext ? "" : "disabled"}>
+                  ${isLast ? "Sonucu Gör" : "İleri"}
+                </button>
+              </div>
+              <div class="right">
+                <button class="btn ghost" id="btnJumpStart">Başlangıç</button>
+                <button class="btn danger" id="btnClearAnswers">Cevapları Temizle</button>
+              </div>
+            </div>
+
+            <div class="mini">
+              ${q.type === "multi" ? "Birden fazla seçenek işaretleyebilirsin. İleri için en az bir seçim şart." : "İleri için seçim şart."}
+            </div>
           </div>
         </div>
+      `;
+    }
 
-        <div class="cardBody">
-          <div class="options" id="optList">${optionHtml}</div>
-
-          <div class="navRow">
-            <div class="left">
-              <button class="btn ghost" id="btnBack" ${state.qIndex === 0 ? "disabled" : ""}>Geri</button>
-              <button class="btn ${isLast ? "primary" : ""}" id="btnNext" ${canNext ? "" : "disabled"}>
-                ${isLast ? "Sonucu Gör" : "İleri"}
-              </button>
-            </div>
-            <div class="right">
-              <button class="btn ghost" id="btnJumpStart">Başlangıç</button>
-              <button class="btn danger" id="btnClearAnswers">Cevapları Temizle</button>
+    function renderLoading(){
+      return `
+        <div class="screen">
+          <div class="cardHeader">
+            <div>
+              <h2>Sonuç Hazırlanıyor</h2>
+              <div class="sub">Kişiselleştirme tamamlanmak üzere.</div>
             </div>
           </div>
-
-          <div class="mini">
-            ${q.type === "multi" ? "Birden fazla seçenek işaretleyebilirsin. İleri için en az bir seçim şart." : "İleri için seçim şart."}
+          <div class="cardBody loadingWrap">
+            <div class="loadingCard">
+              <div class="spinner" aria-hidden="true"></div>
+              <div>
+                <div><strong>Katalog taranıyor...</strong></div>
+                <div class="hint">Aksesuarlar eşleştiriliyor...</div>
+              </div>
+            </div>
           </div>
         </div>
       `;
@@ -1231,244 +1337,61 @@
 
     function renderResult(){
       const res = resultPackage();
-      const winnerId = res.winner;
-      const winnerData = personas[winnerId];
-
-      const hybrid = res.hybrid;
-      const isHybrid = !hybrid.isDominant;
-
-      const pet = petTriggered();
-      const risk = childrenAndPetRisk();
-
-      const recBlock = isHybrid
-        ? buildHybridRec(personas[hybrid.top1.p], personas[hybrid.top2.p])
-        : buildRec(winnerData);
-
-
-      const scoreTableRows = res.list.map(row => `
-        <tr>
-          <td><strong>${escapeHtml(personas[row.p].title)}</strong></td>
-          <td>${row.score}</td>
-          <td>${formatPct(row.share)}</td>
-        </tr>
+      const winner = personas[res.winner];
+      const heroUrl = buildHeroUrl(winner.imageQuery);
+      const colors = winner.colors.map(color => `
+        <div class="swatch">
+          <span class="swatchDot" style="background:${swatchColor(color)};"></span>
+          ${escapeHtml(color)}
+        </div>
       `).join("");
+      const accessories = winner.accessories.map(item => `<li>${escapeHtml(item)}</li>`).join("");
 
       return `
-        <div class="split bento">
-          <div class="panel bento-card bento-meta">
-            <h3>Görüşme Bilgisi</h3>
+        <div class="screen">
+          <div class="cardHeader">
+            <div class="resultHeader">
+              <h2>${escapeHtml(winner.title)}</h2>
+              <p>${escapeHtml(winner.description)}</p>
+            </div>
+            <div class="badge"><strong>Sonuç</strong> • ${formatPct(res.hybrid.topShare)}</div>
+          </div>
+
+          <div class="cardBody">
             <div class="stack">
-              <div class="fieldRow">
-                <label>
-                  Müşteri Ad Soyad
-                  <input type="text" id="metaNameResult" placeholder="Örn: Ayşe Yılmaz" value="${escapeHtml(state.meta.name)}" />
-                </label>
-                <label>
-                  Telefon
-                  <input type="tel" id="metaPhoneResult" placeholder="Örn: 05xx xxx xx xx" value="${escapeHtml(state.meta.phone)}" />
-                </label>
+              <div class="resultHero">
+                <img src="${escapeHtml(heroUrl)}" alt="${escapeHtml(winner.title)} için mood görseli" loading="lazy" />
               </div>
-              <div class="fieldRow">
-                <label>
-                  E-posta
-                  <input type="email" id="metaEmailResult" placeholder="Örn: ayse@mail.com" value="${escapeHtml(state.meta.email)}" />
-                </label>
+
+              <div class="panel">
+                <h3>Sizin İçin Seçilen Model</h3>
+                <p><strong>${escapeHtml(winner.recommendedModel)}</strong></p>
               </div>
-              <label>
-                Proje Notu
-                <textarea id="metaNoteResult" placeholder="Kısa notlar, beklenti, kritik detaylar...">${escapeHtml(state.meta.note || "")}</textarea>
-              </label>
-            </div>
-          </div>
 
-          ${risk ? `
-            <div class="panel alert bento-card bento-alert">
-              <h3>Sistem Uyarısı: Yüksek Aşınma Riski</h3>
-              <ul>
-                <li>Kapak önerisi: Tech-Matt (Mat PET) veya Akrilik, daha dayanıklı kullanım.</li>
-                <li>Modül önerisi: Çöp ayrıştırma ve çekmece içi düzenleyici ile temizlik akışını hızlandırın.</li>
-                <li>Güvenlik: Çocuklar için kilit, hassas yüzeylerde koruma yaklaşımı.</li>
-              </ul>
-            </div>
-          ` : ""}
-
-          <div class="panel bento-card bento-recipe">
-            <h3>Öneri Reçetesi</h3>
-            ${recBlock}
-          </div>
-
-          ${pet ? `
-            <div class="panel ok bento-card bento-pet">
-              <h3>Pet Modülü Kartı</h3>
-              <ul>
-                <li>Evcil hayvan mama kabı modülü gibi günlük pratik sağlayan çözümleri gösterin.</li>
-                <li>Anti-fingerprint ve kolay silinen yüzey yönünü öne çıkarın.</li>
-                <li>Kapalı depolama ve çöp ayrıştırma ile hijyen akışını netleştirin.</li>
-              </ul>
-            </div>
-          ` : ""}
-
-          <div class="panel bento-card bento-scores">
-            <h3>Skor Dağılımı</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Persona</th>
-                  <th>Skor</th>
-                  <th>Pay</th>
-                </tr>
-              </thead>
-              <tbody>${scoreTableRows}</tbody>
-            </table>
-            <div class="mini">Dominant kuralı toplam skorun %30 eşiğine göre hesaplanır.</div>
-          </div>
-
-          <div class="panel bento-card bento-note">
-            <h3>Mimar Notu</h3>
-            <textarea id="archNote" placeholder="Kısa satış yönlendirmesi, kritik istekler, takip notu...">${escapeHtml(state.meta.note || "")}</textarea>
-            <div class="navRow" style="margin-top:10px;">
-              <div class="left">
-                <button class="btn ghost" id="btnBackToQuiz">Ankete Dön</button>
+              <div class="panel">
+                <h3>Önerilen Renkler</h3>
+                <div class="swatchGrid">${colors}</div>
               </div>
-              <div class="right">
-                <button class="btn ghost" id="btnPrint">Yazdır</button>
-                <button class="btn primary" id="btnNewFromResult">Yeni Görüşme</button>
+
+              <div class="panel">
+                <h3>Size Özel Aksesuarlar</h3>
+                <ul class="checklist">${accessories}</ul>
+              </div>
+
+              <div class="ctaRow">
+                <a class="btn primary" href="https://example.com/randevu" target="_blank" rel="noopener noreferrer">Bu Mutfağı Tasarla</a>
+              </div>
+
+              <div class="navRow">
+                <div class="left">
+                  <button class="btn ghost" id="btnBackToQuiz">Ankete Dön</button>
+                </div>
+                <div class="right">
+                  <button class="btn ghost" id="btnPrint">Yazdır</button>
+                  <button class="btn primary" id="btnNewFromResult">Yeni Görüşme</button>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function buildRec(p){
-      const feats = (p.features || []).map(x=>`<li>${escapeHtml(x)}</li>`).join("");
-      const modelImage = p.modelImage;
-      const colorImage = p.colorImage;
-      const accessoryImage = p.accessoryImage;
-
-      return `
-        <div class="stack" style="gap:10px;">
-          <div class="panel">
-            <h3>${escapeHtml(p.title)}</h3>
-            <p><strong>${escapeHtml(p.headline)}</strong></p>
-            <p>${escapeHtml(p.summary)}</p>
-          </div>
-
-          <div class="panel">
-            <h3>Model</h3>
-            <p><strong>${escapeHtml(p.model)}</strong></p>
-          </div>
-
-          <div class="panel">
-            <h3>Malzeme ve Renk</h3>
-            <ul>
-              <li><strong>Malzeme:</strong> ${escapeHtml(p.material)}</li>
-        <li><strong>Renk:</strong> ${escapeHtml(p.color)}</li>
-            </ul>
-          </div>
-
-          <div class="panel">
-            <h3>Görsel Referanslar</h3>
-            <div class="mediaGrid">
-              <div class="mediaCard">
-                <img src="${escapeHtml(modelImage)}" alt="Model görseli" loading="lazy" />
-                <div class="label">Model</div>
-              </div>
-              <div class="mediaCard">
-                <img src="${escapeHtml(colorImage)}" alt="Renk paleti görseli" loading="lazy" />
-                <div class="label">Renk</div>
-              </div>
-              <div class="mediaCard">
-                <img src="${escapeHtml(accessoryImage)}" alt="Aksesuar görseli" loading="lazy" />
-                <div class="label">Aksesuarlar</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="panel">
-            <h3>Önerilen Özellikler</h3>
-            <ul>${feats}</ul>
-          </div>
-
-          <div class="panel">
-            <h3>Mimar Notu (Öneri)</h3>
-            <p>${escapeHtml(p.architectNote || "")}</p>
-          </div>
-        </div>
-      `;
-    }
-
-    function buildHybridRec(a, b){
-      const headline = `Hibrit: ${a.title} + ${b.title}`;
-      const mergedFeatures = unique([...(a.features||[]), ...(b.features||[])]).slice(0, 8);
-      const feats = mergedFeatures.map(x=>`<li>${escapeHtml(x)}</li>`).join("");
-      return `
-        <div class="stack" style="gap:10px;">
-          <div class="panel">
-            <h3>${escapeHtml(headline)}</h3>
-            <p><strong>${escapeHtml(a.headline)}</strong></p>
-            <p>${escapeHtml(a.summary)}</p>
-            <p style="margin-top:10px;"><strong>${escapeHtml(b.headline)}</strong></p>
-            <p>${escapeHtml(b.summary)}</p>
-          </div>
-
-          <div class="panel">
-            <h3>Model Yönü</h3>
-            <ul>
-              <li><strong>${escapeHtml(a.title)}:</strong> ${escapeHtml(a.model)}</li>
-              <li><strong>${escapeHtml(b.title)}:</strong> ${escapeHtml(b.model)}</li>
-            </ul>
-          </div>
-
-          <div class="panel">
-            <h3>Malzeme ve Renk</h3>
-            <ul>
-        <li><strong>${escapeHtml(a.title)}:</strong> Malzeme: ${escapeHtml(a.material)} | Renk: ${escapeHtml(a.color)}</li>
-        <li><strong>${escapeHtml(b.title)}:</strong> Malzeme: ${escapeHtml(b.material)} | Renk: ${escapeHtml(b.color)}</li>
-            </ul>
-          </div>
-
-          <div class="panel">
-            <h3>Görsel Referanslar</h3>
-            <div class="mediaGrid">
-              <div class="mediaCard">
-                <img src="${escapeHtml(a.modelImage)}" alt="${escapeHtml(a.title)} model görseli" loading="lazy" />
-                <div class="label">${escapeHtml(a.title)} • Model</div>
-              </div>
-              <div class="mediaCard">
-                <img src="${escapeHtml(a.colorImage)}" alt="${escapeHtml(a.title)} renk görseli" loading="lazy" />
-                <div class="label">${escapeHtml(a.title)} • Renk</div>
-              </div>
-              <div class="mediaCard">
-                <img src="${escapeHtml(a.accessoryImage)}" alt="${escapeHtml(a.title)} aksesuar görseli" loading="lazy" />
-                <div class="label">${escapeHtml(a.title)} • Aksesuar</div>
-              </div>
-              <div class="mediaCard">
-                <img src="${escapeHtml(b.modelImage)}" alt="${escapeHtml(b.title)} model görseli" loading="lazy" />
-                <div class="label">${escapeHtml(b.title)} • Model</div>
-              </div>
-              <div class="mediaCard">
-                <img src="${escapeHtml(b.colorImage)}" alt="${escapeHtml(b.title)} renk görseli" loading="lazy" />
-                <div class="label">${escapeHtml(b.title)} • Renk</div>
-              </div>
-              <div class="mediaCard">
-                <img src="${escapeHtml(b.accessoryImage)}" alt="${escapeHtml(b.title)} aksesuar görseli" loading="lazy" />
-                <div class="label">${escapeHtml(b.title)} • Aksesuar</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="panel">
-            <h3>Birleşik Özellikler</h3>
-            <ul>${feats}</ul>
-          </div>
-
-          <div class="panel">
-            <h3>Mimar Notları (Öneri)</h3>
-            <ul>
-              <li><strong>${escapeHtml(a.title)}:</strong> ${escapeHtml(a.architectNote || "")}</li>
-              <li><strong>${escapeHtml(b.title)}:</strong> ${escapeHtml(b.architectNote || "")}</li>
-            </ul>
           </div>
         </div>
       `;
@@ -1573,9 +1496,7 @@
       el("#btnNext").addEventListener("click", ()=>{
         if(!isAnswered(q)) return;
         if(state.qIndex >= questions.length - 1){
-          state.step = "result";
-          save();
-          render();
+          startLoadingResult();
           return;
         }
         state.qIndex += 1;
@@ -1606,37 +1527,6 @@
       });
 
       el("#btnNewFromResult").addEventListener("click", ()=> resetAll({ keepMeta:true }));
-
-      const note = el("#archNote");
-      const name = el("#metaNameResult");
-      const phone = el("#metaPhoneResult");
-      const email = el("#metaEmailResult");
-      const noteResult = el("#metaNoteResult");
-      const syncNote = () => {
-        state.meta.note = note.value.trim();
-        save();
-        if(noteResult && noteResult.value !== note.value){
-          noteResult.value = note.value;
-        }
-      };
-      const syncMeta = () => {
-        state.meta.name = name ? name.value.trim() : "";
-        state.meta.phone = phone ? phone.value.trim() : "";
-        state.meta.email = email ? email.value.trim() : "";
-        if(noteResult){
-          state.meta.note = noteResult.value.trim();
-          if(note && note.value !== noteResult.value){
-            note.value = noteResult.value;
-          }
-        }
-        save();
-      };
-      [name, phone, email, noteResult].filter(Boolean).forEach((input)=>{
-        input.addEventListener("input", syncMeta);
-        input.addEventListener("blur", syncMeta);
-      });
-      note.addEventListener("input", syncNote);
-      note.addEventListener("blur", syncNote);
 
       el("#btnPrint").addEventListener("click", ()=> window.print());
     }
@@ -1694,11 +1584,26 @@
         .replaceAll("'","&#039;");
     }
 
+    function buildHeroUrl(query){
+      return `https://source.unsplash.com/1600x900/?${encodeURIComponent(query)}`;
+    }
+
+    function swatchColor(label){
+      let hash = 0;
+      for(let i = 0; i < label.length; i++){
+        hash = label.charCodeAt(i) + ((hash << 5) - hash);
+        hash |= 0;
+      }
+      const hue = Math.abs(hash) % 360;
+      return `hsl(${hue} 36% 70%)`;
+    }
+
     const hasLoaded = load();
     if(!hasLoaded) save();
 
     if(state.step === "quiz" && (state.qIndex == null || isNaN(state.qIndex))) state.qIndex = 0;
     if(state.step === "result" && totalProgress().answeredCount === 0) state.step = "start";
+    if(state.step === "loading") state.step = "result";
 
     render();
   </script>
