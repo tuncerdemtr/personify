@@ -490,6 +490,59 @@
       font-weight: 500;
     }
 
+    .arch-note {
+      font-style: italic;
+      color: var(--muted);
+      border-left: 3px solid var(--primary);
+      padding-left: 12px;
+      margin-top: 12px;
+      font-size: 14px;
+      background: var(--primary-bg);
+      padding: 12px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+
+    .layout-sugg {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--text);
+      margin-top: 12px;
+      font-weight: 500;
+    }
+
+    .warranty-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #ECFDF5;
+      color: #047857;
+      border: 1px solid #A7F3D0;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .mat-info {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .mat-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .mat-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
     .footerNote{
       color: var(--muted-light);
       font-size: 12px;
@@ -675,15 +728,21 @@
         title: "Şehirli Vizyoner (The Urban Visionary)",
         description: "Mutfak senin için bir vitrin. Trendleri takip ediyor, teknolojiyi ve modernizmi seviyorsun.",
         recommendedModel: "Inova",
-        style: "Modern & Minimal",
-        materials: ["Mat Lake", "Metal Görünümlü Yüzeyler"],
-        colors: ["M104_Grafit", "T112_Koyu Taupe", "M007_Siyah"],
+        architectNote: "Seçimlerinizdeki 'teknoloji' ve 'sosyalleşme' vurgusu, entegre aydınlatma sistemleri ve kulpsuz tasarımıyla Inova modelini işaret ediyor.",
+        layoutSuggestion: "Ada Mutfak (Island) Yerleşimi: Misafirlerinizi ağırlarken yüzünüzün onlara dönük olması için ideal.",
+        warrantyInfo: "2 Yıl Garanti (Mat Lake Yüzey Teknolojisi)",
+        materialTech: "İpek Mat Lake & Anti-Fingerprint",
+        materialDesc: "Pürüzsüz, parmak izi bırakmayan ve ipeksi dokuya sahip mat yüzeyler.",
+        colors: [
+          { code: "M104", name: "Grafit (Mat)" },
+          { code: "M007", name: "Siyah (Mat)" },
+          { code: "T112", name: "Koyu Taupe" }
+        ],
         accessories: [
           "Kulpsuz Gola Profil Sistemi (Mat Siyah)",
           "Hareket Sensörlü LED Aydınlatma (Gövde İçi)",
           "Blum Antaro Çekmece İçi Düzenleyici (Orion Gri)"
         ],
-        features: ["Teknolojik Entegrasyon", "Minimalist Hatlar", "Koyu Renk Paleti"],
         imageQuery: "modern dark graphite luxury kitchen with led lights"
       },
       {
@@ -691,15 +750,21 @@
         title: "Klasik Lüks Sever (The Heritage Luxury)",
         description: "Kalite asla modası geçmeyen bir yatırımdır. Geleneksel çizgilerin ağırbaşlılığını arıyorsun.",
         recommendedModel: "Toscana",
-        style: "Neo-Klasik",
-        materials: ["Parlak Lake", "Masif Çerçeve"],
-        colors: ["P019_Orman Yeşili", "P020_Uzay Mavi", "P017_İnci Beyaz"],
+        architectNote: "Geleneksel detaylara verdiğiniz önem ve gösterişli aksesuar tercihiniz, çerçeveli kapak yapısıyla Toscana modelinde hayat buluyor.",
+        layoutSuggestion: "Simetrik U Tipi Yerleşim: Klasik tasarımın ağırlığını ve düzenini en iyi yansıtan plan.",
+        warrantyInfo: "2 Yıl Garanti (Özel İşçilikli Lake)",
+        materialTech: "7 Kat Cila Uygulanmış Parlak/Mat Lake",
+        materialDesc: "El işçiliği ile boyanan, derinlik hissi veren ve zamanla sararmayan premium lake.",
+        colors: [
+          { code: "P019", name: "Orman Yeşili" },
+          { code: "P020", name: "Uzay Mavi" },
+          { code: "P017", name: "İnci Beyaz" }
+        ],
         accessories: [
           "Gold (Altın) Kulp - Kod: MKGDK33FP0032",
           "Klasik Taç ve Işık Bandı Profilleri",
           "Büfe Tipi Camlı Üst Dolaplar (Sable Cam)"
         ],
-        features: ["Gösterişli Detaylar", "Simetrik Yerleşim", "Zengin Aksesuarlar"],
         imageQuery: "classic green luxury kitchen cabinets gold handles"
       },
       {
@@ -707,15 +772,21 @@
         title: "Konfor Odaklı Aile (The Comfort Family)",
         description: "Mutfak evin kalbidir. Senin için dayanıklılık, temizlik kolaylığı ve bolca saklama alanı her şeyden önemli.",
         recommendedModel: "Siena",
-        style: "Fonksiyonel & Sıcak",
-        materials: ["Akrilik PET (Çizilmez)", "Mat PET"],
-        colors: ["T125_Manolya", "T123_Kaşmir", "T122_Açık Gri"],
+        architectNote: "Yoğun kullanım ve temizlik kolaylığı talebiniz, çizilmelere karşı en dayanıklı seri olan Siena'yı sizin için vazgeçilmez kılıyor.",
+        layoutSuggestion: "Geniş L Tipi + Masa: Aile kahvaltıları ve rahat hareket alanı için en ergonomik çözüm.",
+        warrantyInfo: "7 Yıl Garanti (Akrilik & PET Yüzeyler)",
+        materialTech: "Ultra Dayanıklı Akrilik & PET",
+        materialDesc: "Çizilmelere, neme ve UV ışınlarına karşı ekstra dirençli, kolay temizlenen yüzey.",
+        colors: [
+          { code: "T125", name: "Manolya" },
+          { code: "T123", name: "Kaşmir" },
+          { code: "T122", name: "Açık Gri" }
+        ],
         accessories: [
           "Boy Kiler Mekanizması (Tam Açılım)",
           "Fasulye Köşe Mekanizması (Kör Köşe Çözümü)",
           "Tezgah Altı Çöp Kovası Sistemleri"
         ],
-        features: ["Maksimum Depolama", "Parmak İzi Bırakmayan Yüzey", "Ergonomi"],
         imageQuery: "cozy family kitchen beige cabinets bright",
         heroImage: "https://res.cloudinary.com/drp4askpq/image/upload/v1767146955/28daf619-3a8a-4dcf-afea-c917906d0104_bmgtbn.jpg"
       },
@@ -724,15 +795,21 @@
         title: "Doğal Ruh (The Natural Soul)",
         description: "Evin senin sığınağın. Doğal dokular, ahşap sıcaklığı ve sürdürülebilirlik önceliğin.",
         recommendedModel: "Norda",
-        style: "İskandinav & Natural",
-        materials: ["Doğal Ahşap Kaplama", "Geri Dönüştürülmüş PET"],
-        colors: ["W009_Düşey Hareli Naturel Meşe", "T1_121_Adaçayı Yeşili", "M023_Beton Yeşili"],
+        architectNote: "Doğaya dönüş arzunuz ve sürdürülebilirlik hassasiyetiniz, gerçek ahşap kaplama olan Norda serisiyle tam uyum sağlıyor.",
+        layoutSuggestion: "Açık Plan + Yarımada: Yaşam alanıyla bütünleşen, bitkilerle zenginleştirilmiş ferah bir akış.",
+        warrantyInfo: "2 Yıl Garanti (Doğal Ahşap Kaplama)",
+        materialTech: "Doğal Ahşap Kaplama",
+        materialDesc: "Gerçek ağaç dokusunu hissedebileceğiniz, yaşayan ve nefes alan doğal kaplama.",
+        colors: [
+          { code: "W009", name: "Düşey Hareli Naturel Meşe" },
+          { code: "T1_121", name: "Adaçayı Yeşili" },
+          { code: "M023", name: "Beton Yeşili" }
+        ],
         accessories: [
           "Ahşap Çekmece İçi Kaşıklık (Dişbudak)",
           "Metal Çerçeveli Ahşap Açık Raf Üniteleri",
           "Bitki Yetiştirme Modülü (Micro Garden)"
         ],
-        features: ["Sürdürülebilir Malzeme", "Bitkisel Dokunuşlar", "Ferah Tasarım"],
         imageQuery: "scandinavian kitchen light wood green plants"
       },
       {
@@ -740,47 +817,65 @@
         title: "Hız ve Pratiklik Odaklı (The Smart Investor)",
         description: "Kararını verdin, sonuç istiyorsun. Hızlı, ekonomik ama şık çözümler tam sana göre.",
         recommendedModel: "Prime",
-        style: "Modern & Ekonomik",
-        materials: ["Laminant", "Düz Melamin"],
-        colors: ["M104_Grafit", "M103_Latte", "M101_Mat Beyaz"],
+        architectNote: "Bütçe ve hız önceliğiniz, stoklu renkleri ve modüler yapısıyla en hızlı teslim edilen Prime serisini işaret ediyor.",
+        layoutSuggestion: "Kompakt Düz (I Tipi) Yerleşim: Minimum alanda maksimum fonksiyon sağlayan stüdyo tipi çözüm.",
+        warrantyInfo: "2 Yıl Garanti (Laminant & Melamin)",
+        materialTech: "Yüksek Basınçlı Laminat (HPL)",
+        materialDesc: "Darbelere dayanıklı, uzun ömürlü, ekonomik ve geniş renk seçenekli teknolojik yüzey.",
+        colors: [
+          { code: "M104", name: "Grafit" },
+          { code: "M103", name: "Latte" },
+          { code: "M101", name: "Mat Beyaz" }
+        ],
         accessories: [
           "Açılır Masa Mekanizması (Space Saver)",
           "Tezgah Arası Ray Sistemi (Askı Elemanları)",
           "Entegre Kulp (Kapak Kendinden Kulplu)"
         ],
-        features: ["Hızlı Kurulum", "Modüler Yapı", "Fiyat/Performans"],
         imageQuery: "compact modern kitchen studio apartment"
       },
       {
         id: "nostaljik",
         title: "Nostaljik Romantik (The Vintage Lover)",
-        description: "Geçmişin sıcaklığı, bugünün konforu. 'Anne mutfağı' sıcaklığında, duygusal bağ kurabileceğin bir yer.",
+        description: "Geçmişin sıcaklığı, bugünün konforu. 'Anne mutfağı' sıcaklığında bir yer.",
         recommendedModel: "Vega",
-        style: "Country / Vintage",
-        materials: ["Mat Lake", "Polimerik"],
-        colors: ["V1_M021_Baltık Mavi", "T125_Manolya", "V1_M024_Buz Gri"],
+        architectNote: "Geçmişe duyduğunuz özlem ve sıcaklık arayışı, Vega'nın rustik detayları ve pastel tonlarıyla örtüşüyor.",
+        layoutSuggestion: "Bağımsız Mutfak (Kapalı Plan): Yemek masasının merkezde olduğu, sıcak ve samimi bir atmosfer.",
+        warrantyInfo: "3 Yıl Garanti (Polimerik Kapak)",
+        materialTech: "Polimerik & Mat Lake",
+        materialDesc: "Pürüzsüz yüzey üzerine işlenmiş klasik detaylar, neme dayanıklı kaplama.",
+        colors: [
+          { code: "V1_M021", name: "Baltık Mavi" },
+          { code: "T125", name: "Manolya" },
+          { code: "V1_M024", name: "Buz Gri" }
+        ],
         accessories: [
           "Antik Kulp (Eskitme) - Kod: MKGAK24MS0128",
           "Ahşap Tabaklık Rafı (Terek)",
           "Kafesli Tel Dolap Kapakları"
         ],
-        features: ["Rustik Dokunuşlar", "Sıcak Atmosfer", "Detaylı İşçilik"],
         imageQuery: "vintage blue country kitchen rustic style"
       },
       {
         id: "sahilruhu",
         title: "Yazlık Ruhu (The Coastal Dreamer)",
-        description: "Şehirde bile olsan mutfağında bir sahil evi ferahlığı arıyorsun. Çizgili dokular ve mavi tonlar vazgeçilmezin.",
+        description: "Şehirde bile olsan mutfağında bir sahil evi ferahlığı arıyorsun.",
         recommendedModel: "Fresca",
-        style: "Akdeniz & Marin",
-        materials: ["Mat Lake", "Mat PET"],
-        colors: ["F1_M021_Baltık Mavi", "F1_M001_Buz Beyaz", "T1_120_Baltık Mavi"],
+        architectNote: "Ferahlık ve aydınlık arayışınız, Fresca'nın marin esintili çizgili kapaklarıyla mükemmel bir uyum içinde.",
+        layoutSuggestion: "Pencere Önü Eviye Yerleşimi: Dışarıyla bağlantı kuran, bol ışık alan ferah bir düzen.",
+        warrantyInfo: "2 Yıl Garanti (Soft Touch Lake)",
+        materialTech: "Soft Touch Mat Lake",
+        materialDesc: "Düşey fuga hareketleri verilmiş, yumuşak dokulu mat lake yüzeyler.",
+        colors: [
+          { code: "F1_M021", name: "Baltık Mavi" },
+          { code: "F1_M001", name: "Buz Beyaz" },
+          { code: "T1_120", name: "Baltık Mavi" }
+        ],
         accessories: [
           "Krom Kulp - Kod: MKGDK02EB0026",
           "Camlı Üst Dolaplar (Buzlu Cam)",
           "Açık Mavi/Beyaz Raf Sistemleri"
         ],
-        features: ["Düşey Fuga Detayları", "Marin Esintiler", "Aydınlık Alanlar"],
         imageQuery: "coastal kitchen blue striped cabinets bright"
       }
     ];
@@ -1213,15 +1308,15 @@
       const res = resultPackage();
       const winner = personas[res.winner];
       const heroUrl = winner.heroImage ? winner.heroImage : buildHeroUrl(winner.imageQuery);
-      const colors = winner.colors.map(color => `
+
+      const colors = winner.colors.map(c => `
         <div class="swatch">
-          <span class="swatchDot" style="background:${swatchColor(color)};"></span>
-          ${escapeHtml(color)}
+          <span class="swatchDot" style="background:${swatchColor(c.name)};"></span>
+          ${escapeHtml(c.name)} <span style="opacity:0.5; font-size:11px; margin-left:4px;">(${escapeHtml(c.code)})</span>
         </div>
       `).join("");
 
       const accessories = winner.accessories.map((item, i) => {
-        // Simple distinct placeholder for each item based on index
         const keywords = ["kitchen,detail", "kitchen,drawer", "kitchen,light", "kitchen,accessory"][i % 4];
         const imgUrl = `https://source.unsplash.com/300x200/?${keywords}&sig=${i}`;
         return `
@@ -1242,6 +1337,10 @@
                 </div>
                 <h2>${escapeHtml(winner.title)}</h2>
                 <p class="hero-desc">${escapeHtml(winner.description)}</p>
+
+                <div class="arch-note">
+                  “${escapeHtml(winner.architectNote)}”
+                </div>
               </div>
               <div class="ctaRow" style="margin-top: 10px;">
                 <a class="btn primary" href="https://example.com/randevu" target="_blank" rel="noopener noreferrer">Bu Mutfağı Tasarla</a>
@@ -1257,13 +1356,17 @@
             <div style="font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 8px;">
               ${escapeHtml(winner.recommendedModel)}
             </div>
-            <div style="font-size: 14px; color: var(--muted); line-height: 1.5;">
-              Stil: <strong style="color:var(--text)">${escapeHtml(winner.style)}</strong><br>
-              <div style="margin-top:8px;"></div>
-              Öne Çıkan Özellikler:
-              <ul style="padding-left: 20px; margin: 4px 0 0 0; color: var(--text);">
-                 ${winner.features.map(f => `<li>${escapeHtml(f)}</li>`).join("")}
-              </ul>
+
+            <div class="layout-sugg">
+              <span style="font-size:18px;">📐</span>
+              <span>${escapeHtml(winner.layoutSuggestion)}</span>
+            </div>
+
+            <div class="mat-info">
+              <div class="mat-title">Malzeme & Teknoloji</div>
+              <div class="mat-desc"><strong>${escapeHtml(winner.materialTech)}</strong></div>
+              <div class="mat-desc" style="margin-top:4px;">${escapeHtml(winner.materialDesc)}</div>
+              <div class="warranty-badge">🛡️ ${escapeHtml(winner.warrantyInfo)}</div>
             </div>
 
             <div style="margin-top: auto; padding-top: 24px;">
