@@ -427,7 +427,7 @@
       font-size: 16px;
       line-height: 1.6;
     }
-    
+
     .dash-panel {
       background: white;
       border: 1px solid var(--border);
@@ -437,7 +437,7 @@
       flex-direction: column;
       gap: 16px;
     }
-    
+
     .dash-panel h3 {
       margin: 0;
       font-size: 14px;
@@ -640,24 +640,24 @@
       {
         id: 15, text: "Hangi görseldeki mutfak sana 'İşte bu benim evim!' dedirtiyor?", type: "single", layout: "grid",
         options: [
-          { 
-            text: "Yazlık & Enerjik", 
+          {
+            text: "Yazlık & Enerjik",
             image: "https://res.cloudinary.com/drp4askpq/image/upload/v1767170807/e844028e-267e-4f0c-b52c-0399e17efd38_gsesrx.jpg",
-            scores: { sahilruhu: 20, klasikluk: 5 } 
+            scores: { sahilruhu: 20, klasikluk: 5 }
           },
-          { 
-            text: "Sıcak & Samimi", 
+          {
+            text: "Sıcak & Samimi",
             image: "https://res.cloudinary.com/drp4askpq/image/upload/v1767170801/93bc9ec0-8557-4ea6-9889-3a06f8e0a57a_trwp3e.jpg",
-            scores: { konforodakli: 20, nostaljik: 10 } 
+            scores: { konforodakli: 20, nostaljik: 10 }
           },
-          { 
-            text: "Doğal & Ferah", 
+          {
+            text: "Doğal & Ferah",
             image: "https://res.cloudinary.com/drp4askpq/image/upload/v1767170768/7c57193b-b1bd-4967-9acd-8c1fb6df025e_erwnez.jpg",
-            scores: { dogalruh: 20, konforodakli: 5 } 
+            scores: { dogalruh: 20, konforodakli: 5 }
           },
-          { 
-            text: "Modern & Karizmatik", 
-            image: "https://res.cloudinary.com/drp4askpq/image/upload/v1767170765/891b1da9-75cb-41e8-a9a4-c19a588df427_sxdpfd.jpg", 
+          {
+            text: "Modern & Karizmatik",
+            image: "https://res.cloudinary.com/drp4askpq/image/upload/v1767170765/891b1da9-75cb-41e8-a9a4-c19a588df427_sxdpfd.jpg",
             scores: { sehirlivizyoner: 20, hizpratik: 5 }
           }
         ]
@@ -1038,12 +1038,12 @@
 
     function selectOption(q, optIndex){
       lastInteractionIndex = optIndex;
-      
+
       if(q.type === "single"){
         state.answers[q.id] = optIndex;
         save();
         render();
-        
+
         // Auto-advance for single choice
         setTimeout(() => {
           if(state.qIndex >= questions.length - 1){
@@ -1054,7 +1054,7 @@
             render();
           }
         }, 350);
-        
+
       } else {
         // Multi-choice: Toggle selection, wait for manual Next
         const cur = Array.isArray(state.answers[q.id]) ? state.answers[q.id] : [];
@@ -1339,7 +1339,7 @@
 
         const hasImg = !!o.image;
         const cls = ["opt", q.type === "multi" ? "multi" : "", isSel ? "sel" : "", hasImg ? "has-img" : ""].join(" ").trim();
-        
+
         if(hasImg){
           return `
             <div class="${cls}" data-opt="${idx}" role="button" tabindex="0" aria-pressed="${isSel}">
@@ -1457,7 +1457,7 @@
                 </div>
                 <h2 id="resTitle" tabindex="-1">${escapeHtml(winner.title)}</h2>
                 <p class="hero-desc">${escapeHtml(winner.description)}</p>
-                
+
                 <div class="arch-note">
                   “${escapeHtml(winner.architectNote)}”
                 </div>
@@ -1476,7 +1476,7 @@
             <div style="font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 8px;">
               ${escapeHtml(winner.recommendedModel)}
             </div>
-            
+
             <div class="layout-sugg">
               <span style="font-size:18px;">📐</span>
               <span>${escapeHtml(winner.layoutSuggestion)}</span>
@@ -1488,7 +1488,7 @@
               <div class="mat-desc" style="margin-top:4px;">${escapeHtml(winner.materialDesc)}</div>
               <div class="warranty-badge">🛡️ ${escapeHtml(winner.warrantyInfo)}</div>
             </div>
-            
+
             <div style="margin-top: auto; padding-top: 24px;">
                <div class="navRow" style="margin-top:0; padding-top:20px; border-top:1px solid var(--border);">
                 <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
