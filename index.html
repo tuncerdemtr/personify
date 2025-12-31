@@ -901,6 +901,8 @@
     };
 
     let loadingTimer = null;
+    let lastFocusState = { step: null, qIndex: null };
+    let lastInteractionIndex = null;
 
     const el = (sel, root=document) => root.querySelector(sel);
     const els = (sel, root=document) => Array.from(root.querySelectorAll(sel));
@@ -973,6 +975,7 @@
     }
 
     function selectOption(q, optIndex){
+      lastInteractionIndex = optIndex;
       if(q.type === "single"){
         state.answers[q.id] = optIndex;
       }else{
@@ -1130,29 +1133,54 @@
       updateSideSummary();
 
       const main = el("#mainCard");
+      let rendered = false;
+
       if(state.step === "start"){
         main.innerHTML = renderStart();
         bindStart();
-        return;
-      }
-      if(state.step === "quiz"){
+        rendered = true;
+      } else if(state.step === "quiz"){
         main.innerHTML = renderQuiz();
         bindQuiz();
-        return;
-      }
-      if(state.step === "loading"){
+        rendered = true;
+      } else if(state.step === "loading"){
         main.innerHTML = renderLoading();
-        return;
-      }
-      if(state.step === "result"){
+        rendered = true;
+      } else if(state.step === "result"){
         main.innerHTML = renderResult();
         bindResult();
-        return;
+        rendered = true;
+      } else {
+        state.step = "start";
+        save();
+        main.innerHTML = renderStart();
+        bindStart();
+        rendered = true;
       }
-      state.step = "start";
-      save();
-      main.innerHTML = renderStart();
-      bindStart();
+
+      if(rendered) manageFocus();
+    }
+
+    function manageFocus(){
+      // 1. New Screen (Step Changed)
+      if(state.step !== lastFocusState.step){
+        if(state.step === "start") el("#metaName")?.focus();
+        if(state.step === "quiz") el("#qFocusTarget")?.focus();
+        if(state.step === "result") el("#resTitle")?.focus();
+        if(state.step === "loading") el("#loadingTitle")?.focus();
+      }
+      // 2. New Question (Same Step, Index Changed)
+      else if(state.step === "quiz" && state.qIndex !== lastFocusState.qIndex){
+        el("#qFocusTarget")?.focus();
+      }
+      // 3. Interaction Restore (Same Question, Same Step)
+      else if(state.step === "quiz" && lastInteractionIndex !== null){
+        const optBtn = el(`.opt[data-opt="${lastInteractionIndex}"]`);
+        if(optBtn) optBtn.focus();
+      }
+
+      lastFocusState = { step: state.step, qIndex: state.qIndex };
+      lastInteractionIndex = null;
     }
 
     function renderStart(){
@@ -1162,7 +1190,7 @@
         <div class="screen">
           <div class="cardHeader">
             <div>
-              <h2>Görüşme Bilgisi</h2>
+              <h2 id="pageTitle" tabindex="-1">Görüşme Bilgisi</h2>
               <div class="sub">Opsiyonel alanlar. İstersen boş geç.</div>
             </div>
             <div class="toggleRow">
@@ -1251,7 +1279,7 @@
           <div class="progressWrap">
             <div class="progressLeft">
               <div class="qMeta">Soru ${state.qIndex + 1} / ${questions.length} • Cevaplanan: ${prog.answeredCount}/${prog.total}</div>
-              <p class="qText">${escapeHtml(q.text)}</p>
+              <p class="qText" id="qFocusTarget" tabindex="-1">${escapeHtml(q.text)}</p>
             </div>
             <div class="bar" aria-label="İlerleme">
               <div style="width:${pct}%"></div>
@@ -1287,7 +1315,7 @@
         <div class="screen">
           <div class="cardHeader">
             <div>
-              <h2>Sonuç Hazırlanıyor</h2>
+              <h2 id="loadingTitle" tabindex="-1">Sonuç Hazırlanıyor</h2>
               <div class="sub">Kişiselleştirme tamamlanmak üzere.</div>
             </div>
           </div>
@@ -1335,7 +1363,7 @@
                 <div class="pill" style="margin-bottom: 12px; border-color: var(--primary); color: var(--primary);">
                   <strong>Uyum Skoru:</strong> ${formatPct(res.hybrid.topShare)}
                 </div>
-                <h2>${escapeHtml(winner.title)}</h2>
+                <h2 id="resTitle" tabindex="-1">${escapeHtml(winner.title)}</h2>
                 <p class="hero-desc">${escapeHtml(winner.description)}</p>
                 
                 <div class="arch-note">
