@@ -1038,14 +1038,30 @@
 
     function selectOption(q, optIndex){
       lastInteractionIndex = optIndex;
+
       if(q.type === "single"){
         state.answers[q.id] = optIndex;
-      }else{
+        save();
+        render();
+
+        // Auto-advance for single choice
+        setTimeout(() => {
+          if(state.qIndex >= questions.length - 1){
+            startLoadingResult();
+          } else {
+            state.qIndex += 1;
+            save();
+            render();
+          }
+        }, 350);
+
+      } else {
+        // Multi-choice: Toggle selection, wait for manual Next
         const cur = Array.isArray(state.answers[q.id]) ? state.answers[q.id] : [];
         state.answers[q.id] = cur.includes(optIndex) ? cur.filter(i=>i!==optIndex) : [...cur, optIndex];
+        save();
+        render();
       }
-      save();
-      render();
     }
 
     function totalProgress(){
