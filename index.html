@@ -716,7 +716,8 @@
           "Tezgah Altı Çöp Kovası Sistemleri"
         ],
         features: ["Maksimum Depolama", "Parmak İzi Bırakmayan Yüzey", "Ergonomi"],
-        imageQuery: "cozy family kitchen beige cabinets bright"
+        imageQuery: "cozy family kitchen beige cabinets bright",
+        heroImage: "https://res.cloudinary.com/drp4askpq/image/upload/v1767146955/28daf619-3a8a-4dcf-afea-c917906d0104_bmgtbn.jpg"
       },
       {
         id: "dogalruh",
@@ -1211,7 +1212,7 @@
     function renderResult(){
       const res = resultPackage();
       const winner = personas[res.winner];
-      const heroUrl = buildHeroUrl(winner.imageQuery);
+      const heroUrl = winner.heroImage ? winner.heroImage : buildHeroUrl(winner.imageQuery);
       const colors = winner.colors.map(color => `
         <div class="swatch">
           <span class="swatchDot" style="background:${swatchColor(color)};"></span>
